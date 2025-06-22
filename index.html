@@ -1,0 +1,1568 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TRỊNH TẤN MINH - QUẢN LÝ MEDIA</title>
+    <link href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        body {
+            font-family: 'Be Vietnam Pro', sans-serif;
+        }
+        .task-card.platform-youtube { border-left-color: #FF0000; }
+        .task-card.platform-facebook { border-left-color: #1877F2; }
+        .task-card.platform-tiktok { border-left-color: #000000; }
+        .task-card.platform-unknown { border-left-color: #6b7280; } /* Fallback color */
+
+        .status-chua-lam { background-color: #e5e7eb; color: #4b5563; }
+        .status-dang-lam { background-color: #dbeafe; color: #1d4ed8; }
+        .status-hoan-thanh { background-color: #d1fae5; color: #065f46; }
+        .status-bu { background-color: #fef3c7; color: #92400e; }
+        
+        /* Modal Transition Styles */
+        .modal-content {
+            transition: all 0.3s ease-out;
+        }
+
+        
+    </style>
+</head>
+<body class="bg-gray-100">
+
+    <!-- Config Error Message -->
+    <div id="config-error" class="hidden">
+        <div class="bg-red-100 border-l-4 border-red-500 text-red-700 p-8 m-4 rounded-lg shadow-lg" role="alert">
+            <p class="font-bold text-2xl">Lỗi Cấu Hình Firebase</p>
+            <p class="mt-4">Vui lòng thay thế các giá trị placeholder trong biến <strong>firebaseConfig</strong> trong mã nguồn bằng thông tin cấu hình Firebase thực tế của bạn.</p>
+            <p class="mt-2">Bạn có thể tìm thấy thông tin này trong phần Cài đặt dự án (Project settings) trên Firebase Console.</p>
+        </div>
+    </div>
+
+    <!-- Auth Screen -->
+    <div id="auth-screen" class="flex items-center justify-center min-h-screen">
+        <div class="bg-white p-8 rounded-xl shadow-lg w-full max-w-md">
+            <h2 id="auth-title" class="text-2xl font-bold text-center text-gray-800 mb-6">Đăng Nhập</h2>
+            <div id="auth-error" class="hidden bg-red-100 text-red-700 p-3 rounded-lg mb-4 text-sm"></div>
+            <form id="auth-form">
+                <div id="name-field-container" class="hidden mb-4">
+                    <label for="name" class="block text-sm font-medium text-gray-700 mb-1">Tên</label>
+                    <input id="name" type="text" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-indigo-500 focus:border-indigo-500" placeholder="Nguyễn Văn A">
+                </div>
+                <div class="mb-4">
+                    <label for="email" class="block text-sm font-medium text-gray-700 mb-1">Email</label>
+                    <input id="email" type="email" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-indigo-500 focus:border-indigo-500" required placeholder="email@example.com">
+                </div>
+                <div class="mb-6">
+                    <label for="password" class="block text-sm font-medium text-gray-700 mb-1">Mật khẩu</label>
+                    <input id="password" type="password" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-indigo-500 focus:border-indigo-500" required placeholder="••••••••">
+                </div>
+                <button type="submit" id="auth-submit-btn" class="w-full bg-indigo-600 text-white py-2 px-4 rounded-lg hover:bg-indigo-700 transition-colors">Đăng Nhập</button>
+            </form>
+            <p class="text-center text-sm text-gray-600 mt-6">
+                <span id="auth-toggle-text">Chưa có tài khoản?</span>
+                <a href="#" id="auth-toggle-link" class="font-medium text-indigo-600 hover:text-indigo-500">Đăng ký ngay</a>
+            </p>
+        </div>
+    </div>
+
+    <!-- Main App (User View) -->
+    <div id="app-screen" class="hidden">
+        <header class="bg-white shadow-md">
+            <div class="container mx-auto px-4 py-4">
+                 <div class="flex justify-between items-center">
+                       <div class="flex items-center gap-4">
+                           <h1 id="header-title" class="text-xl md:text-2xl font-bold text-gray-800">Các Nhóm Của Tôi</h1>
+                           <button id="back-to-dashboard-btn" class="hidden bg-gray-200 text-gray-800 px-4 py-2 rounded-lg hover:bg-gray-300 transition-colors text-sm">
+                               <i class="fas fa-arrow-left mr-2"></i>Quay lại
+                           </button>
+                       </div>
+                       <div class="flex items-center gap-3">
+                           <span id="user-email" class="hidden md:block text-sm text-gray-600"></span>
+                           <button id="leave-group-btn" class="hidden bg-red-500 text-white px-4 py-2 rounded-lg hover:bg-red-600 transition-colors text-sm">
+                               <i class="fas fa-sign-out-alt mr-2"></i>Rời nhóm
+                           </button>
+                           <button id="create-group-btn" class="bg-indigo-600 text-white px-4 py-2 rounded-lg hover:bg-indigo-700 transition-colors text-sm">
+                               <i class="fas fa-plus mr-2"></i>Tạo nhóm
+                           </button>
+                           <button id="join-group-btn" class="bg-gray-200 text-gray-800 px-4 py-2 rounded-lg hover:bg-gray-300 transition-colors text-sm">
+                               <i class="fas fa-user-plus mr-2"></i>Tham gia
+                           </button>
+                           <button id="logout-btn" class="bg-gray-200 text-gray-800 w-10 h-10 rounded-lg hover:bg-gray-300 transition-colors">
+                               <i class="fas fa-sign-out-alt"></i>
+                           </button>
+                       </div>
+                 </div>
+            </div>
+        </header>
+
+        <main id="main-content-container" class="container mx-auto p-4">
+            <div id="stats-container" class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4 mb-6 hidden"></div>
+            <div id="main-content"></div>
+        </main>
+    </div>
+
+    <!-- Admin Screen -->
+    <div id="admin-screen" class="hidden">
+        <header class="bg-white shadow-md">
+            <div class="container mx-auto px-4 py-4 flex justify-between items-center">
+                <h1 class="text-xl md:text-2xl font-bold text-gray-800">Trang Quản Trị</h1>
+                <div class="flex items-center gap-3">
+                    <span id="admin-email" class="hidden md:block text-sm text-gray-600 font-semibold"></span>
+                    <button id="admin-logout-btn" class="bg-red-600 text-white px-4 py-2 rounded-lg hover:bg-red-700 transition-colors">
+                        <i class="fas fa-sign-out-alt mr-2"></i>Đăng xuất
+                    </button>
+                </div>
+            </div>
+        </header>
+        <main class="container mx-auto p-4">
+            <!-- Admin Dashboard Stats -->
+            <div id="admin-stats-container" class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+                <!-- Stats will be loaded here by JS -->
+            </div>
+
+            <!-- Growth Chart -->
+            <div class="bg-white p-6 rounded-xl shadow-lg mb-8">
+                 <div class="h-80">
+                     <canvas id="user-growth-chart"></canvas>
+                 </div>
+            </div>
+
+            <!-- User Management -->
+            <div class="bg-white p-6 rounded-xl shadow-lg">
+                <div class="flex justify-between items-center mb-4">
+                    <h2 class="text-xl font-bold text-gray-800">Quản Lý Người Dùng</h2>
+                    <button id="add-user-btn" class="bg-indigo-600 text-white px-4 py-2 rounded-lg hover:bg-indigo-700 transition-colors">
+                        <i class="fas fa-plus mr-2"></i>Thêm người dùng
+                    </button>
+                </div>
+                <div class="overflow-x-auto">
+                    <table class="w-full text-sm text-left text-gray-500">
+                        <thead class="text-xs text-gray-700 uppercase bg-gray-50">
+                            <tr>
+                                <th scope="col" class="px-6 py-3">Tên</th>
+                                <th scope="col" class="px-6 py-3">Email</th>
+                                <th scope="col" class="px-6 py-3">Ngày tham gia</th>
+                                <th scope="col" class="px-6 py-3">Vai trò</th>
+                                <th scope="col" class="px-6 py-3">Trạng thái</th>
+                                <th scope="col" class="px-6 py-3">Hành động</th>
+                            </tr>
+                        </thead>
+                        <tbody id="users-table-body">
+                            <!-- User rows will be inserted here by JS -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <!-- Modals -->
+    <div id="user-modal" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 hidden">
+        <div class="modal-content bg-white p-6 rounded-xl shadow-lg w-full max-w-md transform transition-all scale-95 opacity-0">
+            <h3 id="user-modal-title" class="text-xl font-bold text-gray-800 mb-6"></h3>
+            <form id="user-form">
+                <input type="hidden" id="user-id">
+                <div class="mb-4">
+                    <label for="user-name" class="block text-sm font-medium text-gray-700 mb-1">Tên người dùng</label>
+                    <input type="text" id="user-name" class="w-full px-3 py-2 border border-gray-300 rounded-lg" required>
+                </div>
+                <div class="mb-4">
+                    <label for="user-email-input" class="block text-sm font-medium text-gray-700 mb-1">Email</label>
+                    <input type="email" id="user-email-input" class="w-full px-3 py-2 border border-gray-300 rounded-lg" required>
+                </div>
+                <div id="password-field-container" class="mb-6">
+                    <label for="user-password" class="block text-sm font-medium text-gray-700 mb-1">Mật khẩu</label>
+                    <input type="password" id="user-password" class="w-full px-3 py-2 border border-gray-300 rounded-lg">
+                    <p class="text-xs text-gray-500 mt-1">Bỏ trống nếu không muốn thay đổi mật khẩu.</p>
+                </div>
+                <div class="flex justify-end gap-3">
+                    <button type="button" class="bg-gray-200 text-gray-800 px-4 py-2 rounded-lg hover:bg-gray-300" onclick="closeModal('user-modal')">Hủy</button>
+                    <button type="submit" class="bg-indigo-600 text-white px-4 py-2 rounded-lg hover:bg-indigo-700">Lưu</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <div id="task-modal" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 hidden">
+        <div class="modal-content bg-white p-6 rounded-xl shadow-lg w-full max-w-lg transform transition-all scale-95 opacity-0">
+            <h3 id="task-modal-title" class="text-xl font-bold text-gray-800 mb-6">Tạo công việc mới</h3>
+            <form id="task-form">
+                <input type="hidden" id="task-id">
+                <input type="hidden" id="task-time">
+                <input type="hidden" id="task-date">
+                
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
+                    <div>
+                        <label for="task-partner" class="block text-sm font-medium text-gray-700 mb-1">Đối tác</label>
+                        <input type="text" id="task-partner" class="w-full px-3 py-2 border border-gray-300 rounded-lg" required>
+                    </div>
+                     <div>
+                        <label for="task-platform" class="block text-sm font-medium text-gray-700 mb-1">Nền tảng</label>
+                        <select id="task-platform" class="w-full px-3 py-2 border border-gray-300 rounded-lg" required>
+                            <option value="YouTube">YouTube</option>
+                            <option value="Facebook">Facebook</option>
+                            <option value="TikTok">TikTok</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="mb-4">
+                    <label for="task-content" class="block text-sm font-medium text-gray-700 mb-1">Nội dung</label>
+                    <textarea id="task-content" class="w-full px-3 py-2 border border-gray-300 rounded-lg" rows="3" required></textarea>
+                </div>
+                
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
+                    <div>
+                        <label for="task-status" class="block text-sm font-medium text-gray-700 mb-1">Trạng thái</label>
+                        <select id="task-status" class="w-full px-3 py-2 border border-gray-300 rounded-lg" required>
+                           <option value="Chưa làm">Chưa làm</option>
+                           <option value="Đang làm">Đang làm</option>
+                           <option value="Hoàn thành">Hoàn thành</option>
+                           <option value="Bù">Công việc bù</option>
+                       </select>
+                    </div>
+                    <div>
+                        <label for="task-assignee" class="block text-sm font-medium text-gray-700 mb-1">Giao cho</label>
+                        <select id="task-assignee" class="w-full px-3 py-2 border border-gray-300 rounded-lg" required>
+                            <!-- Populated by JS -->
+                        </select>
+                    </div>
+                </div>
+
+
+                <div class="flex justify-between items-center">
+                    <button type="button" id="delete-task-btn" class="hidden bg-red-600 text-white px-4 py-2 rounded-lg hover:bg-red-700">Xóa</button>
+                    <div class="flex gap-3">
+                         <button type="button" onclick="closeModal('task-modal')" class="bg-gray-200 text-gray-800 px-4 py-2 rounded-lg hover:bg-gray-300">Hủy</button>
+                         <button type="submit" class="bg-indigo-600 text-white px-4 py-2 rounded-lg hover:bg-indigo-700">Lưu</button>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <div id="group-modal" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 hidden">
+        <div class="modal-content bg-white p-6 rounded-xl shadow-lg w-full max-w-md transform transition-all scale-95 opacity-0">
+            <h3 id="group-modal-title" class="text-xl font-bold text-gray-800 mb-6">Tạo nhóm mới</h3>
+            <form id="group-form">
+                <div id="create-group-view">
+                    <div class="mb-4">
+                        <label for="new-group-name" class="block text-sm font-medium text-gray-700 mb-1">Tên nhóm</label>
+                        <input type="text" id="new-group-name" class="w-full px-3 py-2 border border-gray-300 rounded-lg" placeholder="VD: Team Sáng Tạo Nội Dung">
+                    </div>
+                    <div>
+                        <label for="group-start-month" class="block text-sm font-medium text-gray-700 mb-1">Tháng bắt đầu</label>
+                        <select id="group-start-month" class="w-full px-3 py-2 border border-gray-300 rounded-lg"></select>
+                    </div>
+                </div>
+                <div id="join-group-view" class="hidden">
+                    <label for="join-group-id" class="block text-sm font-medium text-gray-700 mb-1">Mã mời nhóm</label>
+                    <input type="text" id="join-group-id" class="w-full px-3 py-2 border border-gray-300 rounded-lg" placeholder="Nhập mã mời">
+                </div>
+                <div class="flex justify-end gap-3 mt-6">
+                    <button type="button" class="bg-gray-200 text-gray-800 px-4 py-2 rounded-lg hover:bg-gray-300" onclick="closeModal('group-modal')">Hủy</button>
+                    <button type="submit" class="bg-indigo-600 text-white px-4 py-2 rounded-lg hover:bg-indigo-700">Xác nhận</button>
+                </div>
+            </form>
+        </div>
+    </div>
+    
+    <div id="confirm-modal" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 hidden">
+        <div class="modal-content bg-white p-6 rounded-xl shadow-lg w-full max-w-sm text-center transform transition-all scale-95 opacity-0">
+             <div id="confirm-icon" class="mx-auto mb-4 w-12 h-12 rounded-full flex items-center justify-center bg-red-100 text-red-600 text-2xl">
+                 <i class="fas fa-exclamation-triangle"></i>
+             </div>
+            <h3 id="confirm-title" class="text-lg font-bold text-gray-900 mb-2"></h3>
+            <p id="confirm-text" class="text-sm text-gray-600 mb-6"></p>
+            <div class="flex justify-center gap-4">
+                 <button id="confirm-cancel-btn" class="bg-gray-200 text-gray-800 px-6 py-2 rounded-lg hover:bg-gray-300">Hủy</button>
+                 <button id="confirm-ok-btn" class="bg-red-600 text-white px-6 py-2 rounded-lg hover:bg-red-700">Xác nhận</button>
+            </div>
+        </div>
+    </div>
+
+
+    <div id="message-modal" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 hidden">
+        <div class="modal-content bg-white p-6 rounded-xl shadow-lg w-full max-w-sm text-center transform transition-all scale-95 opacity-0">
+            <div id="message-icon" class="text-4xl mb-4"></div>
+            <h3 id="message-title" class="text-lg font-bold text-gray-900 mb-2"></h3>
+            <p id="message-text" class="text-sm text-gray-600 mb-6"></p>
+            <button class="bg-indigo-600 text-white w-full py-2 rounded-lg hover:bg-indigo-700" onclick="closeModal('message-modal')">Đóng</button>
+        </div>
+    </div>
+
+    <script type="module">
+        // #############################################################################
+        // ##### QUAN TRỌNG: Vui lòng thay thế bằng cấu hình Firebase của bạn #####
+        // #############################################################################
+        const firebaseConfig = {
+            apiKey: "AIzaSyB_P4-Si9ua1b7k4W60z6tcTfK-FXdWpRs",
+            authDomain: "quan-ly-media.firebaseapp.com",
+            projectId: "quan-ly-media",
+            storageBucket: "quan-ly-media.appspot.com",
+            messagingSenderId: "852239719669",
+            appId: "1:852239719669:web:5016001c2f84051b9c39bc",
+            measurementId: "G-EV4HZXNHNH"
+        };
+        // #############################################################################
+        
+        // Import from a more recent, stable Firebase version
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
+        import { 
+            getAuth, 
+            createUserWithEmailAndPassword, 
+            signInWithEmailAndPassword, 
+            onAuthStateChanged, 
+            signOut 
+        } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
+        import { 
+            getFirestore, 
+            doc, 
+            setDoc, 
+            getDoc, 
+            addDoc, 
+            collection,
+            onSnapshot,
+            updateDoc,
+            deleteDoc,
+            arrayUnion,
+            arrayRemove,
+            query,
+            getDocs,
+            Timestamp,
+            writeBatch
+        } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+
+        // --- Firebase Config Check ---
+        if (firebaseConfig.apiKey.includes("AIzaSy") === false) {
+            document.getElementById('auth-screen').classList.add('hidden');
+            document.getElementById('config-error').classList.remove('hidden');
+            throw new Error("Firebase config is not set. Please update the firebaseConfig object in the script.");
+        }
+
+        // Initialize Firebase
+        const app = initializeApp(firebaseConfig);
+        const auth = getAuth(app);
+        const db = getFirestore(app);
+
+        // --- Admin Config ---
+        const ADMIN_EMAIL = "antonyminh2025@gmail.com";
+
+        // --- Global state ---
+        let currentUser = null;
+        let isAdmin = false;
+        let activeGroupId = null;
+        let usersUnsubscribe = null;
+        let taskUnsubscribe = null;
+        let groupsUnsubscribe = null;
+        let groupDocUnsubscribe = null; // Listener for active group document
+        let userGrowthChart = null; // Reference to the admin chart
+        let currentWeek = 1;
+        let cachedTasks = [];
+        let allUsersCache = [];
+        let activeGroupStartDate = null;
+        let activeGroupTotalWeeks = 4; // Default value
+        let activeGroupMembers = []; // Cache for member data
+
+        // --- UI Elements ---
+        const ui = {
+            // Screens
+            authScreen: document.getElementById('auth-screen'),
+            appScreen: document.getElementById('app-screen'),
+            adminScreen: document.getElementById('admin-screen'),
+            
+            // Auth
+            authForm: document.getElementById('auth-form'),
+            authError: document.getElementById('auth-error'),
+            authTitle: document.getElementById('auth-title'),
+            authToggleText: document.getElementById('auth-toggle-text'),
+            authToggleLink: document.getElementById('auth-toggle-link'),
+            authSubmitBtn: document.getElementById('auth-submit-btn'),
+            nameFieldContainer: document.getElementById('name-field-container'),
+            
+            // User App
+            mainContent: document.getElementById('main-content'),
+            statsContainer: document.getElementById('stats-container'),
+            userEmail: document.getElementById('user-email'),
+            logoutBtn: document.getElementById('logout-btn'),
+            headerTitle: document.getElementById('header-title'),
+            backToDashboardBtn: document.getElementById('back-to-dashboard-btn'),
+            createGroupBtn: document.getElementById('create-group-btn'),
+            joinGroupBtn: document.getElementById('join-group-btn'),
+            leaveGroupBtn: document.getElementById('leave-group-btn'),
+            
+            // Admin App
+            adminEmail: document.getElementById('admin-email'),
+            adminLogoutBtn: document.getElementById('admin-logout-btn'),
+            adminStatsContainer: document.getElementById('admin-stats-container'),
+            usersTableBody: document.getElementById('users-table-body'),
+            addUserBtn: document.getElementById('add-user-btn'),
+            userForm: document.getElementById('user-form'),
+            userModalTitle: document.getElementById('user-modal-title'),
+            userIdInput: document.getElementById('user-id'),
+            userNameInput: document.getElementById('user-name'),
+            userEmailInput: document.getElementById('user-email-input'),
+            userPasswordInput: document.getElementById('user-password'),
+            passwordFieldContainer: document.getElementById('password-field-container'),
+
+            // Group Modal
+            groupForm: document.getElementById('group-form'),
+            groupModalTitle: document.getElementById('group-modal-title'),
+            createGroupView: document.getElementById('create-group-view'),
+            joinGroupView: document.getElementById('join-group-view'),
+            newGroupNameInput: document.getElementById('new-group-name'),
+            joinGroupIdInput: document.getElementById('join-group-id'),
+            groupStartMonthSelect: document.getElementById('group-start-month'),
+
+            // Task Modal
+            taskForm: document.getElementById('task-form'),
+            deleteTaskBtn: document.getElementById('delete-task-btn'),
+            taskIdInput: document.getElementById('task-id'),
+            taskTimeInput: document.getElementById('task-time'),
+            taskDateInput: document.getElementById('task-date'),
+            taskPartnerInput: document.getElementById('task-partner'),
+            taskPlatformInput: document.getElementById('task-platform'),
+            taskContentInput: document.getElementById('task-content'),
+            taskStatusInput: document.getElementById('task-status'),
+            taskAssigneeInput: document.getElementById('task-assignee'),
+            taskModalTitle: document.getElementById('task-modal-title'),
+        };
+
+        // --- Modal Control ---
+        window.openModal = (modalId) => {
+            const modal = document.getElementById(modalId);
+            if (!modal) return;
+            modal.classList.remove('hidden');
+            setTimeout(() => { // For transition
+                modal.querySelector('.modal-content').classList.add('scale-100', 'opacity-100');
+                modal.querySelector('.modal-content').classList.remove('scale-95', 'opacity-0');
+            }, 10);
+        };
+
+        window.closeModal = (modalId) => {
+            const modal = document.getElementById(modalId);
+            if (!modal) return;
+            const content = modal.querySelector('.modal-content');
+            content.classList.remove('scale-100', 'opacity-100');
+            content.classList.add('scale-95', 'opacity-0');
+            setTimeout(() => modal.classList.add('hidden'), 200); // Wait for transition
+        };
+
+        const showMessage = (title, text, isError = false) => {
+            document.getElementById('message-title').textContent = title;
+            document.getElementById('message-text').textContent = text;
+            const iconEl = document.getElementById('message-icon');
+            if (isError) {
+                iconEl.innerHTML = '<i class="fas fa-times-circle text-red-500"></i>';
+            } else {
+                iconEl.innerHTML = '<i class="fas fa-check-circle text-green-500"></i>';
+            }
+            openModal('message-modal');
+        };
+
+        const showConfirmation = (title, text, onConfirm) => {
+            document.getElementById('confirm-title').textContent = title;
+            document.getElementById('confirm-text').textContent = text;
+            
+            const okBtn = document.getElementById('confirm-ok-btn');
+            const cancelBtn = document.getElementById('confirm-cancel-btn');
+
+            const confirmHandler = () => {
+                onConfirm();
+                cleanup();
+            };
+
+            const cancelHandler = () => {
+                closeModal('confirm-modal');
+                cleanup();
+            };
+            
+            const cleanup = () => {
+                 okBtn.removeEventListener('click', confirmHandler);
+                 cancelBtn.removeEventListener('click', cancelHandler);
+                 closeModal('confirm-modal');
+            }
+
+            okBtn.addEventListener('click', confirmHandler, { once: true });
+            cancelBtn.addEventListener('click', cancelHandler, { once: true });
+
+            openModal('confirm-modal');
+        };
+
+
+        // --- Date Utilities ---
+        function getNumberOfWeeks(year, month) {
+            const firstDayOfMonth = new Date(year, month, 1);
+            const lastDayOfMonth = new Date(year, month + 1, 0);
+            const firstDayOfWeek = firstDayOfMonth.getDay(); 
+            const firstDayIndex = (firstDayOfWeek === 0) ? 6 : firstDayOfWeek - 1;
+            const totalSlots = firstDayIndex + lastDayOfMonth.getDate();
+            return Math.ceil(totalSlots / 7);
+        }
+
+        const getWeekDates = (weekNumber, groupStartDate) => {
+            const baseDate = groupStartDate ? new Date(groupStartDate) : new Date(new Date().getFullYear(), new Date().getMonth(), 1);
+            const firstDayOfWeek1 = new Date(baseDate);
+            const dayOffset = (firstDayOfWeek1.getDay() === 0) ? 6 : firstDayOfWeek1.getDay() - 1;
+            firstDayOfWeek1.setDate(firstDayOfWeek1.getDate() - dayOffset);
+
+            const startDate = new Date(firstDayOfWeek1);
+            startDate.setDate(startDate.getDate() + (weekNumber - 1) * 7);
+
+            const dates = [];
+            for (let i = 0; i < 7; i++) {
+                const d = new Date(startDate);
+                d.setDate(startDate.getDate() + i);
+                dates.push(d);
+            }
+            return dates;
+        };
+
+        const formatDate = (date) => date.toLocaleDateString('vi-VN', { day: '2-digit', month: '2-digit' });
+        const formatFullDate = (timestamp) => {
+            if (!timestamp || typeof timestamp.toDate !== 'function') return 'N/A';
+            return timestamp.toDate().toLocaleDateString('vi-VN', { day: '2-digit', month: '2-digit', year: 'numeric' });
+        };
+
+
+        // --- Authentication ---
+        const toggleAuthMode = (isLogin) => {
+            ui.authTitle.textContent = isLogin ? 'Đăng Nhập' : 'Đăng Ký';
+            ui.authSubmitBtn.textContent = isLogin ? 'Đăng Nhập' : 'Đăng Ký';
+            ui.authToggleText.textContent = isLogin ? 'Chưa có tài khoản?' : 'Đã có tài khoản?';
+            ui.authToggleLink.textContent = isLogin ? 'Đăng ký ngay' : 'Đăng nhập';
+            ui.authError.classList.add('hidden');
+            ui.authForm.reset();
+            
+            if (isLogin) {
+                ui.nameFieldContainer.classList.add('hidden');
+            } else {
+                ui.nameFieldContainer.classList.remove('hidden');
+            }
+        };
+
+        ui.authToggleLink.addEventListener('click', (e) => {
+            e.preventDefault();
+            toggleAuthMode(ui.authTitle.textContent === 'Đăng Ký');
+        });
+
+        ui.authForm.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const email = document.getElementById('email').value;
+            const password = document.getElementById('password').value;
+            const isLogin = ui.authTitle.textContent === 'Đăng Nhập';
+
+            ui.authError.classList.add('hidden');
+
+            try {
+                if (isLogin) {
+                    await signInWithEmailAndPassword(auth, email, password);
+                    // onAuthStateChanged will handle the rest
+                } else {
+                    const name = document.getElementById('name').value.trim();
+                    if (!name) {
+                        ui.authError.textContent = 'Vui lòng nhập tên của bạn.';
+                        ui.authError.classList.remove('hidden');
+                        return;
+                    }
+
+                    const userCredential = await createUserWithEmailAndPassword(auth, email, password);
+                    
+                    const userData = {
+                        name: name,
+                        email: userCredential.user.email,
+                        groups: [],
+                        activeGroupId: null,
+                        createdAt: Timestamp.now(),
+                        status: 'pending' // NEW: Default status for new users
+                    };
+                    // Auto-assign 'admin' role if the email matches ADMIN_EMAIL
+                    if (userCredential.user.email === ADMIN_EMAIL) {
+                        userData.role = 'admin';
+                        userData.status = 'active'; // NEW: Admin user is active by default
+                    }
+
+                    await setDoc(doc(db, "users", userCredential.user.uid), userData);
+                    
+                    // After registration, sign them out and show message
+                    await signOut(auth);
+                    showMessage('Đăng Ký Thành Công', 'Tài khoản của bạn đã được tạo và đang chờ quản trị viên phê duyệt. Vui lòng quay lại sau.');
+                }
+            } catch (error) {
+                const message = {
+                    'auth/user-not-found': 'Email chưa được đăng ký.',
+                    'auth/wrong-password': 'Sai mật khẩu, vui lòng thử lại.',
+                    'auth/email-already-in-use': 'Email này đã được sử dụng.',
+                    'auth/weak-password': 'Mật khẩu phải có ít nhất 6 ký tự.',
+                    'auth/invalid-email': 'Địa chỉ email không hợp lệ.',
+                }[error.code] || 'Đã có lỗi xảy ra. Vui lòng thử lại.';
+                ui.authError.textContent = message;
+                ui.authError.classList.remove('hidden');
+            }
+        });
+        
+        const handleLogout = () => signOut(auth);
+        ui.logoutBtn.addEventListener('click', handleLogout);
+        ui.adminLogoutBtn.addEventListener('click', handleLogout);
+
+
+        // --- App Initializer on Auth State Change ---
+        onAuthStateChanged(auth, async (user) => {
+            // Reset all listeners and state
+            if (taskUnsubscribe) { taskUnsubscribe(); taskUnsubscribe = null; }
+            if (groupsUnsubscribe) { groupsUnsubscribe(); groupsUnsubscribe = null; }
+            if (groupDocUnsubscribe) { groupDocUnsubscribe(); groupDocUnsubscribe = null; }
+            if (usersUnsubscribe) { usersUnsubscribe(); usersUnsubscribe = null; }
+            cachedTasks = [];
+            allUsersCache = [];
+            activeGroupStartDate = null;
+            activeGroupTotalWeeks = 4;
+            activeGroupMembers = [];
+            activeGroupId = null;
+            isAdmin = false;
+            currentUser = null;
+
+            if (user) {
+                currentUser = user;
+                const userDocRef = doc(db, "users", user.uid);
+                const userDoc = await getDoc(userDocRef);
+
+                if (userDoc.exists()) {
+                    const userData = userDoc.data();
+
+                    // NEW: Check user status before allowing access
+                    const userStatus = userData.status || 'active'; // Default old users to active
+                    if (userStatus !== 'active') {
+                        let message = 'Tài khoản của bạn đang chờ quản trị viên phê duyệt.';
+                        if (userStatus === 'suspended') {
+                            message = 'Tài khoản của bạn đã bị khóa.';
+                        }
+                        await signOut(auth); // This will re-trigger onAuthStateChanged with user=null
+                        showMessage('Truy Cập Bị Từ Chối', message, true);
+                        return; // Stop further processing
+                    }
+                    // END NEW
+
+                    if (userData.role === 'admin') {
+                        // --- ADMIN FLOW ---
+                        isAdmin = true;
+                        ui.authScreen.classList.add('hidden');
+                        ui.appScreen.classList.add('hidden');
+                        ui.adminScreen.classList.remove('hidden');
+                        ui.adminEmail.textContent = user.email;
+                        loadAdminDashboard();
+                    } else {
+                        // --- REGULAR USER FLOW ---
+                        isAdmin = false;
+                        ui.authScreen.classList.add('hidden');
+                        ui.adminScreen.classList.add('hidden');
+                        ui.appScreen.classList.remove('hidden');
+                        ui.userEmail.textContent = user.email;
+                        listenToUserData(user.uid);
+                    }
+                } else {
+                    // User exists in Auth but not in Firestore DB. This is an inconsistent state.
+                    await signOut(auth);
+                    showMessage('Lỗi Dữ Liệu', 'Không tìm thấy hồ sơ người dùng của bạn. Vui lòng liên hệ quản trị viên.', true);
+                }
+            } else {
+                // --- NO USER LOGGED IN ---
+                ui.authScreen.classList.remove('hidden');
+                ui.appScreen.classList.add('hidden');
+                ui.adminScreen.classList.add('hidden');
+                ui.mainContent.innerHTML = '';
+            }
+        });
+        
+        // ======================================================================
+        // ========================= ADMIN SECTION ==============================
+        // ======================================================================
+        
+        function loadAdminDashboard() {
+            listenToAllUsers();
+        }
+        
+        // NEW: Function to update user status
+        window.updateUserStatus = async (userId, newStatus) => {
+            const userToUpdate = allUsersCache.find(u => u.id === userId);
+            if (!userToUpdate || userToUpdate.email === ADMIN_EMAIL) {
+                showMessage('Thao tác không được phép', 'Bạn không thể thay đổi trạng thái của tài khoản này.', true);
+                renderUsersTable(allUsersCache); // Revert UI
+                return;
+            }
+
+            const userRef = doc(db, "users", userId);
+            try {
+                await updateDoc(userRef, { status: newStatus });
+                // The table will re-render automatically via the onSnapshot listener
+            } catch (error) {
+                console.error("Error updating user status:", error);
+                showMessage('Lỗi', 'Không thể cập nhật trạng thái người dùng.', true);
+                renderUsersTable(allUsersCache); // Revert UI on error
+            }
+        };
+
+        function listenToAllUsers() {
+            if (usersUnsubscribe) usersUnsubscribe();
+            const usersQuery = query(collection(db, "users"));
+            usersUnsubscribe = onSnapshot(usersQuery, async (usersSnapshot) => {
+                try {
+                    allUsersCache = usersSnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+                    renderUsersTable(allUsersCache);
+
+                    // Fetch groups and tasks for stats
+                    const groupsSnapshot = await getDocs(collection(db, "groups"));
+                    const totalGroups = groupsSnapshot.size;
+
+                    let totalTasks = 0;
+                    const taskPromises = groupsSnapshot.docs.map(groupDoc => 
+                        getDocs(collection(db, "groups", groupDoc.id, "tasks"))
+                    );
+                    const taskSnapshots = await Promise.all(taskPromises);
+                    taskSnapshots.forEach(taskCollection => {
+                        totalTasks += taskCollection.size;
+                    });
+                    
+                    updateAdminStats(allUsersCache, totalGroups, totalTasks);
+                    renderUserGrowthChart(allUsersCache);
+
+                } catch(error) {
+                    console.error("Error updating admin dashboard:", error);
+                    ui.adminStatsContainer.innerHTML = `<div class="col-span-3 bg-red-100 text-red-700 p-4 rounded-lg">Không thể tải số liệu thống kê.</div>`;
+                }
+            }, (error) => {
+                console.error("Failed to listen to users collection:", error);
+                const errorMessage = `Lỗi tải danh sách người dùng. Vui lòng kiểm tra quyền truy cập Firestore (Security Rules). Lỗi: ${error.message}`;
+                ui.usersTableBody.innerHTML = `<tr><td colspan="6" class="text-center p-4 text-red-600">${errorMessage}</td></tr>`;
+            });
+        }
+
+        function updateAdminStats(users, totalGroups, totalTasks) {
+            const totalUsers = users.length;
+            ui.adminStatsContainer.innerHTML = `
+                <div class="stat-card bg-blue-50">
+                    <div class="stat-icon text-blue-500"><i class="fas fa-users"></i></div>
+                    <div class="stat-value text-blue-600">${totalUsers}</div>
+                    <div class="stat-label">Tổng người dùng</div>
+                </div>
+                <div class="stat-card bg-green-50">
+                    <div class="stat-icon text-green-500"><i class="fas fa-layer-group"></i></div>
+                    <div class="stat-value text-green-600">${totalGroups}</div>
+                    <div class="stat-label">Tổng số nhóm</div>
+                </div>
+                <div class="stat-card bg-indigo-50">
+                    <div class="stat-icon text-indigo-500"><i class="fas fa-tasks"></i></div>
+                    <div class="stat-value text-indigo-600">${totalTasks}</div>
+                    <div class="stat-label">Tổng công việc</div>
+                </div>
+                <style>
+                    .stat-card { border-radius: 12px; padding: 1.5rem; text-align: center; }
+                    .stat-icon { font-size: 2rem; margin-bottom: 0.75rem; }
+                    .stat-value { font-size: 2.25rem; font-weight: 700; }
+                    .stat-label { font-size: 0.875rem; color: #6b7280; margin-top: 4px; text-transform: uppercase; letter-spacing: 0.5px; }
+                </style>
+            `;
+        }
+        
+        function renderUserGrowthChart(users) {
+            const ctx = document.getElementById('user-growth-chart')?.getContext('2d');
+            if (!ctx) return;
+
+            const usersByMonth = {};
+            users.forEach(user => {
+                if (user.createdAt && typeof user.createdAt.toDate === 'function') {
+                    const date = user.createdAt.toDate();
+                    const monthKey = `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}`;
+                    usersByMonth[monthKey] = (usersByMonth[monthKey] || 0) + 1;
+                }
+            });
+            
+            const sortedMonths = Object.keys(usersByMonth).sort();
+            
+            const labels = [];
+            const data = [];
+            if (sortedMonths.length > 0) {
+                const firstMonth = new Date(sortedMonths[0] + "-01T00:00:00");
+                const lastMonth = new Date();
+                
+                let currentMonth = firstMonth;
+                while(currentMonth <= lastMonth) {
+                    const monthKey = `${currentMonth.getFullYear()}-${String(currentMonth.getMonth() + 1).padStart(2, '0')}`;
+                    labels.push(`Tháng ${monthKey.split('-')[1]}/${monthKey.split('-')[0]}`);
+                    data.push(usersByMonth[monthKey] || 0);
+                    currentMonth.setMonth(currentMonth.getMonth() + 1);
+                }
+            }
+
+
+            if (userGrowthChart) {
+                userGrowthChart.destroy();
+            }
+
+            userGrowthChart = new Chart(ctx, {
+                type: 'line',
+                data: {
+                    labels: labels,
+                    datasets: [{
+                        label: 'Số người dùng mới',
+                        data: data,
+                        fill: true,
+                        borderColor: 'rgb(79, 70, 229)',
+                        backgroundColor: 'rgba(199, 210, 254, 0.5)',
+                        tension: 0.3,
+                        pointBackgroundColor: 'rgb(79, 70, 229)',
+                        pointRadius: 4,
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            ticks: {
+                                precision: 0 // Show only whole numbers
+                            }
+                        }
+                    },
+                    plugins: {
+                        legend: { display: false },
+                        title: {
+                            display: true,
+                            text: 'Biểu Đồ Tăng Trưởng Người Dùng',
+                            font: { size: 18, family: "'Be Vietnam Pro', sans-serif" },
+                            padding: { bottom: 20 }
+                        }
+                    }
+                }
+            });
+        }
+
+
+        function renderUsersTable(users) {
+            if (!ui.usersTableBody) return;
+            
+            // Sort users: put pending users first
+            const sortedUsers = [...users].sort((a, b) => {
+                const statusA = a.status || 'active';
+                const statusB = b.status || 'active';
+                if (statusA === 'pending' && statusB !== 'pending') return -1;
+                if (statusA !== 'pending' && statusB === 'pending') return 1;
+                return 0; // Keep original order for others
+            });
+            
+            ui.usersTableBody.innerHTML = sortedUsers.map(user => {
+                const status = user.status || 'active'; // Default old users to 'active'
+                let statusBadge;
+                switch (status) {
+                    case 'active':
+                        statusBadge = `<span class="px-2 py-1 text-xs font-medium rounded-full bg-green-100 text-green-800">Hoạt động</span>`;
+                        break;
+                    case 'pending':
+                        statusBadge = `<span class="px-2 py-1 text-xs font-medium rounded-full bg-yellow-100 text-yellow-800">Chờ duyệt</span>`;
+                        break;
+                    case 'suspended':
+                        statusBadge = `<span class="px-2 py-1 text-xs font-medium rounded-full bg-red-100 text-red-800">Bị khóa</span>`;
+                        break;
+                    default:
+                        statusBadge = `<span class="px-2 py-1 text-xs font-medium rounded-full bg-gray-100 text-gray-800">Không rõ</span>`;
+                }
+
+                const canModify = user.email !== ADMIN_EMAIL;
+                const activateAction = canModify
+                    ? (status !== 'active'
+                        ? `<button onclick="updateUserStatus('${user.id}', 'active')" class="font-medium text-green-600 hover:underline">Kích hoạt</button>`
+                        : `<button onclick="updateUserStatus('${user.id}', 'pending')" class="font-medium text-yellow-600 hover:underline">Tạm dừng</button>`)
+                    : '';
+
+                return `
+                    <tr class="bg-white border-b hover:bg-gray-50 ${status === 'pending' ? 'bg-yellow-50' : ''}">
+                        <td class="px-6 py-4 font-medium text-gray-900 whitespace-nowrap">${user.name || 'N/A'}</td>
+                        <td class="px-6 py-4">${user.email}</td>
+                        <td class="px-6 py-4">${formatFullDate(user.createdAt)}</td>
+                        <td class="px-6 py-4">
+                            <span class="px-2 py-1 text-xs font-medium rounded-full ${
+                                user.role === 'admin' 
+                                ? 'bg-indigo-100 text-indigo-800' 
+                                : 'bg-gray-100 text-gray-800'
+                            }">
+                                ${user.role === 'admin' ? 'Admin' : 'User'}
+                            </span>
+                        </td>
+                        <td class="px-6 py-4">${statusBadge}</td>
+                        <td class="px-6 py-4 flex items-center gap-3">
+                            <button onclick="openEditUserModal('${user.id}')" class="font-medium text-indigo-600 hover:underline">Sửa</button>
+                            ${activateAction}
+                            ${canModify ? `<button onclick="handleDeleteUser('${user.id}', '${user.name}')" class="font-medium text-red-600 hover:underline">Xóa</button>` : ''}
+                        </td>
+                    </tr>
+                `;
+            }).join('');
+        }
+
+
+        ui.addUserBtn.addEventListener('click', () => {
+            ui.userForm.reset();
+            ui.userIdInput.value = '';
+            ui.userModalTitle.textContent = 'Thêm người dùng mới';
+            ui.userEmailInput.disabled = false;
+            ui.passwordFieldContainer.classList.remove('hidden');
+            ui.userPasswordInput.required = true;
+            openModal('user-modal');
+        });
+
+        window.openEditUserModal = (userId) => {
+            const user = allUsersCache.find(u => u.id === userId);
+            if (!user) {
+                showMessage('Lỗi', 'Không tìm thấy người dùng.', true);
+                return;
+            }
+            ui.userForm.reset();
+            ui.userModalTitle.textContent = 'Chỉnh sửa người dùng';
+            ui.userIdInput.value = user.id;
+            ui.userNameInput.value = user.name;
+            ui.userEmailInput.value = user.email;
+            ui.userEmailInput.disabled = true; // Cannot change email
+            ui.passwordFieldContainer.classList.add('hidden'); // Hide password field for editing for simplicity
+            openModal('user-modal');
+        };
+
+        ui.userForm.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const userId = ui.userIdInput.value;
+            const name = ui.userNameInput.value;
+            const email = ui.userEmailInput.value;
+            const password = ui.userPasswordInput.value;
+            
+            try {
+                if (userId) { // Editing existing user
+                    const userRef = doc(db, "users", userId);
+                    await updateDoc(userRef, { name: name });
+                    showMessage('Thành công', 'Đã cập nhật thông tin người dùng.');
+                } else { // Creating new user by admin
+                    // This creates a user but doesn't sign them in.
+                    // A more robust solution might use Cloud Functions to create users.
+                    const tempApp = initializeApp(firebaseConfig, `Secondary-${Date.now()}`); // Use unique name
+                    const tempAuth = getAuth(tempApp);
+                    const userCredential = await createUserWithEmailAndPassword(tempAuth, email, password);
+                    await signOut(tempAuth); // Sign out temporary user immediately
+
+                    const userData = {
+                        name: name,
+                        email: email,
+                        groups: [],
+                        activeGroupId: null,
+                        createdAt: Timestamp.now(),
+                        status: 'active' // NEW: Admin-created users are active by default
+                    };
+                    if (email === ADMIN_EMAIL) {
+                        userData.role = 'admin';
+                    }
+                    await setDoc(doc(db, "users", userCredential.user.uid), userData);
+                    showMessage('Thành công', 'Đã tạo người dùng mới.');
+                }
+                closeModal('user-modal');
+            } catch (error) {
+                console.error("User form error:", error);
+                showMessage('Lỗi', `Không thể lưu người dùng: ${error.message}`, true);
+            }
+        });
+        
+        window.handleDeleteUser = (userId, userName) => {
+            if (!userId) return;
+            showConfirmation(`Xóa người dùng "${userName}"?`, 
+            'Hành động này sẽ xóa dữ liệu người dùng khỏi Firestore nhưng không xóa tài khoản khỏi hệ thống xác thực. Đây là một hạn chế của việc xóa từ phía client. Tiếp tục?',
+            async () => {
+                try {
+                    await deleteDoc(doc(db, "users", userId));
+                    showMessage('Thành công', `Đã xóa người dùng "${userName}" khỏi cơ sở dữ liệu.`);
+                } catch (error) {
+                    console.error("Delete user error:", error);
+                    showMessage('Lỗi', 'Không thể xóa người dùng.', true);
+                }
+            });
+        };
+
+        // ======================================================================
+        // ======================== USER SECTION ================================
+        // ======================================================================
+
+        function listenToUserData(uid) {
+            const userDocRef = doc(db, "users", uid);
+            groupsUnsubscribe = onSnapshot(userDocRef, (userDoc) => {
+                try {
+                    if (!userDoc.exists()) return;
+                    const userData = userDoc.data();
+                    const newActiveGroupId = userData.activeGroupId;
+
+                    // If active group changes, reload view.
+                    if (newActiveGroupId !== activeGroupId) {
+                        activeGroupId = newActiveGroupId;
+                        
+                        if (activeGroupId) {
+                            loadScheduleView(activeGroupId);
+                        } else {
+                            if (taskUnsubscribe) { taskUnsubscribe(); taskUnsubscribe = null; }
+                            if (groupDocUnsubscribe) { groupDocUnsubscribe(); groupDocUnsubscribe = null; }
+                            loadGroupDashboard(userData.groups || []);
+                        }
+                    } else if (!activeGroupId && userData.groups) {
+                        // Initial load or returning to dashboard
+                        loadGroupDashboard(userData.groups || []);
+                    }
+                } catch (error) {
+                    console.error("Critical error in user data listener:", error);
+                    showMessage('Lỗi Hệ Thống', 'Gặp lỗi nghiêm trọng khi xử lý dữ liệu người dùng. Vui lòng tải lại trang.', true);
+                }
+            });
+        }
+        
+        // --- Group Management ---
+        function populateMonthSelector() {
+            const select = ui.groupStartMonthSelect;
+            select.innerHTML = '';
+            const now = new Date();
+            const currentYear = now.getFullYear();
+            const currentMonth = now.getMonth();
+
+            for (let i = 0; i < 6; i++) {
+                const date = new Date(currentYear, currentMonth + i, 1);
+                const option = document.createElement('option');
+                option.value = date.toISOString().split('T')[0];
+                option.textContent = `Tháng ${date.getMonth() + 1}/${date.getFullYear()}`;
+                select.appendChild(option);
+            }
+        }
+
+        async function loadGroupDashboard(groupIds) {
+            ui.headerTitle.textContent = 'Các Nhóm Của Tôi';
+            ui.backToDashboardBtn.classList.add('hidden');
+            ui.statsContainer.classList.add('hidden');
+            ui.leaveGroupBtn.classList.add('hidden');
+            
+            if (groupIds.length === 0) {
+                ui.mainContent.innerHTML = `
+                    <div class="text-center bg-white p-8 rounded-xl shadow">
+                        <h2 class="text-xl font-bold mb-2">Chào mừng bạn!</h2>
+                        <p class="text-gray-600">Bạn chưa ở trong nhóm nào. Hãy tạo một nhóm mới hoặc tham gia bằng mã mời.</p>
+                    </div>`;
+                return;
+            }
+
+            const groupPromises = groupIds.map(id => getDoc(doc(db, "groups", id)));
+            const groupDocs = await Promise.all(groupPromises);
+
+            const content = groupDocs.map(doc => {
+                if (!doc.exists()) return '';
+                const data = doc.data();
+                const isGroupAdmin = data.adminId === currentUser.uid;
+
+                const deleteButtonHtml = isGroupAdmin ? `
+                    <button onclick="deleteGroup(event, '${doc.id}', '${data.name}')" class="absolute top-2 right-2 w-8 h-8 bg-red-100 text-red-600 rounded-full hover:bg-red-200 transition-colors flex items-center justify-center">
+                        <i class="fas fa-trash-alt fa-sm"></i>
+                    </button>
+                ` : '';
+
+                return `
+                    <div class="group-card bg-white p-5 rounded-xl shadow hover:shadow-lg hover:-translate-y-1 transition-all relative">
+                        <div class="pr-10" onclick="selectGroup('${doc.id}')">
+                            <div class="font-bold text-lg text-gray-800 cursor-pointer">${data.name}</div>
+                            <div class="text-sm text-gray-500 cursor-pointer">${(data.members || []).length} thành viên</div>
+                        </div>
+                        ${deleteButtonHtml}
+                    </div>`;
+            }).join('');
+            
+            ui.mainContent.innerHTML = `<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">${content}</div>`;
+        }
+
+        window.selectGroup = async (groupId) => {
+            await updateDoc(doc(db, "users", currentUser.uid), { activeGroupId: groupId });
+        };
+
+        window.deleteGroup = async (event, groupId, groupName) => {
+            event.stopPropagation();
+            showConfirmation(`Xóa nhóm "${groupName}"?`, 'Hành động này không thể hoàn tác. Tất cả công việc trong nhóm cũng sẽ bị xóa vĩnh viễn.', async () => {
+                try {
+                    const tasksRef = collection(db, "groups", groupId, "tasks");
+                    const tasksSnapshot = await getDocs(tasksRef);
+                    const deletePromises = tasksSnapshot.docs.map(taskDoc => deleteDoc(taskDoc.ref));
+                    await Promise.all(deletePromises);
+                    await deleteDoc(doc(db, "groups", groupId));
+                    
+                    const userRef = doc(db, "users", currentUser.uid);
+                    const userDoc = await getDoc(userRef);
+                    const userData = userDoc.data();
+
+                    const updateData = { groups: arrayRemove(groupId) };
+                    if (userData.activeGroupId === groupId) {
+                        updateData.activeGroupId = null;
+                    }
+                    await updateDoc(userRef, updateData);
+                    
+                    showMessage('Thành công', `Nhóm "${groupName}" đã được xóa.`);
+                } catch (error) {
+                    console.error("Delete group error:", error);
+                    showMessage('Lỗi!', 'Không thể xóa nhóm. Vui lòng kiểm tra lại quyền hoặc thử lại.', true);
+                }
+            });
+        };
+        
+        ui.backToDashboardBtn.addEventListener('click', async () => {
+             if (taskUnsubscribe) { taskUnsubscribe(); taskUnsubscribe = null; }
+             if (groupDocUnsubscribe) { groupDocUnsubscribe(); groupDocUnsubscribe = null; }
+             await updateDoc(doc(db, "users", currentUser.uid), { activeGroupId: null });
+        });
+
+        ui.createGroupBtn.addEventListener('click', () => {
+            ui.groupModalTitle.textContent = 'Tạo nhóm mới';
+            ui.createGroupView.classList.remove('hidden');
+            ui.joinGroupView.classList.add('hidden');
+            ui.groupForm.reset();
+            populateMonthSelector();
+            openModal('group-modal');
+        });
+
+        ui.joinGroupBtn.addEventListener('click', () => {
+            ui.groupModalTitle.textContent = 'Tham gia nhóm';
+            ui.joinGroupView.classList.remove('hidden');
+            ui.createGroupView.classList.add('hidden');
+            ui.groupForm.reset();
+            openModal('group-modal');
+        });
+        
+        ui.leaveGroupBtn.addEventListener('click', () => {
+            if (!activeGroupId) return;
+            showConfirmation('Xác nhận rời nhóm', 'Bạn có chắc chắn muốn rời khỏi nhóm này không?', async () => {
+                try {
+                    const userRef = doc(db, "users", currentUser.uid);
+                    const groupRef = doc(db, "groups", activeGroupId);
+
+                    await updateDoc(userRef, {
+                        groups: arrayRemove(activeGroupId),
+                        activeGroupId: null
+                    });
+                    await updateDoc(groupRef, {
+                        members: arrayRemove(currentUser.uid)
+                    });
+                    
+                    showMessage('Thành công', 'Bạn đã rời khỏi nhóm.');
+                } catch (error) {
+                    console.error("Leave group error:", error);
+                    showMessage('Lỗi!', 'Không thể rời nhóm. Vui lòng thử lại.', true);
+                }
+            });
+        });
+
+        ui.groupForm.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const isCreating = !ui.createGroupView.classList.contains('hidden');
+
+            try {
+                if (isCreating) {
+                    const groupName = ui.newGroupNameInput.value.trim();
+                    const selectedStartDate = new Date(ui.groupStartMonthSelect.value);
+
+                    if (!groupName) {
+                        showMessage('Lỗi', 'Vui lòng nhập tên nhóm.', true);
+                        return;
+                    }
+                    
+                    const groupRef = await addDoc(collection(db, "groups"), {
+                        name: groupName,
+                        adminId: currentUser.uid,
+                        members: [currentUser.uid],
+                        createdAt: Timestamp.now(),
+                        startDate: Timestamp.fromDate(selectedStartDate),
+                    });
+                    
+                    await updateDoc(doc(db, "users", currentUser.uid), {
+                        groups: arrayUnion(groupRef.id),
+                        activeGroupId: groupRef.id
+                    });
+
+                    showMessage('Thành công!', `Đã tạo nhóm "${groupName}". Mã mời của nhóm là: ${groupRef.id}`);
+                } else { // Join group logic
+                    const groupId = ui.joinGroupIdInput.value.trim();
+                    if (!groupId) {
+                        showMessage('Lỗi', 'Vui lòng nhập mã mời.', true);
+                        return;
+                    }
+
+                    const groupRef = doc(db, "groups", groupId);
+                    const userRef = doc(db, "users", currentUser.uid);
+
+                    // First, check if the group exists. This might fail if security rules are too strict.
+                    const groupDoc = await getDoc(groupRef);
+                    if (!groupDoc.exists()) {
+                        showMessage('Lỗi', 'Mã nhóm không tồn tại hoặc không hợp lệ.', true);
+                        return;
+                    }
+
+                    // Use a batch to ensure both updates succeed or fail together (atomic operation).
+                    const batch = writeBatch(db);
+
+                    // 1. Add the user's UID to the group's members array.
+                    batch.update(groupRef, { members: arrayUnion(currentUser.uid) });
+                    
+                    // 2. Add the group's ID to the user's groups array and set it as active.
+                    batch.update(userRef, { 
+                        groups: arrayUnion(groupId),
+                        activeGroupId: groupId
+                    });
+
+                    // Commit the batch.
+                    await batch.commit();
+
+                    showMessage('Thành công!', `Đã tham gia nhóm "${groupDoc.data().name}".`);
+                }
+                closeModal('group-modal');
+            } catch (error) {
+                console.error("Group form error:", error); // Keep detailed log for debugging
+                let errorMessage = 'Không thể thực hiện thao tác. Vui lòng thử lại.';
+                // Provide more helpful feedback based on the error code.
+                if (error.code === 'permission-denied') {
+                    errorMessage = 'Thao tác bị từ chối. Vui lòng kiểm tra lại mã mời và đảm bảo bạn có quyền tham gia nhóm này.';
+                } else if (error.code === 'not-found') {
+                    errorMessage = 'Không tìm thấy nhóm với mã mời này.';
+                }
+                showMessage('Lỗi!', errorMessage, true);
+            }
+        });
+
+        async function fetchAndCacheMembers(memberUids) {
+            if (!memberUids || memberUids.length === 0) {
+                activeGroupMembers = [];
+                return;
+            }
+            
+            try {
+                const uniqueUids = [...new Set(memberUids)];
+                const memberPromises = uniqueUids.map(uid => getDoc(doc(db, "users", uid)));
+                const memberResults = await Promise.allSettled(memberPromises);
+                
+                const newMemberList = [];
+                memberResults.forEach((result, index) => {
+                    if (result.status === 'fulfilled' && result.value.exists()) {
+                        newMemberList.push({ uid: result.value.id, ...result.value.data() });
+                    } else {
+                        console.warn(`Failed to fetch or find member with UID: ${uniqueUids[index]}`);
+                    }
+                });
+                activeGroupMembers = newMemberList;
+            } catch (error) {
+                console.error("Error fetching group members:", error);
+                activeGroupMembers = []; // Reset on error to prevent using stale data
+            }
+        }
+        
+        async function loadScheduleView(groupId) {
+            if (groupDocUnsubscribe) { groupDocUnsubscribe(); groupDocUnsubscribe = null; }
+            if (taskUnsubscribe) { taskUnsubscribe(); taskUnsubscribe = null; }
+        
+            try {
+                const groupDocRef = doc(db, "groups", groupId);
+                const groupDoc = await getDoc(groupDocRef);
+                if (!groupDoc.exists()) {
+                    await updateDoc(doc(db, "users", currentUser.uid), { activeGroupId: null });
+                    showMessage('Lỗi', 'Không thể tìm thấy nhóm này hoặc nhóm đã bị xóa.', true);
+                    return;
+                }
+                const initialGroupData = groupDoc.data();
+                
+                ui.headerTitle.textContent = `Lịch trình: ${initialGroupData.name}`;
+                ui.backToDashboardBtn.classList.remove('hidden');
+                ui.statsContainer.classList.remove('hidden');
+                ui.leaveGroupBtn.classList.remove('hidden');
+                ui.mainContent.innerHTML = `<div id="schedule-container" class="bg-white p-4 md:p-6 rounded-xl shadow-lg"></div>`;
+        
+                if (initialGroupData.startDate && typeof initialGroupData.startDate.toDate === 'function') {
+                    activeGroupStartDate = initialGroupData.startDate.toDate();
+                    activeGroupTotalWeeks = getNumberOfWeeks(activeGroupStartDate.getFullYear(), activeGroupStartDate.getMonth());
+                } else {
+                    activeGroupStartDate = null;
+                    activeGroupTotalWeeks = 4;
+                }
+                renderWeekNavigator();
+                renderSchedule();
+        
+                groupDocUnsubscribe = onSnapshot(groupDocRef, async (doc) => {
+                    if (!doc.exists()) {
+                        showMessage('Thông Báo', 'Nhóm này đã bị xóa.', true);
+                        ui.backToDashboardBtn.click();
+                        return;
+                    }
+                    const groupData = doc.data();
+                    await fetchAndCacheMembers(groupData.members || []);
+                    renderTasks(cachedTasks); 
+                }, async (error) => {
+                    console.error("Group listener failed:", error);
+                    showMessage('Lỗi Kết Nối', 'Mất kết nối tới dữ liệu nhóm.', true);
+                    await updateDoc(doc(db, "users", currentUser.uid), { activeGroupId: null });
+                });
+        
+                const tasksQuery = query(collection(db, "groups", groupId, "tasks"));
+                taskUnsubscribe = onSnapshot(tasksQuery, (snapshot) => {
+                    cachedTasks = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+                    renderTasks(cachedTasks);
+                    updateStats(cachedTasks);
+                }, (error) => {
+                    console.error("Task listener failed:", error);
+                    showMessage('Lỗi Lắng Nghe', 'Mất kết nối với dữ liệu công việc. Vui lòng tải lại trang.', true);
+                });
+        
+            } catch (error) {
+                console.error("Failed to load schedule view for group:", groupId, error);
+                showMessage('Lỗi Tải Nhóm', 'Không thể tải được dữ liệu của nhóm này. Đang đưa bạn về trang chính.', true);
+                await updateDoc(doc(db, "users", currentUser.uid), { activeGroupId: null });
+            }
+        }
+        
+        // --- Week Navigation & Schedule Grid ---
+        function renderWeekNavigator() {
+            if (!activeGroupStartDate) return;
+            const weekDates = getWeekDates(currentWeek, activeGroupStartDate);
+            const weekStart = weekDates[0];
+            const weekEnd = weekDates[6];
+            
+            let weekButtonsHtml = '';
+            for (let i = 1; i <= activeGroupTotalWeeks; i++) {
+                weekButtonsHtml += `<button class="week-num-btn ${i === currentWeek ? 'active' : ''}" onclick="setWeek(${i})">${i}</button>`;
+            }
+
+            let navHtml = `
+            <div class="flex flex-col md:flex-row justify-between items-center mb-4 p-3 bg-gray-50 rounded-lg">
+                <div class="font-semibold text-gray-700 mb-3 md:mb-0">
+                    Tuần ${currentWeek} (${formatDate(weekStart)} - ${formatDate(weekEnd)})
+                </div>
+                <div class="flex items-center gap-1">
+                    <button class="week-btn" onclick="changeWeek(-1)" ${currentWeek === 1 ? 'disabled' : ''}><i class="fas fa-chevron-left"></i></button>
+                    ${weekButtonsHtml}
+                    <button class="week-btn" onclick="changeWeek(1)" ${currentWeek === activeGroupTotalWeeks ? 'disabled' : ''}><i class="fas fa-chevron-right"></i></button>
+                </div>
+            </div>
+            <style>
+                .week-btn, .week-num-btn { padding: 8px 12px; border: none; border-radius: 6px; background: #e5e7eb; color: #374151; cursor: pointer; transition: all 0.2s; font-weight: 500; }
+                .week-btn:hover:not(:disabled), .week-num-btn:hover { background: #d1d5db; }
+                .week-btn:disabled { opacity: 0.5; cursor: not-allowed; }
+                .week-num-btn.active { background: #4f46e5; color: white; }
+            </style>`;
+            
+            const container = document.getElementById('schedule-container');
+            if (container) container.innerHTML = navHtml;
+        }
+
+        window.changeWeek = (delta) => {
+            const newWeek = currentWeek + delta;
+            if (newWeek >= 1 && newWeek <= activeGroupTotalWeeks) {
+                setWeek(newWeek);
+            }
+        };
+        
+        window.setWeek = (week) => {
+            currentWeek = week;
+            renderWeekNavigator();
+            renderSchedule();
+            renderTasks(cachedTasks);
+        };
+
+        function renderSchedule() {
+            const days = ["Thứ Hai", "Thứ Ba", "Thứ Tư", "Thứ Năm", "Thứ Sáu", "Thứ Bảy", "Chủ Nhật"];
+            const timeSlots = ["08:00", "09:00", "10:00", "11:00", "14:00", "15:00", "16:00", "17:00", "20:00"];
+            
+            const container = document.getElementById('schedule-container');
+            if (!container) return;
+
+            if (!activeGroupStartDate) {
+                 container.insertAdjacentHTML('beforeend', '<p class="text-center text-red-500 p-4">Không thể hiển thị lịch vì nhóm này không có ngày bắt đầu hợp lệ.</p>');
+                 return;
+            }
+            
+            const weekDates = getWeekDates(currentWeek, activeGroupStartDate);
+
+            let gridHtml = '<div class="schedule-grid grid" style="grid-template-columns: 60px repeat(7, 1fr); gap: 1px; background-color: #e5e7eb; border-radius: 8px; overflow: hidden;">';
+            gridHtml += '<div class="bg-gray-200"></div>'; // Corner
+            days.forEach((day, index) => {
+                gridHtml += `<div class="bg-gray-200 text-center p-2 font-semibold text-sm text-gray-600">${day}<div class="font-normal text-xs">${formatDate(weekDates[index])}</div></div>`;
+            });
+            
+            timeSlots.forEach(time => {
+                gridHtml += `<div class="bg-gray-200 text-center p-2 font-medium text-xs text-gray-600 flex items-center justify-center">${time}</div>`;
+                days.forEach((_, index) => {
+                    const cellDate = weekDates[index];
+                    const dateString = cellDate.toISOString().split('T')[0];
+                    
+                    const cellClasses = "grid-cell bg-white min-h-[100px] p-2 hover:bg-indigo-50 transition-colors";
+                    const clickHandler = `onclick="openTaskModal(null, '${time}', '${dateString}')"`;
+
+                    gridHtml += `<div class="${cellClasses}" data-time="${time}" data-date="${dateString}" ${clickHandler}></div>`;
+                });
+            });
+            gridHtml += '</div>';
+
+            const existingGrid = container.querySelector('.schedule-grid');
+            if (existingGrid) existingGrid.remove();
+            container.insertAdjacentHTML('beforeend', gridHtml);
+        }
+
+        // --- Task Handling ---
+        function renderTasks(allTasks) {
+            document.querySelectorAll('.task-card').forEach(card => card.remove());
+            if (!activeGroupStartDate) return;
+            const weekDates = getWeekDates(currentWeek, activeGroupStartDate).map(d => d.toISOString().split('T')[0]);
+            
+            allTasks.forEach(task => {
+                if (!task || !task.date || !task.time) {
+                    console.warn("Skipping rendering of malformed task:", task);
+                    return; 
+                }
+
+                if (weekDates.includes(task.date)) {
+                    const cell = document.querySelector(`.grid-cell[data-date="${task.date}"][data-time="${task.time}"]`);
+                    if (cell) {
+                        const assignee = activeGroupMembers.find(m => m.uid === task.assigneeUid);
+                        const assigneeName = assignee ? (assignee.name || assignee.email) : 'Chưa gán';
+
+                        const taskEl = document.createElement('div');
+                        const platformClass = (task.platform || 'unknown').toLowerCase();
+                        const statusClass = (task.status || 'Chưa làm').replace(/\s+/g, '-').toLowerCase();
+
+                        taskEl.className = `task-card border-l-4 p-2 rounded mb-2 cursor-pointer transition-all hover:shadow-md hover:translate-x-1 platform-${platformClass}`;
+                        taskEl.innerHTML = `
+                            <div class="font-bold text-sm text-gray-800">${task.partner || 'N/A'}</div>
+                            <div class="text-xs text-gray-600 truncate">${task.content || ''}</div>
+                            <div class="text-xs text-indigo-500 font-medium mt-1">@${assigneeName}</div>
+                            <span class="task-status text-xs font-medium px-2 py-0.5 rounded-full mt-1 inline-block status-${statusClass}">${task.status || 'Chưa làm'}</span>
+                        `;
+                        taskEl.onclick = (e) => {
+                            e.stopPropagation();
+                            openTaskModal(task);
+                        };
+                        cell.appendChild(taskEl);
+                    }
+                }
+            });
+        }
+        
+        window.openTaskModal = (task, time, date) => {
+            ui.taskForm.reset();
+            
+            ui.taskAssigneeInput.innerHTML = '';
+            if (activeGroupMembers.length > 0) {
+                activeGroupMembers.forEach(member => {
+                    const option = document.createElement('option');
+                    option.value = member.uid;
+                    option.textContent = member.name || member.email;
+                    ui.taskAssigneeInput.appendChild(option);
+                });
+            }
+
+            if (task) {
+                ui.taskModalTitle.textContent = 'Chỉnh sửa công việc';
+                ui.taskIdInput.value = task.id;
+                ui.taskPartnerInput.value = task.partner;
+                ui.taskPlatformInput.value = task.platform;
+                ui.taskContentInput.value = task.content;
+                ui.taskStatusInput.value = task.status;
+                ui.taskTimeInput.value = task.time;
+                ui.taskDateInput.value = task.date;
+                ui.taskAssigneeInput.value = task.assigneeUid || currentUser.uid;
+                ui.deleteTaskBtn.classList.remove('hidden');
+            } else {
+                ui.taskModalTitle.textContent = 'Tạo công việc mới';
+                ui.taskIdInput.value = '';
+                ui.taskTimeInput.value = time;
+                ui.taskDateInput.value = date;
+                ui.taskAssigneeInput.value = currentUser.uid;
+                ui.deleteTaskBtn.classList.add('hidden');
+            }
+            openModal('task-modal');
+        };
+
+        ui.taskForm.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const taskId = ui.taskIdInput.value;
+            const taskData = {
+                partner: ui.taskPartnerInput.value,
+                platform: ui.taskPlatformInput.value,
+                content: ui.taskContentInput.value,
+                status: ui.taskStatusInput.value,
+                time: ui.taskTimeInput.value,
+                date: ui.taskDateInput.value,
+                assigneeUid: ui.taskAssigneeInput.value,
+                authorUid: currentUser.uid,
+                updatedAt: Timestamp.now()
+            };
+            
+            try {
+                if (taskId) {
+                    await updateDoc(doc(db, "groups", activeGroupId, "tasks", taskId), taskData);
+                    showMessage('Thành công', 'Đã cập nhật công việc.');
+                } else {
+                    taskData.createdAt = Timestamp.now();
+                    await addDoc(collection(db, "groups", activeGroupId, "tasks"), taskData);
+                    showMessage('Thành công', 'Đã tạo công việc mới.');
+                }
+                closeModal('task-modal');
+            } catch (error) {
+                 showMessage('Lỗi', 'Không thể lưu công việc.', true);
+            }
+        });
+        
+        ui.deleteTaskBtn.addEventListener('click', () => {
+             const taskId = ui.taskIdInput.value;
+             if (!taskId) return;
+             
+             showConfirmation('Xác nhận xóa', 'Bạn có chắc chắn muốn xóa công việc này không?', async () => {
+                 try {
+                     await deleteDoc(doc(db, "groups", activeGroupId, "tasks", taskId));
+                     showMessage('Thành công', 'Đã xóa công việc.');
+                     closeModal('task-modal');
+                 } catch (error) {
+                     showMessage('Lỗi', 'Không thể xóa công việc.', true);
+                 }
+             });
+        });
+
+        // --- Statistics ---
+        function updateStats(allTasks) {
+            const statusCounts = { 'Chưa làm': 0, 'Đang làm': 0, 'Hoàn thành': 0, 'Bù': 0 };
+            let totalTasks = 0;
+            if (activeGroupStartDate){
+                const monthStart = new Date(activeGroupStartDate);
+                
+                const monthTasks = allTasks.filter(task => {
+                    if (!task.date) return false;
+                    const taskDate = new Date(task.date);
+                    return taskDate.getFullYear() === monthStart.getFullYear() && taskDate.getMonth() === monthStart.getMonth();
+                });
+                
+                totalTasks = monthTasks.length;
+                monthTasks.forEach(task => {
+                    const status = task.status || 'Chưa làm';
+                    if (statusCounts[status] !== undefined) {
+                        statusCounts[status]++;
+                    }
+                });
+            }
+
+            ui.statsContainer.innerHTML = `
+                <div class="stat-card"><div class="stat-value">${totalTasks}</div><div class="stat-label">CV Tháng</div></div>
+                <div class="stat-card"><div class="stat-value text-gray-500">${statusCounts['Chưa làm']}</div><div class="stat-label">Chưa làm</div></div>
+                <div class="stat-card"><div class="stat-value text-blue-500">${statusCounts['Đang làm']}</div><div class="stat-label">Đang làm</div></div>
+                <div class="stat-card"><div class="stat-value text-green-500">${statusCounts['Hoàn thành']}</div><div class="stat-label">Hoàn thành</div></div>
+                <div class="stat-card"><div class="stat-value text-yellow-500">${statusCounts['Bù']}</div><div class="stat-label">CV Bù</div></div>
+                <div class="stat-card"><div class="stat-value text-2xs break-all">${activeGroupId || 'N/A'}</div><div class="stat-label">ID Nhóm</div></div>        
+                 <style>
+                      .stat-card { background: white; border-radius: 12px; padding: 1rem; text-align: center; box-shadow: 0 2px 4px rgba(0,0,0,0.05); display: flex; flex-direction: column; justify-content: center;}
+                      .stat-value { font-size: 1.75rem; font-weight: 700; color: #4f46e5; }
+                      .stat-label { font-size: 0.75rem; color: #6b7280; margin-top: 4px; text-transform: uppercase; letter-spacing: 0.5px; }
+                 </style>
+            `;
+        }
+    </script>
+</body>
+</html>
