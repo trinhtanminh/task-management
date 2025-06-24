@@ -11,6 +11,8 @@
     <style>
         body {
             font-family: 'Be Vietnam Pro', sans-serif;
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
         }
         .task-card.platform-youtube { border-left-color: #FF0000; }
         .task-card.platform-facebook { border-left-color: #1877F2; }
@@ -27,7 +29,20 @@
             transition: all 0.3s ease-out;
         }
 
-        
+        /* Custom scrollbar for chat lists */
+        .custom-scrollbar::-webkit-scrollbar {
+            width: 6px;
+        }
+        .custom-scrollbar::-webkit-scrollbar-track {
+            background: #f1f5f9;
+        }
+        .custom-scrollbar::-webkit-scrollbar-thumb {
+            background: #cbd5e1;
+            border-radius: 3px;
+        }
+        .custom-scrollbar::-webkit-scrollbar-thumb:hover {
+            background: #94a3b8;
+        }
     </style>
 </head>
 <body class="bg-gray-100">
@@ -42,7 +57,7 @@
     </div>
 
     <!-- Auth Screen -->
-    <div id="auth-screen" class="flex items-center justify-center min-h-screen">
+    <div id="auth-screen" class="flex items-center justify-center min-h-screen hidden">
         <div class="bg-white p-8 rounded-xl shadow-lg w-full max-w-md">
             <h2 id="auth-title" class="text-2xl font-bold text-center text-gray-800 mb-6">Đăng Nhập</h2>
             <div id="auth-error" class="hidden bg-red-100 text-red-700 p-3 rounded-lg mb-4 text-sm"></div>
@@ -70,31 +85,34 @@
 
     <!-- Main App (User View) -->
     <div id="app-screen" class="hidden">
-        <header class="bg-white shadow-md">
+        <header class="bg-white shadow-md sticky top-0 z-40">
             <div class="container mx-auto px-4 py-4">
-                 <div class="flex justify-between items-center">
-                       <div class="flex items-center gap-4">
-                           <h1 id="header-title" class="text-xl md:text-2xl font-bold text-gray-800">Các Nhóm Của Tôi</h1>
-                           <button id="back-to-dashboard-btn" class="hidden bg-gray-200 text-gray-800 px-4 py-2 rounded-lg hover:bg-gray-300 transition-colors text-sm">
-                               <i class="fas fa-arrow-left mr-2"></i>Quay lại
-                           </button>
-                       </div>
-                       <div class="flex items-center gap-3">
-                           <span id="user-email" class="hidden md:block text-sm text-gray-600"></span>
-                           <button id="leave-group-btn" class="hidden bg-red-500 text-white px-4 py-2 rounded-lg hover:bg-red-600 transition-colors text-sm">
-                               <i class="fas fa-sign-out-alt mr-2"></i>Rời nhóm
-                           </button>
-                           <button id="create-group-btn" class="bg-indigo-600 text-white px-4 py-2 rounded-lg hover:bg-indigo-700 transition-colors text-sm">
-                               <i class="fas fa-plus mr-2"></i>Tạo nhóm
-                           </button>
-                           <button id="join-group-btn" class="bg-gray-200 text-gray-800 px-4 py-2 rounded-lg hover:bg-gray-300 transition-colors text-sm">
-                               <i class="fas fa-user-plus mr-2"></i>Tham gia
-                           </button>
-                           <button id="logout-btn" class="bg-gray-200 text-gray-800 w-10 h-10 rounded-lg hover:bg-gray-300 transition-colors">
-                               <i class="fas fa-sign-out-alt"></i>
-                           </button>
-                       </div>
-                 </div>
+                <div class="flex justify-between items-center">
+                    <div class="flex items-center gap-4">
+                        <h1 id="header-title" class="text-xl md:text-2xl font-bold text-gray-800">Các Nhóm Của Tôi</h1>
+                        <button id="back-to-dashboard-btn" class="hidden bg-gray-200 text-gray-800 px-4 py-2 rounded-lg hover:bg-gray-300 transition-colors text-sm">
+                            <i class="fas fa-arrow-left mr-2"></i>Quay lại
+                        </button>
+                    </div>
+                    <div class="flex items-center gap-3">
+                        <span id="user-email" class="hidden md:block text-sm text-gray-600"></span>
+                        <button id="friends-btn" class="bg-gray-200 text-gray-800 px-4 py-2 rounded-lg hover:bg-gray-300 transition-colors text-sm">
+                            <i class="fas fa-user-friends mr-2"></i>Bạn bè
+                        </button>
+                        <button id="leave-group-btn" class="hidden bg-red-500 text-white px-4 py-2 rounded-lg hover:bg-red-600 transition-colors text-sm">
+                            <i class="fas fa-sign-out-alt mr-2"></i>Rời nhóm
+                        </button>
+                        <button id="create-group-btn" class="bg-indigo-600 text-white px-4 py-2 rounded-lg hover:bg-indigo-700 transition-colors text-sm">
+                            <i class="fas fa-plus mr-2"></i>Tạo nhóm
+                        </button>
+                        <button id="join-group-btn" class="bg-gray-200 text-gray-800 px-4 py-2 rounded-lg hover:bg-gray-300 transition-colors text-sm">
+                            <i class="fas fa-user-plus mr-2"></i>Tham gia
+                        </button>
+                        <button id="logout-btn" class="bg-gray-200 text-gray-800 w-10 h-10 rounded-lg hover:bg-gray-300 transition-colors">
+                            <i class="fas fa-sign-out-alt"></i>
+                        </button>
+                    </div>
+                </div>
             </div>
         </header>
 
@@ -106,7 +124,7 @@
 
     <!-- Admin Screen -->
     <div id="admin-screen" class="hidden">
-        <header class="bg-white shadow-md">
+        <header class="bg-white shadow-md sticky top-0 z-40">
             <div class="container mx-auto px-4 py-4 flex justify-between items-center">
                 <h1 class="text-xl md:text-2xl font-bold text-gray-800">Trang Quản Trị</h1>
                 <div class="flex items-center gap-3">
@@ -125,9 +143,9 @@
 
             <!-- Growth Chart -->
             <div class="bg-white p-6 rounded-xl shadow-lg mb-8">
-                 <div class="h-80">
-                     <canvas id="user-growth-chart"></canvas>
-                 </div>
+                <div class="h-80">
+                   <canvas id="user-growth-chart"></canvas>
+                </div>
             </div>
 
             <!-- User Management -->
@@ -294,6 +312,74 @@
         </div>
     </div>
 
+    <!-- Friends Modal -->
+    <div id="friends-modal" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 hidden">
+        <div class="modal-content bg-white p-6 rounded-xl shadow-lg w-full max-w-lg transform transition-all scale-95 opacity-0">
+            <h3 class="text-xl font-bold text-gray-800 mb-4">Quản lý bạn bè</h3>
+            <div class="mb-4">
+                <form id="send-friend-request-form" class="flex gap-2 mb-2">
+                    <input type="email" id="friend-email-input" class="flex-1 px-3 py-2 border border-gray-300 rounded-lg" placeholder="Nhập email để kết bạn" required />
+                    <button type="submit" class="bg-indigo-600 text-white px-4 py-2 rounded-lg hover:bg-indigo-700">Gửi</button>
+                </form>
+                <div id="friend-request-message" class="hidden text-sm mb-2"></div>
+            </div>
+            <div class="mb-4">
+                <h4 class="font-semibold text-gray-700 mb-2">Lời mời kết bạn</h4>
+                <ul id="friend-requests-list" class="space-y-2 max-h-32 overflow-y-auto custom-scrollbar"></ul>
+            </div>
+            <div>
+                <h4 class="font-semibold text-gray-700 mb-2">Bạn bè</h4>
+                <ul id="friends-list" class="space-y-2 max-h-32 overflow-y-auto custom-scrollbar"></ul>
+            </div>
+            <div class="flex justify-end mt-6">
+                <button type="button" class="bg-gray-200 text-gray-800 px-4 py-2 rounded-lg hover:bg-gray-300" onclick="closeModal('friends-modal')">Đóng</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Messenger Chat Button -->
+    <button id="open-chat-btn" class="fixed bottom-6 right-6 z-40 bg-indigo-600 text-white w-14 h-14 rounded-full shadow-lg flex items-center justify-center text-3xl hover:bg-indigo-700 transition-all">
+        <i class="fab fa-facebook-messenger"></i>
+    </button>
+
+    <!-- Messenger Chat Modal -->
+    <div id="chat-modal" class="fixed inset-0 bg-black bg-opacity-50 flex items-end md:items-center justify-center z-50 hidden">
+        <div class="modal-content bg-white rounded-t-2xl md:rounded-2xl shadow-2xl w-full max-w-3xl h-[80vh] flex flex-col md:flex-row transform transition-all scale-95 opacity-0">
+            <!-- Sidebar -->
+            <div class="w-full md:w-80 bg-gray-50 border-r border-gray-200 flex flex-col">
+                <div class="flex items-center justify-between p-4 border-b">
+                    <div class="font-bold text-lg text-gray-800">Tin nhắn</div>
+                    <button onclick="closeModal('chat-modal')" class="text-gray-500 hover:text-red-500 text-xl"><i class="fas fa-times"></i></button>
+                </div>
+                <div class="flex gap-2 px-4 pt-2">
+                    <button id="chat-tab-group" class="flex-1 py-2 rounded-lg font-medium text-sm text-center bg-indigo-100 text-indigo-700">Nhóm</button>
+                    <button id="chat-tab-friends" class="flex-1 py-2 rounded-lg font-medium text-sm text-center bg-gray-100 text-gray-700">Bạn bè</button>
+                </div>
+                <div id="chat-conversations-list" class="flex-1 overflow-y-auto p-2 space-y-1 custom-scrollbar"></div>
+            </div>
+            <!-- Chat Main -->
+            <div id="chat-view" class="flex-1 flex flex-col h-full hidden">
+                <div id="chat-header" class="p-4 border-b flex items-center gap-3">
+                    <div id="chat-avatar" class="w-10 h-10 rounded-full bg-indigo-200 flex items-center justify-center text-xl font-bold text-white"></div>
+                    <div>
+                        <div id="chat-title" class="font-semibold text-gray-800"></div>
+                        <div id="chat-subtitle" class="text-xs text-gray-500"></div>
+                    </div>
+                </div>
+                <div id="chat-messages" class="flex-1 overflow-y-auto p-4 space-y-4 bg-gray-50 custom-scrollbar"></div>
+                <form id="chat-input-form" class="flex items-center gap-2 p-4 border-t bg-white">
+                    <input id="chat-input" type="text" class="flex-1 px-4 py-2 border border-gray-300 rounded-full focus:ring-indigo-500 focus:border-indigo-500" placeholder="Nhập tin nhắn..." autocomplete="off" />
+                    <button type="submit" class="bg-indigo-600 text-white px-4 py-2 rounded-full hover:bg-indigo-700 transition-colors"><i class="fas fa-paper-plane"></i></button>
+                </form>
+            </div>
+            <div id="chat-placeholder" class="flex-1 flex flex-col h-full items-center justify-center bg-gray-50 p-4">
+                 <i class="fa-regular fa-comments text-6xl text-gray-300 mb-4"></i>
+                 <h3 class="text-lg font-semibold text-gray-600">Bắt đầu cuộc trò chuyện</h3>
+                 <p class="text-sm text-gray-500">Chọn một nhóm hoặc bạn bè để xem tin nhắn.</p>
+            </div>
+        </div>
+    </div>
+
     <script type="module">
         // #############################################################################
         // ##### QUAN TRỌNG: Vui lòng thay thế bằng cấu hình Firebase của bạn #####
@@ -302,22 +388,22 @@
             apiKey: "AIzaSyB_P4-Si9ua1b7k4W60z6tcTfK-FXdWpRs",
             authDomain: "quan-ly-media.firebaseapp.com",
             projectId: "quan-ly-media",
-            storageBucket: "quan-ly-media.appspot.com",
+            storageBucket: "quan-ly-media.firebasestorage.app",
             messagingSenderId: "852239719669",
             appId: "1:852239719669:web:5016001c2f84051b9c39bc",
             measurementId: "G-EV4HZXNHNH"
         };
         // #############################################################################
         
-        // Import from a more recent, stable Firebase version
-        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
+        // Import from a recent, stable Firebase version
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.3/firebase-app.js";
         import { 
             getAuth, 
             createUserWithEmailAndPassword, 
             signInWithEmailAndPassword, 
             onAuthStateChanged, 
             signOut 
-        } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
+        } from "https://www.gstatic.com/firebasejs/10.12.3/firebase-auth.js";
         import { 
             getFirestore, 
             doc, 
@@ -331,17 +417,66 @@
             arrayUnion,
             arrayRemove,
             query,
+            where,
             getDocs,
             Timestamp,
-            writeBatch
-        } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+            writeBatch,
+            orderBy,
+            limit
+        } from "https://www.gstatic.com/firebasejs/10.12.3/firebase-firestore.js";
+
+        // #############################################################################
+        // ##### LƯU Ý QUAN TRỌNG VỀ PHÂN QUYỀN ADMIN (FIRESTORE SECURITY RULES) #####
+        // #############################################################################
+        // Các chức năng của trang Quản trị (Admin) như TẠO, SỬA, XÓA, hoặc CẬP NHẬT
+        // trạng thái người dùng sẽ KHÔNG HOẠT ĐỘNG nếu bạn không cấu hình đúng
+        // Firestore Security Rules.
+        //
+        // Mặc định, một người dùng chỉ có thể sửa đổi dữ liệu của chính họ. Để Admin
+        // có thể quản lý tất cả người dùng, bạn cần cho phép họ quyền truy cập đặc biệt.
+        //
+        // Vui lòng vào Firebase Console -> Firestore Database -> Rules và cập nhật
+        // rules của bạn để bao gồm logic kiểm tra vai trò admin. Dưới đây là một ví dụ:
+        /*
+        rules_version = '2';
+        service cloud.firestore {
+          match /databases/{database}/documents {
+            
+            // Hàm helper để kiểm tra xem người gửi yêu cầu có phải là admin không
+            function isAdmin() {
+              // Yêu cầu phải được xác thực và có tồn tại document trong collection 'users'
+              // với role là 'admin'.
+              return request.auth != null && get(/databases/$(database)/documents/users/$(request.auth.uid)).data.role == 'admin';
+            }
+
+            match /users/{userId} {
+              // Bất kỳ ai đã đăng nhập đều có thể đọc thông tin người dùng (tùy chọn)
+              allow read: if request.auth != null;
+              
+              // Người dùng có thể tạo và cập nhật thông tin của chính họ
+              allow create, update: if request.auth.uid == userId;
+              
+              // Admin có thể tạo, đọc, cập nhật, xóa BẤT KỲ người dùng nào
+              // Quy tắc "write" bao gồm create, update, delete.
+              allow write: if isAdmin();
+            }
+            
+            // Các rules khác cho collection 'groups', 'chats', etc.
+            // ...
+          }
+        }
+        */
+        // #############################################################################
+
 
         // --- Firebase Config Check ---
-        if (firebaseConfig.apiKey.includes("AIzaSy") === false) {
-            document.getElementById('auth-screen').classList.add('hidden');
-            document.getElementById('config-error').classList.remove('hidden');
-            throw new Error("Firebase config is not set. Please update the firebaseConfig object in the script.");
+        // This check ensures you've replaced the placeholder values.
+        if (firebaseConfig.apiKey === "YOUR_API_KEY" || firebaseConfig.projectId === "your-project-id") {
+           document.getElementById('auth-screen').classList.add('hidden');
+           document.getElementById('config-error').classList.remove('hidden');
+           throw new Error("Firebase config is not set. Please update the firebaseConfig object in the script.");
         }
+
 
         // Initialize Firebase
         const app = initializeApp(firebaseConfig);
@@ -353,19 +488,29 @@
 
         // --- Global state ---
         let currentUser = null;
+        let currentUserData = null; // Cache for current user's document data
         let isAdmin = false;
         let activeGroupId = null;
+        // Listeners
         let usersUnsubscribe = null;
         let taskUnsubscribe = null;
         let groupsUnsubscribe = null;
-        let groupDocUnsubscribe = null; // Listener for active group document
-        let userGrowthChart = null; // Reference to the admin chart
-        let currentWeek = 1;
+        let groupDocUnsubscribe = null;
+        let friendRequestsUnsubscribe = null;
+        let chatMessagesUnsubscribe = null;
+        // Chart
+        let userGrowthChart = null;
+        // Data Caches
         let cachedTasks = [];
         let allUsersCache = [];
+        let activeGroupMembers = []; 
+        let currentFriendsData = []; // Cache for friend data {uid, name, email}
+        // UI State
+        let currentWeek = 1;
         let activeGroupStartDate = null;
-        let activeGroupTotalWeeks = 4; // Default value
-        let activeGroupMembers = []; // Cache for member data
+        let activeGroupTotalWeeks = 4;
+        let currentChatContext = { type: null, id: null, name: null };
+        
 
         // --- UI Elements ---
         const ui = {
@@ -393,6 +538,8 @@
             createGroupBtn: document.getElementById('create-group-btn'),
             joinGroupBtn: document.getElementById('join-group-btn'),
             leaveGroupBtn: document.getElementById('leave-group-btn'),
+            friendsBtn: document.getElementById('friends-btn'),
+            openChatBtn: document.getElementById('open-chat-btn'),
             
             // Admin App
             adminEmail: document.getElementById('admin-email'),
@@ -429,8 +576,41 @@
             taskStatusInput: document.getElementById('task-status'),
             taskAssigneeInput: document.getElementById('task-assignee'),
             taskModalTitle: document.getElementById('task-modal-title'),
+
+            // Friends Modal
+            sendFriendRequestForm: document.getElementById('send-friend-request-form'),
+            friendEmailInput: document.getElementById('friend-email-input'),
+            friendRequestMessage: document.getElementById('friend-request-message'),
+            friendRequestsList: document.getElementById('friend-requests-list'),
+            friendsList: document.getElementById('friends-list'),
+
+            // Chat Modal
+            chatModal: document.getElementById('chat-modal'),
+            chatTabGroup: document.getElementById('chat-tab-group'),
+            chatTabFriends: document.getElementById('chat-tab-friends'),
+            chatConversationsList: document.getElementById('chat-conversations-list'),
+            chatView: document.getElementById('chat-view'),
+            chatPlaceholder: document.getElementById('chat-placeholder'),
+            chatHeader: document.getElementById('chat-header'),
+            chatAvatar: document.getElementById('chat-avatar'),
+            chatTitle: document.getElementById('chat-title'),
+            chatSubtitle: document.getElementById('chat-subtitle'),
+            chatMessages: document.getElementById('chat-messages'),
+            chatInputForm: document.getElementById('chat-input-form'),
+            chatInput: document.getElementById('chat-input'),
         };
 
+        // --- Helper & Utility Functions ---
+
+        // Debounce function to limit rapid calls
+        const debounce = (func, delay) => {
+            let timeout;
+            return function(...args) {
+                clearTimeout(timeout);
+                timeout = setTimeout(() => func.apply(this, args), delay);
+            };
+        };
+        
         // --- Modal Control ---
         window.openModal = (modalId) => {
             const modal = document.getElementById(modalId);
@@ -450,7 +630,7 @@
             content.classList.add('scale-95', 'opacity-0');
             setTimeout(() => modal.classList.add('hidden'), 200); // Wait for transition
         };
-
+        
         const showMessage = (title, text, isError = false) => {
             document.getElementById('message-title').textContent = title;
             document.getElementById('message-text').textContent = text;
@@ -470,35 +650,28 @@
             const okBtn = document.getElementById('confirm-ok-btn');
             const cancelBtn = document.getElementById('confirm-cancel-btn');
 
-            const confirmHandler = () => {
-                onConfirm();
-                cleanup();
-            };
-
-            const cancelHandler = () => {
-                closeModal('confirm-modal');
-                cleanup();
-            };
+            // Clone and replace to remove old listeners
+            const newOkBtn = okBtn.cloneNode(true);
+            okBtn.parentNode.replaceChild(newOkBtn, okBtn);
             
-            const cleanup = () => {
-                 okBtn.removeEventListener('click', confirmHandler);
-                 cancelBtn.removeEventListener('click', cancelHandler);
-                 closeModal('confirm-modal');
-            }
+            const newCancelBtn = cancelBtn.cloneNode(true);
+            cancelBtn.parentNode.replaceChild(newCancelBtn, cancelBtn);
 
-            okBtn.addEventListener('click', confirmHandler, { once: true });
-            cancelBtn.addEventListener('click', cancelHandler, { once: true });
+            newOkBtn.addEventListener('click', () => {
+                onConfirm();
+                closeModal('confirm-modal');
+            });
+            newCancelBtn.addEventListener('click', () => closeModal('confirm-modal'));
 
             openModal('confirm-modal');
         };
-
 
         // --- Date Utilities ---
         function getNumberOfWeeks(year, month) {
             const firstDayOfMonth = new Date(year, month, 1);
             const lastDayOfMonth = new Date(year, month + 1, 0);
             const firstDayOfWeek = firstDayOfMonth.getDay(); 
-            const firstDayIndex = (firstDayOfWeek === 0) ? 6 : firstDayOfWeek - 1;
+            const firstDayIndex = (firstDayOfWeek === 0) ? 6 : firstDayOfWeek - 1; // Monday = 0
             const totalSlots = firstDayIndex + lastDayOfMonth.getDate();
             return Math.ceil(totalSlots / 7);
         }
@@ -520,12 +693,16 @@
             }
             return dates;
         };
-
+        
         const formatDate = (date) => date.toLocaleDateString('vi-VN', { day: '2-digit', month: '2-digit' });
         const formatFullDate = (timestamp) => {
             if (!timestamp || typeof timestamp.toDate !== 'function') return 'N/A';
             return timestamp.toDate().toLocaleDateString('vi-VN', { day: '2-digit', month: '2-digit', year: 'numeric' });
         };
+        const formatTime = (timestamp) => {
+            if (!timestamp || typeof timestamp.toDate !== 'function') return '';
+            return timestamp.toDate().toLocaleTimeString('vi-VN', { hour: '2-digit', minute: '2-digit' });
+        }
 
 
         // --- Authentication ---
@@ -548,7 +725,7 @@
             e.preventDefault();
             toggleAuthMode(ui.authTitle.textContent === 'Đăng Ký');
         });
-
+        
         ui.authForm.addEventListener('submit', async (e) => {
             e.preventDefault();
             const email = document.getElementById('email').value;
@@ -575,14 +752,16 @@
                         name: name,
                         email: userCredential.user.email,
                         groups: [],
+                        friends: [],
+                        friendRequests: [],
                         activeGroupId: null,
                         createdAt: Timestamp.now(),
-                        status: 'pending' // NEW: Default status for new users
+                        status: 'pending' // Default status for new users
                     };
                     // Auto-assign 'admin' role if the email matches ADMIN_EMAIL
                     if (userCredential.user.email === ADMIN_EMAIL) {
                         userData.role = 'admin';
-                        userData.status = 'active'; // NEW: Admin user is active by default
+                        userData.status = 'active'; // Admin user is active by default
                     }
 
                     await setDoc(doc(db, "users", userCredential.user.uid), userData);
@@ -590,6 +769,7 @@
                     // After registration, sign them out and show message
                     await signOut(auth);
                     showMessage('Đăng Ký Thành Công', 'Tài khoản của bạn đã được tạo và đang chờ quản trị viên phê duyệt. Vui lòng quay lại sau.');
+                    toggleAuthMode(true);
                 }
             } catch (error) {
                 const message = {
@@ -608,22 +788,33 @@
         ui.logoutBtn.addEventListener('click', handleLogout);
         ui.adminLogoutBtn.addEventListener('click', handleLogout);
 
+        // --- Cleanup Listeners ---
+        function cleanupAllListeners() {
+            if (taskUnsubscribe) taskUnsubscribe();
+            if (groupsUnsubscribe) groupsUnsubscribe();
+            if (groupDocUnsubscribe) groupDocUnsubscribe();
+            if (usersUnsubscribe) usersUnsubscribe();
+            if (friendRequestsUnsubscribe) friendRequestsUnsubscribe();
+            if (chatMessagesUnsubscribe) chatMessagesUnsubscribe();
+            taskUnsubscribe = null;
+            groupsUnsubscribe = null;
+            groupDocUnsubscribe = null;
+            usersUnsubscribe = null;
+            friendRequestsUnsubscribe = null;
+            chatMessagesUnsubscribe = null;
+        }
 
         // --- App Initializer on Auth State Change ---
         onAuthStateChanged(auth, async (user) => {
-            // Reset all listeners and state
-            if (taskUnsubscribe) { taskUnsubscribe(); taskUnsubscribe = null; }
-            if (groupsUnsubscribe) { groupsUnsubscribe(); groupsUnsubscribe = null; }
-            if (groupDocUnsubscribe) { groupDocUnsubscribe(); groupDocUnsubscribe = null; }
-            if (usersUnsubscribe) { usersUnsubscribe(); usersUnsubscribe = null; }
+            cleanupAllListeners();
             cachedTasks = [];
             allUsersCache = [];
-            activeGroupStartDate = null;
-            activeGroupTotalWeeks = 4;
             activeGroupMembers = [];
+            currentFriendsData = [];
             activeGroupId = null;
             isAdmin = false;
             currentUser = null;
+            currentUserData = null;
 
             if (user) {
                 currentUser = user;
@@ -631,23 +822,20 @@
                 const userDoc = await getDoc(userDocRef);
 
                 if (userDoc.exists()) {
-                    const userData = userDoc.data();
+                    currentUserData = { uid: user.uid, ...userDoc.data() };
+                    const userStatus = currentUserData.status || 'active';
 
-                    // NEW: Check user status before allowing access
-                    const userStatus = userData.status || 'active'; // Default old users to active
                     if (userStatus !== 'active') {
                         let message = 'Tài khoản của bạn đang chờ quản trị viên phê duyệt.';
                         if (userStatus === 'suspended') {
                             message = 'Tài khoản của bạn đã bị khóa.';
                         }
-                        await signOut(auth); // This will re-trigger onAuthStateChanged with user=null
+                        await signOut(auth); 
                         showMessage('Truy Cập Bị Từ Chối', message, true);
-                        return; // Stop further processing
+                        return;
                     }
-                    // END NEW
 
-                    if (userData.role === 'admin') {
-                        // --- ADMIN FLOW ---
+                    if (currentUserData.role === 'admin') {
                         isAdmin = true;
                         ui.authScreen.classList.add('hidden');
                         ui.appScreen.classList.add('hidden');
@@ -655,21 +843,19 @@
                         ui.adminEmail.textContent = user.email;
                         loadAdminDashboard();
                     } else {
-                        // --- REGULAR USER FLOW ---
                         isAdmin = false;
                         ui.authScreen.classList.add('hidden');
                         ui.adminScreen.classList.add('hidden');
                         ui.appScreen.classList.remove('hidden');
                         ui.userEmail.textContent = user.email;
                         listenToUserData(user.uid);
+                        listenToFriendRequests(user.uid);
                     }
                 } else {
-                    // User exists in Auth but not in Firestore DB. This is an inconsistent state.
                     await signOut(auth);
                     showMessage('Lỗi Dữ Liệu', 'Không tìm thấy hồ sơ người dùng của bạn. Vui lòng liên hệ quản trị viên.', true);
                 }
             } else {
-                // --- NO USER LOGGED IN ---
                 ui.authScreen.classList.remove('hidden');
                 ui.appScreen.classList.add('hidden');
                 ui.adminScreen.classList.add('hidden');
@@ -685,8 +871,9 @@
             listenToAllUsers();
         }
         
-        // NEW: Function to update user status
         window.updateUserStatus = async (userId, newStatus) => {
+            // LƯU Ý: Chức năng này yêu cầu cấu hình Firestore Security Rules phù hợp.
+            // Xem ghi chú ở đầu thẻ <script> để biết thêm chi tiết.
             const userToUpdate = allUsersCache.find(u => u.id === userId);
             if (!userToUpdate || userToUpdate.email === ADMIN_EMAIL) {
                 showMessage('Thao tác không được phép', 'Bạn không thể thay đổi trạng thái của tài khoản này.', true);
@@ -697,11 +884,11 @@
             const userRef = doc(db, "users", userId);
             try {
                 await updateDoc(userRef, { status: newStatus });
-                // The table will re-render automatically via the onSnapshot listener
+                // onSnapshot sẽ tự động cập nhật UI
             } catch (error) {
                 console.error("Error updating user status:", error);
-                showMessage('Lỗi', 'Không thể cập nhật trạng thái người dùng.', true);
-                renderUsersTable(allUsersCache); // Revert UI on error
+                showMessage('Lỗi Phân Quyền', 'Không thể cập nhật trạng thái. Vui lòng kiểm tra Firestore Security Rules.', true);
+                renderUsersTable(allUsersCache); 
             }
         };
 
@@ -713,7 +900,6 @@
                     allUsersCache = usersSnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
                     renderUsersTable(allUsersCache);
 
-                    // Fetch groups and tasks for stats
                     const groupsSnapshot = await getDocs(collection(db, "groups"));
                     const totalGroups = groupsSnapshot.size;
 
@@ -845,7 +1031,6 @@
         function renderUsersTable(users) {
             if (!ui.usersTableBody) return;
             
-            // Sort users: put pending users first
             const sortedUsers = [...users].sort((a, b) => {
                 const statusA = a.status || 'active';
                 const statusB = b.status || 'active';
@@ -855,7 +1040,7 @@
             });
             
             ui.usersTableBody.innerHTML = sortedUsers.map(user => {
-                const status = user.status || 'active'; // Default old users to 'active'
+                const status = user.status || 'active';
                 let statusBadge;
                 switch (status) {
                     case 'active':
@@ -872,11 +1057,18 @@
                 }
 
                 const canModify = user.email !== ADMIN_EMAIL;
-                const activateAction = canModify
-                    ? (status !== 'active'
-                        ? `<button onclick="updateUserStatus('${user.id}', 'active')" class="font-medium text-green-600 hover:underline">Kích hoạt</button>`
-                        : `<button onclick="updateUserStatus('${user.id}', 'pending')" class="font-medium text-yellow-600 hover:underline">Tạm dừng</button>`)
-                    : '';
+                let actionsHtml = '';
+                if(canModify) {
+                    actionsHtml += `<button onclick="openEditUserModal('${user.id}')" class="font-medium text-indigo-600 hover:underline">Sửa</button>`;
+                    if(status === 'active') {
+                        actionsHtml += `<button onclick="updateUserStatus('${user.id}', 'suspended')" class="font-medium text-orange-600 hover:underline">Khóa</button>`;
+                    } else if (status === 'pending') {
+                         actionsHtml += `<button onclick="updateUserStatus('${user.id}', 'active')" class="font-medium text-green-600 hover:underline">Duyệt</button>`;
+                    } else if (status === 'suspended') {
+                        actionsHtml += `<button onclick="updateUserStatus('${user.id}', 'active')" class="font-medium text-green-600 hover:underline">Mở khóa</button>`;
+                    }
+                    actionsHtml += `<button onclick="handleDeleteUser('${user.id}', '${user.name}')" class="font-medium text-red-600 hover:underline">Xóa</button>`;
+                }
 
                 return `
                     <tr class="bg-white border-b hover:bg-gray-50 ${status === 'pending' ? 'bg-yellow-50' : ''}">
@@ -894,9 +1086,7 @@
                         </td>
                         <td class="px-6 py-4">${statusBadge}</td>
                         <td class="px-6 py-4 flex items-center gap-3">
-                            <button onclick="openEditUserModal('${user.id}')" class="font-medium text-indigo-600 hover:underline">Sửa</button>
-                            ${activateAction}
-                            ${canModify ? `<button onclick="handleDeleteUser('${user.id}', '${user.name}')" class="font-medium text-red-600 hover:underline">Xóa</button>` : ''}
+                           ${actionsHtml}
                         </td>
                     </tr>
                 `;
@@ -926,10 +1116,10 @@
             ui.userNameInput.value = user.name;
             ui.userEmailInput.value = user.email;
             ui.userEmailInput.disabled = true; // Cannot change email
-            ui.passwordFieldContainer.classList.add('hidden'); // Hide password field for editing for simplicity
+            ui.passwordFieldContainer.classList.add('hidden'); // For simplicity, password change should be a separate function
             openModal('user-modal');
         };
-
+        
         ui.userForm.addEventListener('submit', async (e) => {
             e.preventDefault();
             const userId = ui.userIdInput.value;
@@ -939,24 +1129,38 @@
             
             try {
                 if (userId) { // Editing existing user
+                    // LƯU Ý: Chức năng này yêu cầu cấu hình Firestore Security Rules phù hợp.
                     const userRef = doc(db, "users", userId);
                     await updateDoc(userRef, { name: name });
                     showMessage('Thành công', 'Đã cập nhật thông tin người dùng.');
                 } else { // Creating new user by admin
-                    // This creates a user but doesn't sign them in.
-                    // A more robust solution might use Cloud Functions to create users.
-                    const tempApp = initializeApp(firebaseConfig, `Secondary-${Date.now()}`); // Use unique name
+                    // ##### LƯU Ý VỀ VIỆC TẠO NGƯỜI DÙNG TỪ TRANG ADMIN #####
+                    // Việc tạo tài khoản người dùng trực tiếp từ client-side (như đoạn code dưới đây)
+                    // là một GIẢI PHÁP TẠM THỜI và không đáng tin cậy. Cách làm này khởi tạo một
+                    // ứng dụng Firebase thứ hai tạm thời, có thể gặp lỗi hoặc bị Firebase hạn chế.
+                    //
+                    // GIẢI PHÁP ĐÚNG ĐẮN VÀ BẢO MẬT là sử dụng Firebase Cloud Functions.
+                    // Admin sẽ gọi một function trên server, và function đó với quyền admin sẽ
+                    // tạo người dùng một cách an toàn.
+                    // Tham khảo: https://firebase.google.com/docs/functions/callable
+                    //
+                    // Ngoài ra, để `setDoc` bên dưới thành công, bạn cũng cần có Security Rule
+                    // cho phép admin tạo document trong collection 'users'.
+                    
+                    const tempApp = initializeApp(firebaseConfig, `Secondary-${Date.now()}`); 
                     const tempAuth = getAuth(tempApp);
                     const userCredential = await createUserWithEmailAndPassword(tempAuth, email, password);
-                    await signOut(tempAuth); // Sign out temporary user immediately
+                    await signOut(tempAuth); 
 
                     const userData = {
                         name: name,
                         email: email,
                         groups: [],
+                        friends: [],
+                        friendRequests: [],
                         activeGroupId: null,
                         createdAt: Timestamp.now(),
-                        status: 'active' // NEW: Admin-created users are active by default
+                        status: 'active' // Admin-created users are active by default
                     };
                     if (email === ADMIN_EMAIL) {
                         userData.role = 'admin';
@@ -967,11 +1171,12 @@
                 closeModal('user-modal');
             } catch (error) {
                 console.error("User form error:", error);
-                showMessage('Lỗi', `Không thể lưu người dùng: ${error.message}`, true);
+                showMessage('Lỗi', `Không thể lưu người dùng: ${error.message}. Vui lòng kiểm tra Security Rules.`, true);
             }
         });
         
         window.handleDeleteUser = (userId, userName) => {
+            // LƯU Ý: Chức năng này yêu cầu cấu hình Firestore Security Rules phù hợp.
             if (!userId) return;
             showConfirmation(`Xóa người dùng "${userName}"?`, 
             'Hành động này sẽ xóa dữ liệu người dùng khỏi Firestore nhưng không xóa tài khoản khỏi hệ thống xác thực. Đây là một hạn chế của việc xóa từ phía client. Tiếp tục?',
@@ -981,7 +1186,7 @@
                     showMessage('Thành công', `Đã xóa người dùng "${userName}" khỏi cơ sở dữ liệu.`);
                 } catch (error) {
                     console.error("Delete user error:", error);
-                    showMessage('Lỗi', 'Không thể xóa người dùng.', true);
+                    showMessage('Lỗi', 'Không thể xóa người dùng. Vui lòng kiểm tra Security Rules.', true);
                 }
             });
         };
@@ -995,23 +1200,22 @@
             groupsUnsubscribe = onSnapshot(userDocRef, (userDoc) => {
                 try {
                     if (!userDoc.exists()) return;
-                    const userData = userDoc.data();
-                    const newActiveGroupId = userData.activeGroupId;
+                    currentUserData = { uid: userDoc.id, ...userDoc.data()};
+                    const newActiveGroupId = currentUserData.activeGroupId;
 
-                    // If active group changes, reload view.
                     if (newActiveGroupId !== activeGroupId) {
                         activeGroupId = newActiveGroupId;
                         
                         if (activeGroupId) {
                             loadScheduleView(activeGroupId);
                         } else {
-                            if (taskUnsubscribe) { taskUnsubscribe(); taskUnsubscribe = null; }
-                            if (groupDocUnsubscribe) { groupDocUnsubscribe(); groupDocUnsubscribe = null; }
-                            loadGroupDashboard(userData.groups || []);
+                            cleanupAllListeners(); // Clean up old listeners
+                            listenToUserData(uid); // Re-establish the main listener
+                            listenToFriendRequests(uid);
+                            loadGroupDashboard(currentUserData.groups || []);
                         }
-                    } else if (!activeGroupId && userData.groups) {
-                        // Initial load or returning to dashboard
-                        loadGroupDashboard(userData.groups || []);
+                    } else if (!activeGroupId && currentUserData.groups) {
+                        loadGroupDashboard(currentUserData.groups || []);
                     }
                 } catch (error) {
                     console.error("Critical error in user data listener:", error);
@@ -1067,10 +1271,10 @@
                 ` : '';
 
                 return `
-                    <div class="group-card bg-white p-5 rounded-xl shadow hover:shadow-lg hover:-translate-y-1 transition-all relative">
-                        <div class="pr-10" onclick="selectGroup('${doc.id}')">
-                            <div class="font-bold text-lg text-gray-800 cursor-pointer">${data.name}</div>
-                            <div class="text-sm text-gray-500 cursor-pointer">${(data.members || []).length} thành viên</div>
+                    <div class="group-card relative">
+                        <div onclick="selectGroup('${doc.id}')" class="bg-white p-5 rounded-xl shadow hover:shadow-lg hover:-translate-y-1 transition-all cursor-pointer pr-12">
+                            <div class="font-bold text-lg text-gray-800">${data.name}</div>
+                            <div class="text-sm text-gray-500">${(data.members || []).length} thành viên</div>
                         </div>
                         ${deleteButtonHtml}
                     </div>`;
@@ -1085,23 +1289,37 @@
 
         window.deleteGroup = async (event, groupId, groupName) => {
             event.stopPropagation();
-            showConfirmation(`Xóa nhóm "${groupName}"?`, 'Hành động này không thể hoàn tác. Tất cả công việc trong nhóm cũng sẽ bị xóa vĩnh viễn.', async () => {
+            showConfirmation(`Xóa nhóm "${groupName}"?`, 'Hành động này không thể hoàn tác. Tất cả công việc và tin nhắn trong nhóm cũng sẽ bị xóa vĩnh viễn.', async () => {
                 try {
+                    const batch = writeBatch(db);
+                    
+                    // Delete all tasks in subcollection
                     const tasksRef = collection(db, "groups", groupId, "tasks");
                     const tasksSnapshot = await getDocs(tasksRef);
-                    const deletePromises = tasksSnapshot.docs.map(taskDoc => deleteDoc(taskDoc.ref));
-                    await Promise.all(deletePromises);
-                    await deleteDoc(doc(db, "groups", groupId));
+                    tasksSnapshot.docs.forEach(taskDoc => batch.delete(taskDoc.ref));
                     
-                    const userRef = doc(db, "users", currentUser.uid);
-                    const userDoc = await getDoc(userRef);
-                    const userData = userDoc.data();
+                    // Delete all messages in subcollection
+                    const messagesRef = collection(db, "groups", groupId, "messages");
+                    const messagesSnapshot = await getDocs(messagesRef);
+                    messagesSnapshot.docs.forEach(messageDoc => batch.delete(messageDoc.ref));
+                    
+                    // Delete the group itself
+                    batch.delete(doc(db, "groups", groupId));
+                    
+                    await batch.commit();
 
-                    const updateData = { groups: arrayRemove(groupId) };
-                    if (userData.activeGroupId === groupId) {
-                        updateData.activeGroupId = null;
+                    // Update all members to remove the group
+                    const groupDoc = await getDoc(doc(db, "groups", groupId));
+                    if (groupDoc.exists() && groupDoc.data().members) {
+                        const memberUpdates = groupDoc.data().members.map(memberId => {
+                            const userRef = doc(db, "users", memberId);
+                            return updateDoc(userRef, {
+                                groups: arrayRemove(groupId),
+                                activeGroupId: null // Reset active group if it was the deleted one
+                            });
+                        });
+                        await Promise.all(memberUpdates);
                     }
-                    await updateDoc(userRef, updateData);
                     
                     showMessage('Thành công', `Nhóm "${groupName}" đã được xóa.`);
                 } catch (error) {
@@ -1112,8 +1330,6 @@
         };
         
         ui.backToDashboardBtn.addEventListener('click', async () => {
-             if (taskUnsubscribe) { taskUnsubscribe(); taskUnsubscribe = null; }
-             if (groupDocUnsubscribe) { groupDocUnsubscribe(); groupDocUnsubscribe = null; }
              await updateDoc(doc(db, "users", currentUser.uid), { activeGroupId: null });
         });
 
@@ -1141,13 +1357,15 @@
                     const userRef = doc(db, "users", currentUser.uid);
                     const groupRef = doc(db, "groups", activeGroupId);
 
-                    await updateDoc(userRef, {
+                    const batch = writeBatch(db);
+                    batch.update(userRef, {
                         groups: arrayRemove(activeGroupId),
                         activeGroupId: null
                     });
-                    await updateDoc(groupRef, {
+                    batch.update(groupRef, {
                         members: arrayRemove(currentUser.uid)
                     });
+                    await batch.commit();
                     
                     showMessage('Thành công', 'Bạn đã rời khỏi nhóm.');
                 } catch (error) {
@@ -1195,37 +1413,28 @@
                     const groupRef = doc(db, "groups", groupId);
                     const userRef = doc(db, "users", currentUser.uid);
 
-                    // First, check if the group exists. This might fail if security rules are too strict.
                     const groupDoc = await getDoc(groupRef);
                     if (!groupDoc.exists()) {
                         showMessage('Lỗi', 'Mã nhóm không tồn tại hoặc không hợp lệ.', true);
                         return;
                     }
 
-                    // Use a batch to ensure both updates succeed or fail together (atomic operation).
                     const batch = writeBatch(db);
-
-                    // 1. Add the user's UID to the group's members array.
                     batch.update(groupRef, { members: arrayUnion(currentUser.uid) });
-                    
-                    // 2. Add the group's ID to the user's groups array and set it as active.
                     batch.update(userRef, { 
                         groups: arrayUnion(groupId),
                         activeGroupId: groupId
                     });
-
-                    // Commit the batch.
                     await batch.commit();
 
                     showMessage('Thành công!', `Đã tham gia nhóm "${groupDoc.data().name}".`);
                 }
                 closeModal('group-modal');
             } catch (error) {
-                console.error("Group form error:", error); // Keep detailed log for debugging
+                console.error("Group form error:", error);
                 let errorMessage = 'Không thể thực hiện thao tác. Vui lòng thử lại.';
-                // Provide more helpful feedback based on the error code.
                 if (error.code === 'permission-denied') {
-                    errorMessage = 'Thao tác bị từ chối. Vui lòng kiểm tra lại mã mời và đảm bảo bạn có quyền tham gia nhóm này.';
+                    errorMessage = 'Thao tác bị từ chối. Vui lòng kiểm tra lại mã mời.';
                 } else if (error.code === 'not-found') {
                     errorMessage = 'Không tìm thấy nhóm với mã mời này.';
                 }
@@ -1242,53 +1451,24 @@
             try {
                 const uniqueUids = [...new Set(memberUids)];
                 const memberPromises = uniqueUids.map(uid => getDoc(doc(db, "users", uid)));
-                const memberResults = await Promise.allSettled(memberPromises);
+                const memberDocs = await Promise.all(memberPromises);
                 
-                const newMemberList = [];
-                memberResults.forEach((result, index) => {
-                    if (result.status === 'fulfilled' && result.value.exists()) {
-                        newMemberList.push({ uid: result.value.id, ...result.value.data() });
-                    } else {
-                        console.warn(`Failed to fetch or find member with UID: ${uniqueUids[index]}`);
-                    }
-                });
-                activeGroupMembers = newMemberList;
+                activeGroupMembers = memberDocs
+                    .filter(doc => doc.exists())
+                    .map(doc => ({ uid: doc.id, ...doc.data() }));
+
             } catch (error) {
                 console.error("Error fetching group members:", error);
-                activeGroupMembers = []; // Reset on error to prevent using stale data
+                activeGroupMembers = [];
             }
         }
         
         async function loadScheduleView(groupId) {
-            if (groupDocUnsubscribe) { groupDocUnsubscribe(); groupDocUnsubscribe = null; }
-            if (taskUnsubscribe) { taskUnsubscribe(); taskUnsubscribe = null; }
+            if (groupDocUnsubscribe) groupDocUnsubscribe();
+            if (taskUnsubscribe) taskUnsubscribe();
         
             try {
                 const groupDocRef = doc(db, "groups", groupId);
-                const groupDoc = await getDoc(groupDocRef);
-                if (!groupDoc.exists()) {
-                    await updateDoc(doc(db, "users", currentUser.uid), { activeGroupId: null });
-                    showMessage('Lỗi', 'Không thể tìm thấy nhóm này hoặc nhóm đã bị xóa.', true);
-                    return;
-                }
-                const initialGroupData = groupDoc.data();
-                
-                ui.headerTitle.textContent = `Lịch trình: ${initialGroupData.name}`;
-                ui.backToDashboardBtn.classList.remove('hidden');
-                ui.statsContainer.classList.remove('hidden');
-                ui.leaveGroupBtn.classList.remove('hidden');
-                ui.mainContent.innerHTML = `<div id="schedule-container" class="bg-white p-4 md:p-6 rounded-xl shadow-lg"></div>`;
-        
-                if (initialGroupData.startDate && typeof initialGroupData.startDate.toDate === 'function') {
-                    activeGroupStartDate = initialGroupData.startDate.toDate();
-                    activeGroupTotalWeeks = getNumberOfWeeks(activeGroupStartDate.getFullYear(), activeGroupStartDate.getMonth());
-                } else {
-                    activeGroupStartDate = null;
-                    activeGroupTotalWeeks = 4;
-                }
-                renderWeekNavigator();
-                renderSchedule();
-        
                 groupDocUnsubscribe = onSnapshot(groupDocRef, async (doc) => {
                     if (!doc.exists()) {
                         showMessage('Thông Báo', 'Nhóm này đã bị xóa.', true);
@@ -1296,7 +1476,24 @@
                         return;
                     }
                     const groupData = doc.data();
+                    
+                    ui.headerTitle.textContent = `Lịch trình: ${groupData.name}`;
+                    ui.backToDashboardBtn.classList.remove('hidden');
+                    ui.statsContainer.classList.remove('hidden');
+                    ui.leaveGroupBtn.classList.remove('hidden');
+                    ui.mainContent.innerHTML = `<div id="schedule-container" class="bg-white p-4 md:p-6 rounded-xl shadow-lg"></div>`;
+            
+                    if (groupData.startDate && typeof groupData.startDate.toDate === 'function') {
+                        activeGroupStartDate = groupData.startDate.toDate();
+                        activeGroupTotalWeeks = getNumberOfWeeks(activeGroupStartDate.getFullYear(), activeGroupStartDate.getMonth());
+                    } else {
+                        activeGroupStartDate = null;
+                        activeGroupTotalWeeks = 4;
+                    }
+                    
                     await fetchAndCacheMembers(groupData.members || []);
+                    renderWeekNavigator();
+                    renderSchedule();
                     renderTasks(cachedTasks); 
                 }, async (error) => {
                     console.error("Group listener failed:", error);
@@ -1371,7 +1568,7 @@
 
         function renderSchedule() {
             const days = ["Thứ Hai", "Thứ Ba", "Thứ Tư", "Thứ Năm", "Thứ Sáu", "Thứ Bảy", "Chủ Nhật"];
-            const timeSlots = ["00:00", "01:00", "02:00", "03:00", "04:00", "05:00", "06:00", "07:00", "08:00", "09:00", "10:00", "11:00", "12:00", "13:00", "14:00", "15:00", "16:00", "17:00", "18:00", "19:00", "20:00", "21:00", "22:00", "23:00"];
+            const timeSlots = ["08:00", "09:00", "10:00", "11:00", "14:00", "15:00", "16:00", "17:00", "20:00"];
             
             const container = document.getElementById('schedule-container');
             if (!container) return;
@@ -1395,7 +1592,7 @@
                     const cellDate = weekDates[index];
                     const dateString = cellDate.toISOString().split('T')[0];
                     
-                    const cellClasses = "grid-cell bg-white min-h-[100px] p-2 hover:bg-indigo-50 transition-colors";
+                    const cellClasses = "grid-cell bg-white min-h-[100px] p-1.5 hover:bg-indigo-50 transition-colors space-y-1.5 overflow-y-auto custom-scrollbar";
                     const clickHandler = `onclick="openTaskModal(null, '${time}', '${dateString}')"`;
 
                     gridHtml += `<div class="${cellClasses}" data-time="${time}" data-date="${dateString}" ${clickHandler}></div>`;
@@ -1415,10 +1612,7 @@
             const weekDates = getWeekDates(currentWeek, activeGroupStartDate).map(d => d.toISOString().split('T')[0]);
             
             allTasks.forEach(task => {
-                if (!task || !task.date || !task.time) {
-                    console.warn("Skipping rendering of malformed task:", task);
-                    return; 
-                }
+                if (!task || !task.date || !task.time) return; 
 
                 if (weekDates.includes(task.date)) {
                     const cell = document.querySelector(`.grid-cell[data-date="${task.date}"][data-time="${task.time}"]`);
@@ -1430,7 +1624,7 @@
                         const platformClass = (task.platform || 'unknown').toLowerCase();
                         const statusClass = (task.status || 'Chưa làm').replace(/\s+/g, '-').toLowerCase();
 
-                        taskEl.className = `task-card border-l-4 p-2 rounded mb-2 cursor-pointer transition-all hover:shadow-md hover:translate-x-1 platform-${platformClass}`;
+                        taskEl.className = `task-card border-l-4 p-2 rounded cursor-pointer transition-all hover:shadow-md hover:translate-x-1 platform-${platformClass}`;
                         taskEl.innerHTML = `
                             <div class="font-bold text-sm text-gray-800">${task.partner || 'N/A'}</div>
                             <div class="text-xs text-gray-600 truncate">${task.content || ''}</div>
@@ -1500,11 +1694,9 @@
             try {
                 if (taskId) {
                     await updateDoc(doc(db, "groups", activeGroupId, "tasks", taskId), taskData);
-                    showMessage('Thành công', 'Đã cập nhật công việc.');
                 } else {
                     taskData.createdAt = Timestamp.now();
                     await addDoc(collection(db, "groups", activeGroupId, "tasks"), taskData);
-                    showMessage('Thành công', 'Đã tạo công việc mới.');
                 }
                 closeModal('task-modal');
             } catch (error) {
@@ -1513,18 +1705,18 @@
         });
         
         ui.deleteTaskBtn.addEventListener('click', () => {
-             const taskId = ui.taskIdInput.value;
-             if (!taskId) return;
-             
-             showConfirmation('Xác nhận xóa', 'Bạn có chắc chắn muốn xóa công việc này không?', async () => {
-                 try {
-                     await deleteDoc(doc(db, "groups", activeGroupId, "tasks", taskId));
-                     showMessage('Thành công', 'Đã xóa công việc.');
-                     closeModal('task-modal');
-                 } catch (error) {
-                     showMessage('Lỗi', 'Không thể xóa công việc.', true);
-                 }
-             });
+            const taskId = ui.taskIdInput.value;
+            if (!taskId) return;
+            
+            showConfirmation('Xác nhận xóa', 'Bạn có chắc chắn muốn xóa công việc này không?', async () => {
+                try {
+                    await deleteDoc(doc(db, "groups", activeGroupId, "tasks", taskId));
+                    showMessage('Thành công', 'Đã xóa công việc.');
+                    closeModal('task-modal');
+                } catch (error) {
+                    showMessage('Lỗi', 'Không thể xóa công việc.', true);
+                }
+            });
         });
 
         // --- Statistics ---
@@ -1555,7 +1747,7 @@
                 <div class="stat-card"><div class="stat-value text-blue-500">${statusCounts['Đang làm']}</div><div class="stat-label">Đang làm</div></div>
                 <div class="stat-card"><div class="stat-value text-green-500">${statusCounts['Hoàn thành']}</div><div class="stat-label">Hoàn thành</div></div>
                 <div class="stat-card"><div class="stat-value text-yellow-500">${statusCounts['Bù']}</div><div class="stat-label">CV Bù</div></div>
-                <div class="stat-card"><div class="stat-value text-2xs break-all">${activeGroupId || 'N/A'}</div><div class="stat-label">ID Nhóm</div></div>        
+                <div class="stat-card"><div class="stat-value text-xs break-all">${activeGroupId || 'N/A'}</div><div class="stat-label">ID Nhóm</div></div>        
                  <style>
                       .stat-card { background: white; border-radius: 12px; padding: 1rem; text-align: center; box-shadow: 0 2px 4px rgba(0,0,0,0.05); display: flex; flex-direction: column; justify-content: center;}
                       .stat-value { font-size: 1.75rem; font-weight: 700; color: #4f46e5; }
@@ -1563,6 +1755,361 @@
                  </style>
             `;
         }
+
+        // ======================================================================
+        // ======================== FRIENDS SECTION =============================
+        // ======================================================================
+        
+        ui.friendsBtn.addEventListener('click', async () => {
+            if (!currentUserData) return;
+            // The onSnapshot listener will keep these up to date, just need to render
+            renderFriendsUI(currentUserData.friendRequests || []);
+            await loadAndRenderFriendsList(currentUserData.friends || []);
+            openModal('friends-modal');
+        });
+
+        function listenToFriendRequests(uid) {
+            if (friendRequestsUnsubscribe) friendRequestsUnsubscribe();
+            const userRef = doc(db, 'users', uid);
+            // This listener is part of the main `listenToUserData`, so friend data
+            // will be updated automatically. We just need to ensure the UI is rendered
+            // when the friends modal is opened.
+        }
+        
+        async function loadAndRenderFriendsList(friendUids) {
+            ui.friendsList.innerHTML = '<li class="text-gray-400 p-2">Đang tải...</li>';
+            if (friendUids.length === 0) {
+                currentFriendsData = [];
+                ui.friendsList.innerHTML = '<li class="text-gray-400 p-2">Chưa có bạn bè.</li>';
+                return;
+            }
+            try {
+                const friendPromises = friendUids.map(uid => getDoc(doc(db, 'users', uid)));
+                const friendDocs = await Promise.all(friendPromises);
+                currentFriendsData = friendDocs
+                    .filter(d => d.exists())
+                    .map(d => ({ uid: d.id, ...d.data() }));
+
+                if (currentFriendsData.length === 0) {
+                     ui.friendsList.innerHTML = '<li class="text-gray-400 p-2">Chưa có bạn bè.</li>';
+                     return;
+                }
+
+                ui.friendsList.innerHTML = currentFriendsData.map(friend => `
+                    <li class="px-3 py-2 bg-gray-100 rounded flex justify-between items-center">
+                        <span>${friend.name || friend.email}</span>
+                        <button onclick="unfriend('${friend.uid}', '${friend.name}')" class="text-xs text-red-500 hover:underline">Hủy kết bạn</button>
+                    </li>
+                `).join('');
+            } catch (error) {
+                console.error("Error loading friends list:", error);
+                ui.friendsList.innerHTML = '<li class="text-red-500 p-2">Lỗi tải danh sách bạn bè.</li>';
+            }
+        }
+        
+        async function renderFriendsUI(requests) {
+            const pendingRequests = requests.filter(r => r.status === 'pending');
+            if (pendingRequests.length > 0) {
+                 ui.friendRequestsList.innerHTML = pendingRequests.map(r => `
+                    <li class="px-3 py-2 bg-yellow-50 rounded flex justify-between items-center">
+                        <span>${r.fromName || r.fromEmail}</span>
+                        <div class="flex gap-2">
+                            <button class="text-green-600 hover:underline text-sm" onclick="handleFriendRequest('${r.fromUid}', true)">Chấp nhận</button>
+                            <button class="text-red-600 hover:underline text-sm" onclick="handleFriendRequest('${r.fromUid}', false)">Từ chối</button>
+                        </div>
+                    </li>
+                `).join('');
+            } else {
+                 ui.friendRequestsList.innerHTML = '<li class="text-gray-400 p-2">Không có lời mời mới.</li>';
+            }
+        }
+        
+        const showFriendRequestMessage = (message, isError = false) => {
+            ui.friendRequestMessage.textContent = message;
+            ui.friendRequestMessage.className = `text-sm mb-2 ${isError ? 'text-red-600' : 'text-green-600'}`;
+        };
+
+        ui.sendFriendRequestForm.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            showFriendRequestMessage('', false);
+            const email = ui.friendEmailInput.value.trim().toLowerCase();
+            if (!email || !currentUser) return;
+            if (email === currentUser.email) {
+                showFriendRequestMessage('Không thể kết bạn với chính mình!', true);
+                return;
+            }
+            try {
+                // NOTE: This query requires a Firestore index on the 'email' field in the 'users' collection.
+                // If you get a permission error in the console, create this index in the Firebase console.
+                const q = query(collection(db, 'users'), where("email", "==", email));
+                const querySnapshot = await getDocs(q);
+
+                if (querySnapshot.empty) {
+                    showFriendRequestMessage('Không tìm thấy người dùng với email này.', true);
+                    return;
+                }
+                const foundUserDoc = querySnapshot.docs[0];
+                const foundUser = { id: foundUserDoc.id, ...foundUserDoc.data() };
+
+
+                if ((currentUserData.friends || []).includes(foundUser.id)) {
+                    showFriendRequestMessage('Hai bạn đã là bạn bè.', true);
+                    return;
+                }
+
+                const existingRequest = (foundUser.friendRequests || []).find(r => r.fromUid === currentUser.uid && r.status === 'pending');
+                if(existingRequest) {
+                    showFriendRequestMessage('Đã gửi lời mời, vui lòng chờ xác nhận.', false);
+                    return;
+                }
+                
+                const newRequest = {
+                    fromUid: currentUser.uid,
+                    fromEmail: currentUser.email,
+                    fromName: currentUserData.name || currentUser.email,
+                    status: 'pending',
+                    sentAt: Timestamp.now()
+                };
+
+                await updateDoc(doc(db, 'users', foundUser.id), {
+                    friendRequests: arrayUnion(newRequest)
+                });
+                
+                showFriendRequestMessage('Đã gửi lời mời kết bạn!', false);
+                ui.friendEmailInput.value = '';
+            } catch (err) {
+                console.error("Error sending friend request", err);
+                showFriendRequestMessage('Lỗi gửi lời mời! Vui lòng thử lại.', true);
+            }
+        });
+        
+        window.handleFriendRequest = async (fromUid, accept) => {
+            if (!currentUser || !currentUserData) return;
+
+            const requestToHandle = (currentUserData.friendRequests || []).find(r => r.fromUid === fromUid && r.status === 'pending');
+
+            if (!requestToHandle) {
+                console.log("Không tìm thấy lời mời kết bạn hoặc đã được xử lý.");
+                return;
+            }
+
+            const userRef = doc(db, 'users', currentUser.uid);
+            const batch = writeBatch(db);
+
+            try {
+                // Luôn xóa lời mời kết bạn khỏi danh sách
+                batch.update(userRef, { friendRequests: arrayRemove(requestToHandle) });
+
+                if (accept) {
+                    const friendRef = doc(db, 'users', fromUid);
+                    // Thêm bạn bè cho cả hai người dùng
+                    batch.update(userRef, { friends: arrayUnion(fromUid) });
+                    batch.update(friendRef, { friends: arrayUnion(currentUser.uid) });
+                }
+
+                await batch.commit();
+
+                // Cập nhật giao diện ngay lập tức thay vì chờ onSnapshot
+                // 1. Cập nhật danh sách lời mời trong cache và re-render
+                currentUserData.friendRequests = (currentUserData.friendRequests || []).filter(r => r.fromUid !== fromUid);
+                renderFriendsUI(currentUserData.friendRequests);
+                
+                // 2. Nếu chấp nhận, cập nhật danh sách bạn bè trong cache và re-render
+                if (accept) {
+                    // Đảm bảo không thêm trùng lặp
+                    if (!(currentUserData.friends || []).includes(fromUid)) {
+                        currentUserData.friends.push(fromUid);
+                    }
+                    await loadAndRenderFriendsList(currentUserData.friends); // Tải lại toàn bộ list để có tên bạn mới
+                }
+
+            } catch (error) {
+                console.error("Lỗi khi xử lý lời mời kết bạn: ", error);
+                showMessage('Lỗi', 'Không thể xử lý lời mời. Vui lòng thử lại.', true);
+            }
+        };
+
+        window.unfriend = async (friendUid, friendName) => {
+             showConfirmation(`Hủy kết bạn với ${friendName || 'người này'}?`, 
+             'Bạn có chắc muốn hủy kết bạn không?', 
+             async () => {
+                try {
+                    const userRef = doc(db, 'users', currentUser.uid);
+                    const friendRef = doc(db, 'users', friendUid);
+                    
+                    const batch = writeBatch(db);
+                    batch.update(userRef, { friends: arrayRemove(friendUid) });
+                    batch.update(friendRef, { friends: arrayRemove(currentUser.uid) });
+                    await batch.commit();
+                    
+                    // Cập nhật cache cục bộ và re-render UI ngay lập tức
+                    currentUserData.friends = (currentUserData.friends || []).filter(uid => uid !== friendUid);
+                    await loadAndRenderFriendsList(currentUserData.friends);
+                    
+                    showMessage('Thành công', 'Đã hủy kết bạn.');
+                } catch(error) {
+                    console.error("Lỗi khi hủy kết bạn: ", error);
+                    showMessage('Lỗi', 'Không thể hủy kết bạn. Vui lòng thử lại.', true);
+                }
+             });
+        }
+        
+        // ======================================================================
+        // ========================== CHAT SECTION ==============================
+        // ======================================================================
+
+        ui.openChatBtn.addEventListener('click', () => {
+            openModal('chat-modal');
+            renderChatSidebar('group');
+        });
+
+        ui.chatTabGroup.addEventListener('click', () => {
+            ui.chatTabGroup.classList.add('bg-indigo-100', 'text-indigo-700');
+            ui.chatTabFriends.classList.remove('bg-indigo-100', 'text-indigo-700');
+            renderChatSidebar('group');
+        });
+        
+        ui.chatTabFriends.addEventListener('click', () => {
+            ui.chatTabFriends.classList.add('bg-indigo-100', 'text-indigo-700');
+            ui.chatTabGroup.classList.remove('bg-indigo-100', 'text-indigo-700');
+            renderChatSidebar('friend');
+        });
+
+        async function renderChatSidebar(type) {
+            ui.chatConversationsList.innerHTML = '<div class="text-gray-400 text-center p-4">Đang tải...</div>';
+            let conversations = [];
+            if (type === 'group' && currentUserData.groups) {
+                const groupPromises = currentUserData.groups.map(id => getDoc(doc(db, "groups", id)));
+                const groupDocs = await Promise.all(groupPromises);
+                conversations = groupDocs.filter(d => d.exists()).map(d => ({
+                    id: d.id,
+                    name: d.data().name,
+                    subtitle: `${d.data().members.length} thành viên`,
+                    type: 'group'
+                }));
+            } else if (type === 'friend' && currentUserData.friends) {
+                if (currentFriendsData.length !== currentUserData.friends.length) {
+                   await loadAndRenderFriendsList(currentUserData.friends);
+                }
+                conversations = currentFriendsData.map(f => ({
+                    id: f.uid,
+                    name: f.name || f.email,
+                    subtitle: f.email,
+                    type: 'friend'
+                }));
+            }
+
+            if(conversations.length > 0) {
+                 ui.chatConversationsList.innerHTML = conversations.map(convo => `
+                    <div onclick="openChatConversation('${convo.id}', '${convo.type}')" 
+                         class="flex items-center gap-3 p-2 rounded-lg hover:bg-gray-200 cursor-pointer transition-colors ${currentChatContext.id === convo.id ? 'bg-indigo-100' : ''}">
+                        <div class="w-10 h-10 rounded-full bg-gray-300 flex items-center justify-center font-bold text-white flex-shrink-0">
+                            ${(convo.name[0] || '?').toUpperCase()}
+                        </div>
+                        <div class="flex-1 overflow-hidden">
+                            <div class="font-semibold text-sm text-gray-800 truncate">${convo.name}</div>
+                            <div class="text-xs text-gray-500 truncate">${convo.subtitle}</div>
+                        </div>
+                    </div>
+                `).join('');
+            } else {
+                 ui.chatConversationsList.innerHTML = `<div class="text-gray-400 text-center p-4">Không có ${type === 'group' ? 'nhóm' : 'bạn bè'} nào.</div>`;
+            }
+        }
+        
+        window.openChatConversation = async (id, type) => {
+            if (chatMessagesUnsubscribe) chatMessagesUnsubscribe();
+            ui.chatView.classList.remove('hidden');
+            ui.chatPlaceholder.classList.add('hidden');
+
+            let conversationRef;
+            let title, subtitle;
+            let membersForAvatar = [];
+            
+            if (type === 'group') {
+                const groupDoc = await getDoc(doc(db, 'groups', id));
+                if (!groupDoc.exists()) return;
+                const groupData = groupDoc.data();
+                title = groupData.name;
+                subtitle = `${groupData.members.length} thành viên`;
+                conversationRef = collection(db, 'groups', id, 'messages');
+                await fetchAndCacheMembers(groupData.members); // Make sure members are cached
+                membersForAvatar = activeGroupMembers;
+            } else { // friend
+                const friendDoc = await getDoc(doc(db, 'users', id));
+                if (!friendDoc.exists()) return;
+                title = friendDoc.data().name || friendDoc.data().email;
+                subtitle = 'Bạn bè';
+                // Create a consistent chat ID for 1-on-1 chats
+                const chatId = [currentUser.uid, id].sort().join('_');
+                conversationRef = collection(db, 'chats', chatId, 'messages');
+                membersForAvatar = [currentUserData, {uid: friendDoc.id, ...friendDoc.data()}];
+            }
+            
+            currentChatContext = { id, type, name: title, members: membersForAvatar };
+
+            ui.chatTitle.textContent = title;
+            ui.chatSubtitle.textContent = subtitle;
+            ui.chatAvatar.textContent = (title[0] || '?').toUpperCase();
+            
+            const q = query(conversationRef, orderBy("sentAt", "desc"), limit(50));
+            chatMessagesUnsubscribe = onSnapshot(q, (snapshot) => {
+                const messages = snapshot.docs.map(doc => ({id: doc.id, ...doc.data()})).reverse();
+                renderChatMessages(messages);
+            });
+        }
+        
+        function renderChatMessages(messages) {
+            ui.chatMessages.innerHTML = messages.map(msg => {
+                const isMe = msg.senderUid === currentUser.uid;
+                
+                const sender = currentChatContext.members.find(m => m.uid === msg.senderUid) || {name: '...', email: '...'}
+                const senderName = isMe ? 'Bạn' : sender.name || sender.email;
+                
+                return `
+                    <div class="flex gap-2.5 ${isMe ? 'justify-end' : 'justify-start'}">
+                        ${!isMe ? `<div class="w-8 h-8 rounded-full bg-gray-300 flex-shrink-0 flex items-center justify-center text-sm text-white font-bold" title="${senderName}">${(senderName[0] || '?').toUpperCase()}</div>` : ''}
+                        <div class="flex flex-col gap-1 max-w-[70%]">
+                            <div class="flex items-center space-x-2 rtl:space-x-reverse ${isMe ? 'justify-end' : ''}">
+                                <span class="text-xs font-semibold text-gray-900">${senderName}</span>
+                                <span class="text-xs font-normal text-gray-500">${formatTime(msg.sentAt)}</span>
+                            </div>
+                            <div class="leading-snug p-2.5 rounded-xl ${isMe ? 'bg-indigo-600 text-white rounded-br-none' : 'bg-white text-gray-800 rounded-bl-none shadow-sm'}">
+                                <p class="text-sm font-normal">${msg.text}</p>
+                            </div>
+                        </div>
+                    </div>
+                `;
+            }).join('');
+            ui.chatMessages.scrollTop = ui.chatMessages.scrollHeight;
+        }
+
+        ui.chatInputForm.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const text = ui.chatInput.value.trim();
+            if(!text || !currentChatContext.id) return;
+
+            let conversationRef;
+            if(currentChatContext.type === 'group') {
+                conversationRef = collection(db, 'groups', currentChatContext.id, 'messages');
+            } else {
+                const chatId = [currentUser.uid, currentChatContext.id].sort().join('_');
+                conversationRef = collection(db, 'chats', chatId, 'messages');
+            }
+
+            try {
+                await addDoc(conversationRef, {
+                    text: text,
+                    senderUid: currentUser.uid,
+                    sentAt: Timestamp.now()
+                });
+                ui.chatInput.value = '';
+            } catch (error) {
+                console.error("Error sending message:", error);
+                showMessage('Lỗi', 'Không thể gửi tin nhắn.', true);
+            }
+        });
+        
     </script>
 </body>
 </html>
