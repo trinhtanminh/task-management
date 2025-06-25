@@ -29,9 +29,10 @@
             transition: all 0.3s ease-out;
         }
 
-        /* Custom scrollbar for chat lists */
+        /* Custom scrollbar */
         .custom-scrollbar::-webkit-scrollbar {
             width: 6px;
+            height: 6px;
         }
         .custom-scrollbar::-webkit-scrollbar-track {
             background: #f1f5f9;
@@ -43,9 +44,22 @@
         .custom-scrollbar::-webkit-scrollbar-thumb:hover {
             background: #94a3b8;
         }
+
+        /* Prevent layout shift when scrollbar appears */
+        :root {
+            scrollbar-gutter: stable;
+        }
+        
+        /* Add a hint for horizontally scrollable areas on touch devices */
+        @media (max-width: 768px) {
+            .horizontal-scroll-hint {
+                background: linear-gradient(to right, white, rgba(255, 255, 255, 0) 10%, rgba(255, 255, 255, 0) 90%, white 100%);
+                pointer-events: none;
+            }
+        }
     </style>
 </head>
-<body class="bg-gray-100">
+<body class="bg-gray-100" oncontextmenu="return true;">
 
     <!-- Config Error Message -->
     <div id="config-error" class="hidden">
@@ -57,7 +71,7 @@
     </div>
 
     <!-- Auth Screen -->
-    <div id="auth-screen" class="flex items-center justify-center min-h-screen hidden">
+    <div id="auth-screen" class="flex items-center justify-center min-h-screen hidden p-4">
         <div class="bg-white p-8 rounded-xl shadow-lg w-full max-w-md">
             <h2 id="auth-title" class="text-2xl font-bold text-center text-gray-800 mb-6">Đăng Nhập</h2>
             <div id="auth-error" class="hidden bg-red-100 text-red-700 p-3 rounded-lg mb-4 text-sm"></div>
@@ -86,29 +100,30 @@
     <!-- Main App (User View) -->
     <div id="app-screen" class="hidden">
         <header class="bg-white shadow-md sticky top-0 z-40">
-            <div class="container mx-auto px-4 py-4">
+            <div class="container mx-auto px-4 py-3">
                 <div class="flex justify-between items-center">
-                    <div class="flex items-center gap-4">
-                        <h1 id="header-title" class="text-xl md:text-2xl font-bold text-gray-800">Các Nhóm Của Tôi</h1>
-                        <button id="back-to-dashboard-btn" class="hidden bg-gray-200 text-gray-800 px-4 py-2 rounded-lg hover:bg-gray-300 transition-colors text-sm">
-                            <i class="fas fa-arrow-left mr-2"></i>Quay lại
+                    <div class="flex items-center gap-2 sm:gap-4">
+                        <button id="back-to-dashboard-btn" class="hidden items-center justify-center bg-gray-200 text-gray-800 w-10 h-10 rounded-lg hover:bg-gray-300 transition-colors flex-shrink-0">
+                            <i class="fas fa-arrow-left"></i>
                         </button>
+                        <h1 id="header-title" class="text-lg sm:text-xl md:text-2xl font-bold text-gray-800 truncate">Các Nhóm Của Tôi</h1>
                     </div>
-                    <div class="flex items-center gap-3">
-                        <span id="user-email" class="hidden md:block text-sm text-gray-600"></span>
-                        <button id="friends-btn" class="bg-gray-200 text-gray-800 px-4 py-2 rounded-lg hover:bg-gray-300 transition-colors text-sm">
-                            <i class="fas fa-user-friends mr-2"></i>Bạn bè
+                    <!-- Responsive Buttons: Icons on mobile, text on larger screens -->
+                    <div class="flex items-center gap-2">
+                        <span id="user-email" class="hidden lg:block text-sm text-gray-600 font-medium mr-2"></span>
+                        <button id="friends-btn" class="bg-gray-200 text-gray-800 p-2 sm:px-4 sm:py-2 rounded-lg hover:bg-gray-300 transition-colors text-sm flex items-center">
+                            <i class="fas fa-user-friends text-base sm:mr-2"></i><span class="hidden sm:inline">Bạn bè</span>
                         </button>
-                        <button id="leave-group-btn" class="hidden bg-red-500 text-white px-4 py-2 rounded-lg hover:bg-red-600 transition-colors text-sm">
-                            <i class="fas fa-sign-out-alt mr-2"></i>Rời nhóm
+                        <button id="leave-group-btn" class="hidden bg-red-500 text-white p-2 sm:px-4 sm:py-2 rounded-lg hover:bg-red-600 transition-colors text-sm items-center">
+                            <i class="fas fa-sign-out-alt text-base sm:mr-2"></i><span class="hidden sm:inline">Rời nhóm</span>
                         </button>
-                        <button id="create-group-btn" class="bg-indigo-600 text-white px-4 py-2 rounded-lg hover:bg-indigo-700 transition-colors text-sm">
-                            <i class="fas fa-plus mr-2"></i>Tạo nhóm
+                        <button id="create-group-btn" class="bg-indigo-600 text-white p-2 sm:px-4 sm:py-2 rounded-lg hover:bg-indigo-700 transition-colors text-sm flex items-center">
+                            <i class="fas fa-plus text-base sm:mr-2"></i><span class="hidden sm:inline">Tạo</span>
                         </button>
-                        <button id="join-group-btn" class="bg-gray-200 text-gray-800 px-4 py-2 rounded-lg hover:bg-gray-300 transition-colors text-sm">
-                            <i class="fas fa-user-plus mr-2"></i>Tham gia
+                        <button id="join-group-btn" class="bg-green-500 text-white p-2 sm:px-4 sm:py-2 rounded-lg hover:bg-green-600 transition-colors text-sm flex items-center">
+                            <i class="fas fa-user-plus text-base sm:mr-2"></i><span class="hidden sm:inline">Tham gia</span>
                         </button>
-                        <button id="logout-btn" class="bg-gray-200 text-gray-800 w-10 h-10 rounded-lg hover:bg-gray-300 transition-colors">
+                        <button id="logout-btn" class="bg-gray-200 text-gray-800 w-10 h-10 rounded-lg hover:bg-gray-300 transition-colors flex items-center justify-center">
                             <i class="fas fa-sign-out-alt"></i>
                         </button>
                     </div>
@@ -117,7 +132,7 @@
         </header>
 
         <main id="main-content-container" class="container mx-auto p-4">
-            <div id="stats-container" class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4 mb-6 hidden"></div>
+            <div id="stats-container" class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-2 sm:gap-4 mb-6 hidden"></div>
             <div id="main-content"></div>
         </main>
     </div>
@@ -129,8 +144,8 @@
                 <h1 class="text-xl md:text-2xl font-bold text-gray-800">Trang Quản Trị</h1>
                 <div class="flex items-center gap-3">
                     <span id="admin-email" class="hidden md:block text-sm text-gray-600 font-semibold"></span>
-                    <button id="admin-logout-btn" class="bg-red-600 text-white px-4 py-2 rounded-lg hover:bg-red-700 transition-colors">
-                        <i class="fas fa-sign-out-alt mr-2"></i>Đăng xuất
+                    <button id="admin-logout-btn" class="bg-red-600 text-white px-4 py-2 rounded-lg hover:bg-red-700 transition-colors flex items-center">
+                        <i class="fas fa-sign-out-alt sm:mr-2"></i><span class="hidden sm:inline">Đăng xuất</span>
                     </button>
                 </div>
             </div>
@@ -142,22 +157,23 @@
             </div>
 
             <!-- Growth Chart -->
-            <div class="bg-white p-6 rounded-xl shadow-lg mb-8">
+            <div class="bg-white p-4 sm:p-6 rounded-xl shadow-lg mb-8">
                 <div class="h-80">
                    <canvas id="user-growth-chart"></canvas>
                 </div>
             </div>
 
             <!-- User Management -->
-            <div class="bg-white p-6 rounded-xl shadow-lg">
-                <div class="flex justify-between items-center mb-4">
+            <div class="bg-white p-4 sm:p-6 rounded-xl shadow-lg">
+                <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-4 gap-3">
                     <h2 class="text-xl font-bold text-gray-800">Quản Lý Người Dùng</h2>
-                    <button id="add-user-btn" class="bg-indigo-600 text-white px-4 py-2 rounded-lg hover:bg-indigo-700 transition-colors">
+                    <button id="add-user-btn" class="bg-indigo-600 text-white px-4 py-2 rounded-lg hover:bg-indigo-700 transition-colors flex items-center self-end sm:self-center">
                         <i class="fas fa-plus mr-2"></i>Thêm người dùng
                     </button>
                 </div>
+                <!-- Wrapper for horizontal scrolling on mobile -->
                 <div class="overflow-x-auto">
-                    <table class="w-full text-sm text-left text-gray-500">
+                    <table class="w-full text-sm text-left text-gray-500 min-w-[800px]">
                         <thead class="text-xs text-gray-700 uppercase bg-gray-50">
                             <tr>
                                 <th scope="col" class="px-6 py-3">Tên</th>
@@ -178,7 +194,7 @@
     </div>
 
     <!-- Modals -->
-    <div id="user-modal" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 hidden">
+    <div id="user-modal" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 hidden p-4">
         <div class="modal-content bg-white p-6 rounded-xl shadow-lg w-full max-w-md transform transition-all scale-95 opacity-0">
             <h3 id="user-modal-title" class="text-xl font-bold text-gray-800 mb-6"></h3>
             <form id="user-form">
@@ -204,7 +220,7 @@
         </div>
     </div>
 
-    <div id="task-modal" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 hidden">
+    <div id="task-modal" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 hidden p-4">
         <div class="modal-content bg-white p-6 rounded-xl shadow-lg w-full max-w-lg transform transition-all scale-95 opacity-0">
             <h3 id="task-modal-title" class="text-xl font-bold text-gray-800 mb-6">Tạo công việc mới</h3>
             <form id="task-form">
@@ -250,7 +266,6 @@
                     </div>
                 </div>
 
-
                 <div class="flex justify-between items-center">
                     <button type="button" id="delete-task-btn" class="hidden bg-red-600 text-white px-4 py-2 rounded-lg hover:bg-red-700">Xóa</button>
                     <div class="flex gap-3">
@@ -262,7 +277,7 @@
         </div>
     </div>
 
-    <div id="group-modal" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 hidden">
+    <div id="group-modal" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 hidden p-4">
         <div class="modal-content bg-white p-6 rounded-xl shadow-lg w-full max-w-md transform transition-all scale-95 opacity-0">
             <h3 id="group-modal-title" class="text-xl font-bold text-gray-800 mb-6">Tạo nhóm mới</h3>
             <form id="group-form">
@@ -288,10 +303,10 @@
         </div>
     </div>
     
-    <div id="confirm-modal" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 hidden">
+    <div id="confirm-modal" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 hidden p-4">
         <div class="modal-content bg-white p-6 rounded-xl shadow-lg w-full max-w-sm text-center transform transition-all scale-95 opacity-0">
              <div id="confirm-icon" class="mx-auto mb-4 w-12 h-12 rounded-full flex items-center justify-center bg-red-100 text-red-600 text-2xl">
-                 <i class="fas fa-exclamation-triangle"></i>
+                   <i class="fas fa-exclamation-triangle"></i>
              </div>
             <h3 id="confirm-title" class="text-lg font-bold text-gray-900 mb-2"></h3>
             <p id="confirm-text" class="text-sm text-gray-600 mb-6"></p>
@@ -302,8 +317,7 @@
         </div>
     </div>
 
-
-    <div id="message-modal" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 hidden">
+    <div id="message-modal" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 hidden p-4">
         <div class="modal-content bg-white p-6 rounded-xl shadow-lg w-full max-w-sm text-center transform transition-all scale-95 opacity-0">
             <div id="message-icon" class="text-4xl mb-4"></div>
             <h3 id="message-title" class="text-lg font-bold text-gray-900 mb-2"></h3>
@@ -313,25 +327,27 @@
     </div>
 
     <!-- Friends Modal -->
-    <div id="friends-modal" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 hidden">
-        <div class="modal-content bg-white p-6 rounded-xl shadow-lg w-full max-w-lg transform transition-all scale-95 opacity-0">
-            <h3 class="text-xl font-bold text-gray-800 mb-4">Quản lý bạn bè</h3>
-            <div class="mb-4">
+    <div id="friends-modal" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 hidden p-4">
+        <div class="modal-content bg-white p-6 rounded-xl shadow-lg w-full max-w-lg transform transition-all scale-95 opacity-0 flex flex-col max-h-[80vh]">
+            <h3 class="text-xl font-bold text-gray-800 mb-4 flex-shrink-0">Quản lý bạn bè</h3>
+            <div class="mb-4 flex-shrink-0">
                 <form id="send-friend-request-form" class="flex gap-2 mb-2">
                     <input type="email" id="friend-email-input" class="flex-1 px-3 py-2 border border-gray-300 rounded-lg" placeholder="Nhập email để kết bạn" required />
                     <button type="submit" class="bg-indigo-600 text-white px-4 py-2 rounded-lg hover:bg-indigo-700">Gửi</button>
                 </form>
                 <div id="friend-request-message" class="hidden text-sm mb-2"></div>
             </div>
-            <div class="mb-4">
-                <h4 class="font-semibold text-gray-700 mb-2">Lời mời kết bạn</h4>
-                <ul id="friend-requests-list" class="space-y-2 max-h-32 overflow-y-auto custom-scrollbar"></ul>
+            <div class="flex-grow overflow-y-auto custom-scrollbar pr-2">
+                <div class="mb-4">
+                    <h4 class="font-semibold text-gray-700 mb-2">Lời mời kết bạn</h4>
+                    <ul id="friend-requests-list" class="space-y-2"></ul>
+                </div>
+                <div>
+                    <h4 class="font-semibold text-gray-700 mb-2">Bạn bè</h4>
+                    <ul id="friends-list" class="space-y-2"></ul>
+                </div>
             </div>
-            <div>
-                <h4 class="font-semibold text-gray-700 mb-2">Bạn bè</h4>
-                <ul id="friends-list" class="space-y-2 max-h-32 overflow-y-auto custom-scrollbar"></ul>
-            </div>
-            <div class="flex justify-end mt-6">
+            <div class="flex justify-end mt-6 flex-shrink-0">
                 <button type="button" class="bg-gray-200 text-gray-800 px-4 py-2 rounded-lg hover:bg-gray-300" onclick="closeModal('friends-modal')">Đóng</button>
             </div>
         </div>
@@ -344,9 +360,9 @@
 
     <!-- Messenger Chat Modal -->
     <div id="chat-modal" class="fixed inset-0 bg-black bg-opacity-50 flex items-end md:items-center justify-center z-50 hidden">
-        <div class="modal-content bg-white rounded-t-2xl md:rounded-2xl shadow-2xl w-full max-w-3xl h-[80vh] flex flex-col md:flex-row transform transition-all scale-95 opacity-0">
+        <div class="modal-content bg-white rounded-t-2xl md:rounded-2xl shadow-2xl w-full max-w-3xl h-[80vh] flex flex-col md:flex-row transform transition-all scale-95 opacity-0 overflow-hidden">
             <!-- Sidebar -->
-            <div class="w-full md:w-80 bg-gray-50 border-r border-gray-200 flex flex-col">
+            <div id="chat-sidebar" class="w-full md:w-80 bg-gray-50 border-r border-gray-200 flex flex-col">
                 <div class="flex items-center justify-between p-4 border-b">
                     <div class="font-bold text-lg text-gray-800">Tin nhắn</div>
                     <button onclick="closeModal('chat-modal')" class="text-gray-500 hover:text-red-500 text-xl"><i class="fas fa-times"></i></button>
@@ -358,24 +374,28 @@
                 <div id="chat-conversations-list" class="flex-1 overflow-y-auto p-2 space-y-1 custom-scrollbar"></div>
             </div>
             <!-- Chat Main -->
-            <div id="chat-view" class="flex-1 flex flex-col h-full hidden">
-                <div id="chat-header" class="p-4 border-b flex items-center gap-3">
-                    <div id="chat-avatar" class="w-10 h-10 rounded-full bg-indigo-200 flex items-center justify-center text-xl font-bold text-white"></div>
-                    <div>
-                        <div id="chat-title" class="font-semibold text-gray-800"></div>
-                        <div id="chat-subtitle" class="text-xs text-gray-500"></div>
+            <div id="chat-view" class="flex-1 flex-col h-full hidden">
+                <div id="chat-header" class="p-4 border-b flex items-center gap-3 flex-shrink-0">
+                    <button id="back-to-conversations-btn" class="p-2 -ml-2 text-gray-600 hover:text-gray-800 md:hidden">
+                        <i class="fas fa-arrow-left"></i>
+                    </button>
+                    <div id="chat-avatar" class="w-10 h-10 rounded-full bg-indigo-200 flex items-center justify-center text-xl font-bold text-white flex-shrink-0"></div>
+                    <div class="overflow-hidden">
+                        <div id="chat-title" class="font-semibold text-gray-800 truncate"></div>
+                        <div id="chat-subtitle" class="text-xs text-gray-500 truncate"></div>
                     </div>
                 </div>
                 <div id="chat-messages" class="flex-1 overflow-y-auto p-4 space-y-4 bg-gray-50 custom-scrollbar"></div>
                 <form id="chat-input-form" class="flex items-center gap-2 p-4 border-t bg-white">
                     <input id="chat-input" type="text" class="flex-1 px-4 py-2 border border-gray-300 rounded-full focus:ring-indigo-500 focus:border-indigo-500" placeholder="Nhập tin nhắn..." autocomplete="off" />
-                    <button type="submit" class="bg-indigo-600 text-white px-4 py-2 rounded-full hover:bg-indigo-700 transition-colors"><i class="fas fa-paper-plane"></i></button>
+                    <button type="submit" class="bg-indigo-600 text-white w-10 h-10 rounded-full hover:bg-indigo-700 transition-colors flex items-center justify-center flex-shrink-0"><i class="fas fa-paper-plane"></i></button>
                 </form>
             </div>
-            <div id="chat-placeholder" class="flex-1 flex flex-col h-full items-center justify-center bg-gray-50 p-4">
-                 <i class="fa-regular fa-comments text-6xl text-gray-300 mb-4"></i>
-                 <h3 class="text-lg font-semibold text-gray-600">Bắt đầu cuộc trò chuyện</h3>
-                 <p class="text-sm text-gray-500">Chọn một nhóm hoặc bạn bè để xem tin nhắn.</p>
+            <!-- Placeholder -->
+            <div id="chat-placeholder" class="flex-1 flex-col h-full items-center justify-center bg-gray-50 p-4 hidden md:flex">
+               <i class="fa-regular fa-comments text-6xl text-gray-300 mb-4"></i>
+               <h3 class="text-lg font-semibold text-gray-600">Bắt đầu cuộc trò chuyện</h3>
+               <p class="text-sm text-gray-500 text-center">Chọn một nhóm hoặc bạn bè để xem tin nhắn.</p>
             </div>
         </div>
     </div>
@@ -428,41 +448,27 @@
         // #############################################################################
         // ##### LƯU Ý QUAN TRỌNG VỀ PHÂN QUYỀN ADMIN (FIRESTORE SECURITY RULES) #####
         // #############################################################################
-        // Các chức năng của trang Quản trị (Admin) như TẠO, SỬA, XÓA, hoặc CẬP NHẬT
-        // trạng thái người dùng sẽ KHÔNG HOẠT ĐỘNG nếu bạn không cấu hình đúng
-        // Firestore Security Rules.
+        // Các chức năng của trang Quản trị (Admin) yêu cầu bạn phải cấu hình đúng
+        // Firestore Security Rules để cấp quyền cho vai trò 'admin'. Nếu không, các
+        // thao tác như sửa/xóa/phê duyệt người dùng sẽ thất bại.
         //
-        // Mặc định, một người dùng chỉ có thể sửa đổi dữ liệu của chính họ. Để Admin
-        // có thể quản lý tất cả người dùng, bạn cần cho phép họ quyền truy cập đặc biệt.
-        //
-        // Vui lòng vào Firebase Console -> Firestore Database -> Rules và cập nhật
-        // rules của bạn để bao gồm logic kiểm tra vai trò admin. Dưới đây là một ví dụ:
+        // Ví dụ về một quy tắc cần thiết:
         /*
         rules_version = '2';
         service cloud.firestore {
           match /databases/{database}/documents {
             
-            // Hàm helper để kiểm tra xem người gửi yêu cầu có phải là admin không
             function isAdmin() {
-              // Yêu cầu phải được xác thực và có tồn tại document trong collection 'users'
-              // với role là 'admin'.
               return request.auth != null && get(/databases/$(database)/documents/users/$(request.auth.uid)).data.role == 'admin';
             }
 
             match /users/{userId} {
-              // Bất kỳ ai đã đăng nhập đều có thể đọc thông tin người dùng (tùy chọn)
               allow read: if request.auth != null;
-              
-              // Người dùng có thể tạo và cập nhật thông tin của chính họ
               allow create, update: if request.auth.uid == userId;
-              
-              // Admin có thể tạo, đọc, cập nhật, xóa BẤT KỲ người dùng nào
-              // Quy tắc "write" bao gồm create, update, delete.
+              // Admin có thể ghi (tạo, sửa, xóa) bất kỳ hồ sơ người dùng nào
               allow write: if isAdmin();
             }
-            
-            // Các rules khác cho collection 'groups', 'chats', etc.
-            // ...
+            // ... các rules khác cho groups, chats...
           }
         }
         */
@@ -471,12 +477,11 @@
 
         // --- Firebase Config Check ---
         // This check ensures you've replaced the placeholder values.
-        if (firebaseConfig.apiKey === "YOUR_API_KEY" || firebaseConfig.projectId === "your-project-id") {
-           document.getElementById('auth-screen').classList.add('hidden');
-           document.getElementById('config-error').classList.remove('hidden');
-           throw new Error("Firebase config is not set. Please update the firebaseConfig object in the script.");
+        if (firebaseConfig.apiKey.includes("YOUR_API_KEY") || firebaseConfig.projectId.includes("your-project-id")) {
+            document.getElementById('auth-screen').classList.add('hidden');
+            document.getElementById('config-error').classList.remove('hidden');
+            throw new Error("Firebase config is not set. Please update the firebaseConfig object in the script.");
         }
-
 
         // Initialize Firebase
         const app = initializeApp(firebaseConfig);
@@ -586,6 +591,8 @@
 
             // Chat Modal
             chatModal: document.getElementById('chat-modal'),
+            chatSidebar: document.getElementById('chat-sidebar'),
+            backToConversationsBtn: document.getElementById('back-to-conversations-btn'),
             chatTabGroup: document.getElementById('chat-tab-group'),
             chatTabFriends: document.getElementById('chat-tab-friends'),
             chatConversationsList: document.getElementById('chat-conversations-list'),
@@ -616,6 +623,7 @@
             const modal = document.getElementById(modalId);
             if (!modal) return;
             modal.classList.remove('hidden');
+            document.body.style.overflow = 'hidden'; // Prevent background scrolling
             setTimeout(() => { // For transition
                 modal.querySelector('.modal-content').classList.add('scale-100', 'opacity-100');
                 modal.querySelector('.modal-content').classList.remove('scale-95', 'opacity-0');
@@ -625,6 +633,17 @@
         window.closeModal = (modalId) => {
             const modal = document.getElementById(modalId);
             if (!modal) return;
+            
+            // Reset chat view on close
+            if (modalId === 'chat-modal') {
+                 ui.chatSidebar.classList.remove('hidden');
+                 ui.chatView.classList.add('hidden');
+                 ui.chatView.classList.remove('flex');
+                 ui.chatPlaceholder.classList.remove('hidden');
+                 ui.chatPlaceholder.classList.add('md:flex'); // Reset to default state
+            }
+
+            document.body.style.overflow = ''; // Restore background scrolling
             const content = modal.querySelector('.modal-content');
             content.classList.remove('scale-100', 'opacity-100');
             content.classList.add('scale-95', 'opacity-0');
@@ -1477,11 +1496,11 @@
                     }
                     const groupData = doc.data();
                     
-                    ui.headerTitle.textContent = `Lịch trình: ${groupData.name}`;
+                    ui.headerTitle.textContent = `${groupData.name}`;
                     ui.backToDashboardBtn.classList.remove('hidden');
                     ui.statsContainer.classList.remove('hidden');
                     ui.leaveGroupBtn.classList.remove('hidden');
-                    ui.mainContent.innerHTML = `<div id="schedule-container" class="bg-white p-4 md:p-6 rounded-xl shadow-lg"></div>`;
+                    ui.mainContent.innerHTML = `<div id="schedule-container" class="bg-white p-2 sm:p-4 md:p-6 rounded-xl shadow-lg"></div>`;
             
                     if (groupData.startDate && typeof groupData.startDate.toDate === 'function') {
                         activeGroupStartDate = groupData.startDate.toDate();
@@ -1537,7 +1556,7 @@
                 </div>
                 <div class="flex items-center gap-1">
                     <button class="week-btn" onclick="changeWeek(-1)" ${currentWeek === 1 ? 'disabled' : ''}><i class="fas fa-chevron-left"></i></button>
-                    ${weekButtonsHtml}
+                    <div class="hidden sm:flex items-center gap-1">${weekButtonsHtml}</div>
                     <button class="week-btn" onclick="changeWeek(1)" ${currentWeek === activeGroupTotalWeeks ? 'disabled' : ''}><i class="fas fa-chevron-right"></i></button>
                 </div>
             </div>
@@ -1567,7 +1586,7 @@
         };
 
         function renderSchedule() {
-            const days = ["Thứ Hai", "Thứ Ba", "Thứ Tư", "Thứ Năm", "Thứ Sáu", "Thứ Bảy", "Chủ Nhật"];
+            const days = ["Hai", "Ba", "Tư", "Năm", "Sáu", "Bảy", "CN"];
             const timeSlots = ["00:00", "01:00", "02:00", "03:00", "04:00", "05:00", "06:00", "07:00", "08:00", "09:00", "10:00", "11:00", "12:00", "13:00", "14:00", "15:00", "16:00", "17:00", "18:00", "19:00", "20:00", "21:00", "22:00", "23:00"];
             
             const container = document.getElementById('schedule-container');
@@ -1580,14 +1599,17 @@
             
             const weekDates = getWeekDates(currentWeek, activeGroupStartDate);
 
-            let gridHtml = '<div class="schedule-grid grid" style="grid-template-columns: 60px repeat(7, 1fr); gap: 1px; background-color: #e5e7eb; border-radius: 8px; overflow: hidden;">';
-            gridHtml += '<div class="bg-gray-200"></div>'; // Corner
+            // Responsive grid wrapper
+            let gridHtml = '<div class="overflow-x-auto custom-scrollbar">';
+            
+            gridHtml += '<div class="schedule-grid grid" style="grid-template-columns: 50px repeat(7, minmax(120px, 1fr)); gap: 1px; background-color: #e5e7eb; border-radius: 8px; overflow: hidden; min-width: 900px;">';
+            gridHtml += '<div class="bg-gray-200 sticky left-0 z-10"></div>'; // Corner
             days.forEach((day, index) => {
                 gridHtml += `<div class="bg-gray-200 text-center p-2 font-semibold text-sm text-gray-600">${day}<div class="font-normal text-xs">${formatDate(weekDates[index])}</div></div>`;
             });
             
             timeSlots.forEach(time => {
-                gridHtml += `<div class="bg-gray-200 text-center p-2 font-medium text-xs text-gray-600 flex items-center justify-center">${time}</div>`;
+                gridHtml += `<div class="bg-gray-200 text-center p-2 font-medium text-xs text-gray-600 flex items-center justify-center sticky left-0 z-10">${time}</div>`;
                 days.forEach((_, index) => {
                     const cellDate = weekDates[index];
                     const dateString = cellDate.toISOString().split('T')[0];
@@ -1598,9 +1620,9 @@
                     gridHtml += `<div class="${cellClasses}" data-time="${time}" data-date="${dateString}" ${clickHandler}></div>`;
                 });
             });
-            gridHtml += '</div>';
+            gridHtml += '</div></div>'; // Close schedule-grid and wrapper
 
-            const existingGrid = container.querySelector('.schedule-grid');
+            const existingGrid = container.querySelector('.overflow-x-auto');
             if (existingGrid) existingGrid.remove();
             container.insertAdjacentHTML('beforeend', gridHtml);
         }
@@ -1627,7 +1649,7 @@
                         taskEl.className = `task-card border-l-4 p-2 rounded cursor-pointer transition-all hover:shadow-md hover:translate-x-1 platform-${platformClass}`;
                         taskEl.innerHTML = `
                             <div class="font-bold text-sm text-gray-800">${task.partner || 'N/A'}</div>
-                            <div class="text-xs text-gray-600 truncate">${task.content || ''}</div>
+                            <div class="text-xs text-gray-600 break-words">${task.content || ''}</div>
                             <div class="text-xs text-indigo-500 font-medium mt-1">@${assigneeName}</div>
                             <span class="task-status text-xs font-medium px-2 py-0.5 rounded-full mt-1 inline-block status-${statusClass}">${task.status || 'Chưa làm'}</span>
                         `;
@@ -1747,11 +1769,14 @@
                 <div class="stat-card"><div class="stat-value text-blue-500">${statusCounts['Đang làm']}</div><div class="stat-label">Đang làm</div></div>
                 <div class="stat-card"><div class="stat-value text-green-500">${statusCounts['Hoàn thành']}</div><div class="stat-label">Hoàn thành</div></div>
                 <div class="stat-card"><div class="stat-value text-yellow-500">${statusCounts['Bù']}</div><div class="stat-label">CV Bù</div></div>
-                <div class="stat-card"><div class="stat-value text-xs break-all">${activeGroupId || 'N/A'}</div><div class="stat-label">ID Nhóm</div></div>        
+                <div class="stat-card"><div class="stat-value text-xs break-all p-2">${activeGroupId || 'N/A'}</div><div class="stat-label">ID Nhóm</div></div>       
                  <style>
-                      .stat-card { background: white; border-radius: 12px; padding: 1rem; text-align: center; box-shadow: 0 2px 4px rgba(0,0,0,0.05); display: flex; flex-direction: column; justify-content: center;}
-                      .stat-value { font-size: 1.75rem; font-weight: 700; color: #4f46e5; }
-                      .stat-label { font-size: 0.75rem; color: #6b7280; margin-top: 4px; text-transform: uppercase; letter-spacing: 0.5px; }
+                      .stat-card { background: white; border-radius: 12px; padding: 0.5rem; text-align: center; box-shadow: 0 2px 4px rgba(0,0,0,0.05); display: flex; flex-direction: column; justify-content: center;}
+                      .stat-value { font-size: 1.5rem; line-height: 2rem; font-weight: 700; color: #4f46e5; }
+                      .stat-label { font-size: 0.7rem; line-height: 1rem; color: #6b7280; margin-top: 2px; text-transform: uppercase; letter-spacing: 0.5px; }
+                      @media (max-width: 640px) {
+                        .stat-value { font-size: 1.25rem; line-height: 1.75rem;}
+                      }
                  </style>
             `;
         }
@@ -1811,9 +1836,9 @@
             const pendingRequests = requests.filter(r => r.status === 'pending');
             if (pendingRequests.length > 0) {
                  ui.friendRequestsList.innerHTML = pendingRequests.map(r => `
-                    <li class="px-3 py-2 bg-yellow-50 rounded flex justify-between items-center">
+                    <li class="px-3 py-2 bg-yellow-50 rounded flex flex-col sm:flex-row justify-between items-start sm:items-center gap-2">
                         <span>${r.fromName || r.fromEmail}</span>
-                        <div class="flex gap-2">
+                        <div class="flex gap-2 self-end sm:self-center">
                             <button class="text-green-600 hover:underline text-sm" onclick="handleFriendRequest('${r.fromUid}', true)">Chấp nhận</button>
                             <button class="text-red-600 hover:underline text-sm" onclick="handleFriendRequest('${r.fromUid}', false)">Từ chối</button>
                         </div>
@@ -1933,24 +1958,24 @@
              showConfirmation(`Hủy kết bạn với ${friendName || 'người này'}?`, 
              'Bạn có chắc muốn hủy kết bạn không?', 
              async () => {
-                try {
-                    const userRef = doc(db, 'users', currentUser.uid);
-                    const friendRef = doc(db, 'users', friendUid);
-                    
-                    const batch = writeBatch(db);
-                    batch.update(userRef, { friends: arrayRemove(friendUid) });
-                    batch.update(friendRef, { friends: arrayRemove(currentUser.uid) });
-                    await batch.commit();
-                    
-                    // Cập nhật cache cục bộ và re-render UI ngay lập tức
-                    currentUserData.friends = (currentUserData.friends || []).filter(uid => uid !== friendUid);
-                    await loadAndRenderFriendsList(currentUserData.friends);
-                    
-                    showMessage('Thành công', 'Đã hủy kết bạn.');
-                } catch(error) {
-                    console.error("Lỗi khi hủy kết bạn: ", error);
-                    showMessage('Lỗi', 'Không thể hủy kết bạn. Vui lòng thử lại.', true);
-                }
+                 try {
+                     const userRef = doc(db, 'users', currentUser.uid);
+                     const friendRef = doc(db, 'users', friendUid);
+                     
+                     const batch = writeBatch(db);
+                     batch.update(userRef, { friends: arrayRemove(friendUid) });
+                     batch.update(friendRef, { friends: arrayRemove(currentUser.uid) });
+                     await batch.commit();
+                     
+                     // Cập nhật cache cục bộ và re-render UI ngay lập tức
+                     currentUserData.friends = (currentUserData.friends || []).filter(uid => uid !== friendUid);
+                     await loadAndRenderFriendsList(currentUserData.friends);
+                     
+                     showMessage('Thành công', 'Đã hủy kết bạn.');
+                 } catch(error) {
+                     console.error("Lỗi khi hủy kết bạn: ", error);
+                     showMessage('Lỗi', 'Không thể hủy kết bạn. Vui lòng thử lại.', true);
+                 }
              });
         }
         
@@ -1965,12 +1990,16 @@
 
         ui.chatTabGroup.addEventListener('click', () => {
             ui.chatTabGroup.classList.add('bg-indigo-100', 'text-indigo-700');
+            ui.chatTabGroup.classList.remove('bg-gray-100', 'text-gray-700');
+            ui.chatTabFriends.classList.add('bg-gray-100', 'text-gray-700');
             ui.chatTabFriends.classList.remove('bg-indigo-100', 'text-indigo-700');
             renderChatSidebar('group');
         });
         
         ui.chatTabFriends.addEventListener('click', () => {
             ui.chatTabFriends.classList.add('bg-indigo-100', 'text-indigo-700');
+            ui.chatTabFriends.classList.remove('bg-gray-100', 'text-gray-700');
+            ui.chatTabGroup.classList.add('bg-gray-100', 'text-gray-700');
             ui.chatTabGroup.classList.remove('bg-indigo-100', 'text-indigo-700');
             renderChatSidebar('friend');
         });
@@ -1989,7 +2018,7 @@
                 }));
             } else if (type === 'friend' && currentUserData.friends) {
                 if (currentFriendsData.length !== currentUserData.friends.length) {
-                   await loadAndRenderFriendsList(currentUserData.friends);
+                  await loadAndRenderFriendsList(currentUserData.friends);
                 }
                 conversations = currentFriendsData.map(f => ({
                     id: f.uid,
@@ -2001,17 +2030,17 @@
 
             if(conversations.length > 0) {
                  ui.chatConversationsList.innerHTML = conversations.map(convo => `
-                    <div onclick="openChatConversation('${convo.id}', '${convo.type}')" 
-                         class="flex items-center gap-3 p-2 rounded-lg hover:bg-gray-200 cursor-pointer transition-colors ${currentChatContext.id === convo.id ? 'bg-indigo-100' : ''}">
-                        <div class="w-10 h-10 rounded-full bg-gray-300 flex items-center justify-center font-bold text-white flex-shrink-0">
-                            ${(convo.name[0] || '?').toUpperCase()}
-                        </div>
-                        <div class="flex-1 overflow-hidden">
-                            <div class="font-semibold text-sm text-gray-800 truncate">${convo.name}</div>
-                            <div class="text-xs text-gray-500 truncate">${convo.subtitle}</div>
-                        </div>
-                    </div>
-                `).join('');
+                     <div onclick="openChatConversation('${convo.id}', '${convo.type}')" 
+                          class="flex items-center gap-3 p-2 rounded-lg hover:bg-gray-200 cursor-pointer transition-colors ${currentChatContext.id === convo.id ? 'bg-indigo-100' : ''}">
+                         <div class="w-10 h-10 rounded-full bg-gray-300 flex items-center justify-center font-bold text-white flex-shrink-0">
+                             ${(convo.name[0] || '?').toUpperCase()}
+                         </div>
+                         <div class="flex-1 overflow-hidden">
+                             <div class="font-semibold text-sm text-gray-800 truncate">${convo.name}</div>
+                             <div class="text-xs text-gray-500 truncate">${convo.subtitle}</div>
+                         </div>
+                     </div>
+                 `).join('');
             } else {
                  ui.chatConversationsList.innerHTML = `<div class="text-gray-400 text-center p-4">Không có ${type === 'group' ? 'nhóm' : 'bạn bè'} nào.</div>`;
             }
@@ -2019,8 +2048,22 @@
         
         window.openChatConversation = async (id, type) => {
             if (chatMessagesUnsubscribe) chatMessagesUnsubscribe();
+            
             ui.chatView.classList.remove('hidden');
+            ui.chatView.classList.add('flex');
             ui.chatPlaceholder.classList.add('hidden');
+            ui.chatPlaceholder.classList.remove('md:flex');
+
+            if (window.innerWidth < 768) {
+                ui.chatSidebar.classList.add('hidden');
+            }
+
+            // Highlight the current conversation in the list
+            document.querySelectorAll('#chat-conversations-list > div').forEach(el => el.classList.remove('bg-indigo-100'));
+            const currentConvoEl = document.querySelector(`div[onclick="openChatConversation('${id}', '${type}')"]`);
+            if (currentConvoEl) {
+                currentConvoEl.classList.add('bg-indigo-100');
+            }
 
             let conversationRef;
             let title, subtitle;
@@ -2033,14 +2076,15 @@
                 title = groupData.name;
                 subtitle = `${groupData.members.length} thành viên`;
                 conversationRef = collection(db, 'groups', id, 'messages');
-                await fetchAndCacheMembers(groupData.members); // Make sure members are cached
+                if (activeGroupId !== id || activeGroupMembers.length === 0) {
+                    await fetchAndCacheMembers(groupData.members); 
+                }
                 membersForAvatar = activeGroupMembers;
             } else { // friend
                 const friendDoc = await getDoc(doc(db, 'users', id));
                 if (!friendDoc.exists()) return;
                 title = friendDoc.data().name || friendDoc.data().email;
                 subtitle = 'Bạn bè';
-                // Create a consistent chat ID for 1-on-1 chats
                 const chatId = [currentUser.uid, id].sort().join('_');
                 conversationRef = collection(db, 'chats', chatId, 'messages');
                 membersForAvatar = [currentUserData, {uid: friendDoc.id, ...friendDoc.data()}];
@@ -2075,7 +2119,7 @@
                                 <span class="text-xs font-normal text-gray-500">${formatTime(msg.sentAt)}</span>
                             </div>
                             <div class="leading-snug p-2.5 rounded-xl ${isMe ? 'bg-indigo-600 text-white rounded-br-none' : 'bg-white text-gray-800 rounded-bl-none shadow-sm'}">
-                                <p class="text-sm font-normal">${msg.text}</p>
+                                <p class="text-sm font-normal break-words">${msg.text}</p>
                             </div>
                         </div>
                     </div>
@@ -2108,6 +2152,12 @@
                 console.error("Error sending message:", error);
                 showMessage('Lỗi', 'Không thể gửi tin nhắn.', true);
             }
+        });
+
+        ui.backToConversationsBtn.addEventListener('click', () => {
+            ui.chatSidebar.classList.remove('hidden');
+            ui.chatView.classList.add('hidden');
+            ui.chatView.classList.remove('flex');
         });
         
     </script>
