@@ -57,9 +57,24 @@
                 pointer-events: none;
             }
         }
+        .toggle-checkbox:checked {
+            right: 0;
+            border-color: #68D391;
+        }
+        .toggle-checkbox:checked + .toggle-label {
+            background-color: #68D391;
+        }
     </style>
 </head>
 <body class="bg-gray-100" oncontextmenu="return true;">
+
+    <!-- Initial Loading Screen -->
+    <div id="loading-screen" class="fixed inset-0 bg-gray-100 flex items-center justify-center z-[100]">
+        <div class="text-center">
+            <i class="fas fa-spinner fa-spin text-4xl text-indigo-600"></i>
+            <p class="mt-4 text-lg text-gray-700">Đang tải ứng dụng...</p>
+        </div>
+    </div>
 
     <!-- Config Error Message -->
     <div id="config-error" class="hidden">
@@ -114,6 +129,9 @@
                         <button id="friends-btn" class="bg-gray-200 text-gray-800 p-2 sm:px-4 sm:py-2 rounded-lg hover:bg-gray-300 transition-colors text-sm flex items-center">
                             <i class="fas fa-user-friends text-base sm:mr-2"></i><span class="hidden sm:inline">Bạn bè</span>
                         </button>
+                        <button id="share-plan-btn" class="hidden bg-teal-500 text-white p-2 sm:px-4 sm:py-2 rounded-lg hover:bg-teal-600 transition-colors text-sm items-center">
+                            <i class="fas fa-share-alt text-base sm:mr-2"></i><span class="hidden sm:inline">Chia sẻ</span>
+                        </button>
                         <button id="leave-group-btn" class="hidden bg-red-500 text-white p-2 sm:px-4 sm:py-2 rounded-lg hover:bg-red-600 transition-colors text-sm items-center">
                             <i class="fas fa-sign-out-alt text-base sm:mr-2"></i><span class="hidden sm:inline">Rời nhóm</span>
                         </button>
@@ -136,6 +154,21 @@
             <div id="main-content"></div>
         </main>
     </div>
+
+    <!-- Public View Screen -->
+    <div id="public-view-screen" class="hidden">
+        <header class="bg-white shadow-md sticky top-0 z-40">
+            <div class="container mx-auto px-4 py-4 flex justify-between items-center">
+                 <h1 id="public-header-title" class="text-lg sm:text-xl md:text-2xl font-bold text-gray-800 truncate">Lịch Công Việc</h1>
+                 <span class="px-3 py-1 text-sm font-semibold rounded-full bg-blue-100 text-blue-800">Chế độ xem công khai</span>
+            </div>
+        </header>
+        <main id="public-main-content-container" class="container mx-auto p-4">
+             <div id="public-stats-container" class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-2 sm:gap-4 mb-6"></div>
+             <div id="public-main-content"></div>
+        </main>
+    </div>
+
 
     <!-- Admin Screen -->
     <div id="admin-screen" class="hidden">
@@ -326,6 +359,34 @@
         </div>
     </div>
 
+    <!-- Share Modal -->
+    <div id="share-modal" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 hidden p-4">
+        <div class="modal-content bg-white p-6 rounded-xl shadow-lg w-full max-w-lg transform transition-all scale-95 opacity-0">
+            <h3 class="text-xl font-bold text-gray-800 mb-4">Chia sẻ Lịch Công Việc</h3>
+            <div class="flex items-center justify-between mb-6 bg-gray-50 p-3 rounded-lg">
+                <span class="font-medium text-gray-700">Bật chế độ chia sẻ công khai</span>
+                <div class="relative inline-block w-10 mr-2 align-middle select-none transition duration-200 ease-in">
+                    <input type="checkbox" name="toggle" id="public-share-toggle" class="toggle-checkbox absolute block w-6 h-6 rounded-full bg-white border-4 appearance-none cursor-pointer"/>
+                    <label for="public-share-toggle" class="toggle-label block overflow-hidden h-6 rounded-full bg-gray-300 cursor-pointer"></label>
+                </div>
+            </div>
+            <div id="share-link-container" class="hidden">
+                 <label class="block text-sm font-medium text-gray-700 mb-1">Liên kết chia sẻ</label>
+                 <div class="flex gap-2">
+                     <input type="text" id="share-link-input" readonly class="w-full px-3 py-2 border border-gray-300 rounded-lg bg-gray-100">
+                     <button id="copy-share-link-btn" class="bg-indigo-600 text-white px-4 py-2 rounded-lg hover:bg-indigo-700 flex items-center gap-2">
+                         <i class="far fa-copy"></i>
+                         <span>Sao chép</span>
+                    </button>
+                 </div>
+                 <p class="text-xs text-gray-500 mt-2">Bất kỳ ai có liên kết này đều có thể xem lịch công việc của nhóm bạn ở chế độ chỉ đọc.</p>
+            </div>
+            <div class="flex justify-end mt-6">
+                <button type="button" class="bg-gray-200 text-gray-800 px-4 py-2 rounded-lg hover:bg-gray-300" onclick="closeModal('share-modal')">Đóng</button>
+            </div>
+        </div>
+    </div>
+
     <!-- Friends Modal -->
     <div id="friends-modal" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 hidden p-4">
         <div class="modal-content bg-white p-6 rounded-xl shadow-lg w-full max-w-lg transform transition-all scale-95 opacity-0 flex flex-col max-h-[80vh]">
@@ -408,7 +469,7 @@
             apiKey: "AIzaSyB_P4-Si9ua1b7k4W60z6tcTfK-FXdWpRs",
             authDomain: "quan-ly-media.firebaseapp.com",
             projectId: "quan-ly-media",
-            storageBucket: "quan-ly-media.firebasestorage.app",
+            storageBucket: "quan-ly-media.appspot.com",
             messagingSenderId: "852239719669",
             appId: "1:852239719669:web:5016001c2f84051b9c39bc",
             measurementId: "G-EV4HZXNHNH"
@@ -445,30 +506,64 @@
             limit
         } from "https://www.gstatic.com/firebasejs/10.12.3/firebase-firestore.js";
 
-        // #############################################################################
-        // ##### LƯU Ý QUAN TRỌNG VỀ PHÂN QUYỀN ADMIN (FIRESTORE SECURITY RULES) #####
-        // #############################################################################
-        // Các chức năng của trang Quản trị (Admin) yêu cầu bạn phải cấu hình đúng
-        // Firestore Security Rules để cấp quyền cho vai trò 'admin'. Nếu không, các
-        // thao tác như sửa/xóa/phê duyệt người dùng sẽ thất bại.
+        // #################################################################################################
+        // ##### LƯU Ý QUAN TRỌNG VỀ PHÂN QUYỀN (FIRESTORE SECURITY RULES) CHO CHIA SẺ CÔNG KHAI #####
+        // #################################################################################################
+        // Để tính năng chia sẻ công khai hoạt động, bạn CẦN cập nhật Firestore Security Rules.
+        // Nếu không, người dùng không đăng nhập sẽ không thể xem được dữ liệu.
         //
-        // Ví dụ về một quy tắc cần thiết:
+        // Dưới đây là ví dụ về các quy tắc cần thiết. Hãy vào Firebase Console > Firestore Database > Rules
+        // và cập nhật cho phù hợp.
         /*
         rules_version = '2';
         service cloud.firestore {
           match /databases/{database}/documents {
             
-            function isAdmin() {
+            // Hàm kiểm tra xem người dùng có phải là admin của hệ thống không
+            function isAppAdmin() {
               return request.auth != null && get(/databases/$(database)/documents/users/$(request.auth.uid)).data.role == 'admin';
             }
 
-            match /users/{userId} {
-              allow read: if request.auth != null;
-              allow create, update: if request.auth.uid == userId;
-              // Admin có thể ghi (tạo, sửa, xóa) bất kỳ hồ sơ người dùng nào
-              allow write: if isAdmin();
+            // Hàm kiểm tra xem người dùng có phải là thành viên của một nhóm cụ thể không
+            function isGroupMember(groupId) {
+                return request.auth != null && request.auth.uid in get(/databases/$(database)/documents/groups/$(groupId)).data.members;
             }
-            // ... các rules khác cho groups, chats...
+
+            // QUY TẮC CHO COLLECTION 'users'
+            match /users/{userId} {
+              allow read: if request.auth != null; // Bất kỳ ai đăng nhập cũng có thể đọc hồ sơ người khác (cần cho việc lấy tên, email)
+              allow create: if request.auth.uid == userId; // Người dùng tự tạo hồ sơ của mình
+              allow update: if request.auth.uid == userId; // Người dùng tự cập nhật hồ sơ của mình
+              // Admin của hệ thống có thể đọc, ghi, xóa bất kỳ hồ sơ người dùng nào
+              allow write, delete: if isAppAdmin();
+            }
+
+            // QUY TẮC CHO COLLECTION 'groups'
+            match /groups/{groupId} {
+              // CHO PHÉP XEM CÔNG KHAI: Bất kỳ ai (kể cả không đăng nhập) cũng có thể đọc (get) thông tin của nhóm nếu nhóm được đặt là công khai.
+              allow get: if resource.data.public == true;
+
+              // Cho phép thành viên đọc và cập nhật (không xóa) nhóm.
+              allow read, update: if isGroupMember(groupId);
+              
+              // Chỉ admin của nhóm mới có quyền xóa nhóm.
+              allow delete: if request.auth.uid == resource.data.adminId;
+            }
+
+            // QUY TẮC CHO SUB-COLLECTION 'tasks'
+            match /groups/{groupId}/tasks/{taskId} {
+                // CHO PHÉP XEM CÔNG KHAI: Bất kỳ ai cũng có thể liệt kê (list) và đọc (get) các công việc của một nhóm công khai.
+                allow list, get: if get(/databases/$(database)/documents/groups/$(groupId)).data.public == true;
+                
+                // Thành viên nhóm có toàn quyền trên các công việc.
+                allow read, write, delete: if isGroupMember(groupId);
+            }
+            
+            // Các quy tắc khác cho 'chats', 'friendRequests' giữ nguyên hoặc tùy chỉnh theo nhu cầu...
+            // Ví dụ:
+            match /chats/{chatId}/messages/{messageId} {
+                allow read, create: if request.auth.uid in chatId.split('_');
+            }
           }
         }
         */
@@ -476,11 +571,8 @@
 
 
         // --- Firebase Config Check ---
-        // This check ensures you've replaced the placeholder values.
-        if (firebaseConfig.apiKey.includes("YOUR_API_KEY") || firebaseConfig.projectId.includes("your-project-id")) {
-            document.getElementById('auth-screen').classList.add('hidden');
-            document.getElementById('config-error').classList.remove('hidden');
-            throw new Error("Firebase config is not set. Please update the firebaseConfig object in the script.");
+        if (firebaseConfig.apiKey.includes("AIzaSyB_P4-Si9ua1b7k4W60z6tcTfK-FXdWpRs") || firebaseConfig.projectId.includes("quan-ly-media")) {
+            console.warn("Đang sử dụng cấu hình Firebase mặc định. Vui lòng thay thế bằng cấu hình của bạn để triển khai thực tế.");
         }
 
         // Initialize Firebase
@@ -520,9 +612,11 @@
         // --- UI Elements ---
         const ui = {
             // Screens
+            loadingScreen: document.getElementById('loading-screen'),
             authScreen: document.getElementById('auth-screen'),
             appScreen: document.getElementById('app-screen'),
             adminScreen: document.getElementById('admin-screen'),
+            publicViewScreen: document.getElementById('public-view-screen'),
             
             // Auth
             authForm: document.getElementById('auth-form'),
@@ -545,6 +639,12 @@
             leaveGroupBtn: document.getElementById('leave-group-btn'),
             friendsBtn: document.getElementById('friends-btn'),
             openChatBtn: document.getElementById('open-chat-btn'),
+            sharePlanBtn: document.getElementById('share-plan-btn'),
+
+            // Public View
+            publicHeaderTitle: document.getElementById('public-header-title'),
+            publicStatsContainer: document.getElementById('public-stats-container'),
+            publicMainContent: document.getElementById('public-main-content'),
             
             // Admin App
             adminEmail: document.getElementById('admin-email'),
@@ -582,6 +682,12 @@
             taskAssigneeInput: document.getElementById('task-assignee'),
             taskModalTitle: document.getElementById('task-modal-title'),
 
+            // Share Modal
+            publicShareToggle: document.getElementById('public-share-toggle'),
+            shareLinkContainer: document.getElementById('share-link-container'),
+            shareLinkInput: document.getElementById('share-link-input'),
+            copyShareLinkBtn: document.getElementById('copy-share-link-btn'),
+
             // Friends Modal
             sendFriendRequestForm: document.getElementById('send-friend-request-form'),
             friendEmailInput: document.getElementById('friend-email-input'),
@@ -607,17 +713,20 @@
             chatInput: document.getElementById('chat-input'),
         };
 
-        // --- Helper & Utility Functions ---
-
-        // Debounce function to limit rapid calls
-        const debounce = (func, delay) => {
-            let timeout;
-            return function(...args) {
-                clearTimeout(timeout);
-                timeout = setTimeout(() => func.apply(this, args), delay);
-            };
+        const showScreen = (screenId) => {
+            ['auth-screen', 'app-screen', 'admin-screen', 'public-view-screen', 'loading-screen'].forEach(id => {
+                const screen = document.getElementById(id);
+                if (id === screenId) {
+                    screen.classList.remove('hidden');
+                } else {
+                    screen.classList.add('hidden');
+                }
+            });
+             if (screenId !== 'loading-screen') {
+                ui.loadingScreen.classList.add('hidden');
+            }
         };
-        
+
         // --- Modal Control ---
         window.openModal = (modalId) => {
             const modal = document.getElementById(modalId);
@@ -823,65 +932,129 @@
             chatMessagesUnsubscribe = null;
         }
 
-        // --- App Initializer on Auth State Change ---
-        onAuthStateChanged(auth, async (user) => {
-            cleanupAllListeners();
-            cachedTasks = [];
-            allUsersCache = [];
-            activeGroupMembers = [];
-            currentFriendsData = [];
-            activeGroupId = null;
-            isAdmin = false;
-            currentUser = null;
-            currentUserData = null;
+        // --- App Initializer ---
+        function handleRouting() {
+            const params = new URLSearchParams(window.location.search);
+            const shareId = params.get('share');
 
-            if (user) {
-                currentUser = user;
-                const userDocRef = doc(db, "users", user.uid);
-                const userDoc = await getDoc(userDocRef);
+            if (shareId) {
+                initializePublicView(shareId);
+            } else {
+                initializeAuthenticatedApp();
+            }
+        }
 
-                if (userDoc.exists()) {
-                    currentUserData = { uid: user.uid, ...userDoc.data() };
-                    const userStatus = currentUserData.status || 'active';
+        function initializeAuthenticatedApp() {
+            onAuthStateChanged(auth, async (user) => {
+                cleanupAllListeners();
+                cachedTasks = [];
+                allUsersCache = [];
+                activeGroupMembers = [];
+                currentFriendsData = [];
+                activeGroupId = null;
+                isAdmin = false;
+                currentUser = null;
+                currentUserData = null;
 
-                    if (userStatus !== 'active') {
-                        let message = 'Tài khoản của bạn đang chờ quản trị viên phê duyệt.';
-                        if (userStatus === 'suspended') {
-                            message = 'Tài khoản của bạn đã bị khóa.';
+                if (user) {
+                    currentUser = user;
+                    const userDocRef = doc(db, "users", user.uid);
+                    const userDoc = await getDoc(userDocRef);
+
+                    if (userDoc.exists()) {
+                        currentUserData = { uid: user.uid, ...userDoc.data() };
+                        const userStatus = currentUserData.status || 'active';
+
+                        if (userStatus !== 'active') {
+                            let message = 'Tài khoản của bạn đang chờ quản trị viên phê duyệt.';
+                            if (userStatus === 'suspended') {
+                                message = 'Tài khoản của bạn đã bị khóa.';
+                            }
+                            await signOut(auth); 
+                            showMessage('Truy Cập Bị Từ Chối', message, true);
+                            showScreen('auth-screen');
+                            toggleAuthMode(true);
+                            return;
                         }
-                        await signOut(auth); 
-                        showMessage('Truy Cập Bị Từ Chối', message, true);
-                        return;
-                    }
 
-                    if (currentUserData.role === 'admin') {
-                        isAdmin = true;
-                        ui.authScreen.classList.add('hidden');
-                        ui.appScreen.classList.add('hidden');
-                        ui.adminScreen.classList.remove('hidden');
-                        ui.adminEmail.textContent = user.email;
-                        loadAdminDashboard();
+                        if (currentUserData.role === 'admin') {
+                            isAdmin = true;
+                            showScreen('admin-screen');
+                            ui.adminEmail.textContent = user.email;
+                            loadAdminDashboard();
+                        } else {
+                            isAdmin = false;
+                            showScreen('app-screen');
+                            ui.userEmail.textContent = user.email;
+                            listenToUserData(user.uid);
+                            listenToFriendRequests(user.uid);
+                        }
                     } else {
-                        isAdmin = false;
-                        ui.authScreen.classList.add('hidden');
-                        ui.adminScreen.classList.add('hidden');
-                        ui.appScreen.classList.remove('hidden');
-                        ui.userEmail.textContent = user.email;
-                        listenToUserData(user.uid);
-                        listenToFriendRequests(user.uid);
+                        await signOut(auth);
+                        showMessage('Lỗi Dữ Liệu', 'Không tìm thấy hồ sơ người dùng của bạn. Vui lòng liên hệ quản trị viên.', true);
+                        showScreen('auth-screen');
                     }
                 } else {
-                    await signOut(auth);
-                    showMessage('Lỗi Dữ Liệu', 'Không tìm thấy hồ sơ người dùng của bạn. Vui lòng liên hệ quản trị viên.', true);
+                    showScreen('auth-screen');
+                    ui.mainContent.innerHTML = '';
                 }
-            } else {
-                ui.authScreen.classList.remove('hidden');
-                ui.appScreen.classList.add('hidden');
-                ui.adminScreen.classList.add('hidden');
-                ui.mainContent.innerHTML = '';
-            }
-        });
+            });
+        }
         
+        // ======================================================================
+        // ======================= PUBLIC VIEW SECTION ==========================
+        // ======================================================================
+        async function initializePublicView(groupId) {
+             showScreen('public-view-screen');
+             ui.publicMainContent.innerHTML = `<div class="text-center p-8"><i class="fas fa-spinner fa-spin text-2xl text-indigo-600"></i><p class="mt-2">Đang tải lịch công việc...</p></div>`;
+
+             try {
+                const groupRef = doc(db, "groups", groupId);
+                const groupDoc = await getDoc(groupRef);
+
+                if (!groupDoc.exists() || !groupDoc.data().public) {
+                     ui.publicMainContent.innerHTML = `<div class="text-center bg-red-100 text-red-700 p-8 rounded-xl shadow">
+                        <h2 class="text-xl font-bold mb-2">Lỗi Truy Cập</h2>
+                        <p>Lịch công việc này không tồn tại hoặc không được chia sẻ công khai.</p>
+                     </div>`;
+                     return;
+                }
+                
+                const groupData = { id: groupDoc.id, ...groupDoc.data() };
+                ui.publicHeaderTitle.textContent = `Lịch Công Việc: ${groupData.name}`;
+                
+                // Set global state for public view
+                activeGroupId = groupId;
+                activeGroupStartDate = groupData.startDate ? groupData.startDate.toDate() : null;
+                activeGroupTotalWeeks = activeGroupStartDate ? getNumberOfWeeks(activeGroupStartDate.getFullYear(), activeGroupStartDate.getMonth()) : 4;
+
+                await fetchAndCacheMembers(groupData.members || []);
+
+                const tasksQuery = query(collection(db, "groups", groupId, "tasks"));
+                const tasksSnapshot = await getDocs(tasksQuery);
+                cachedTasks = tasksSnapshot.docs.map(d => ({id: d.id, ...d.data()}));
+                
+                // Render UI
+                renderWeekNavigator(true); // isReadOnly = true
+                renderSchedule(true); // isReadOnly = true
+                renderTasks(cachedTasks, true); // isReadOnly = true
+                updateStats(cachedTasks, true); // isReadOnly = true
+
+
+             } catch (error) {
+                console.error("Error loading public view:", error);
+                const errorMessage = error.code === 'permission-denied'
+                    ? 'Bạn không có quyền xem lịch này. Hãy chắc chắn rằng Firestore Security Rules đã được cấu hình đúng cho việc xem công khai.'
+                    : 'Đã có lỗi xảy ra khi tải dữ liệu.';
+                
+                 ui.publicMainContent.innerHTML = `<div class="text-center bg-red-100 text-red-700 p-8 rounded-xl shadow">
+                        <h2 class="text-xl font-bold mb-2">Lỗi</h2>
+                        <p>${errorMessage}</p>
+                     </div>`;
+             }
+        }
+
+
         // ======================================================================
         // ========================= ADMIN SECTION ==============================
         // ======================================================================
@@ -891,8 +1064,6 @@
         }
         
         window.updateUserStatus = async (userId, newStatus) => {
-            // LƯU Ý: Chức năng này yêu cầu cấu hình Firestore Security Rules phù hợp.
-            // Xem ghi chú ở đầu thẻ <script> để biết thêm chi tiết.
             const userToUpdate = allUsersCache.find(u => u.id === userId);
             if (!userToUpdate || userToUpdate.email === ADMIN_EMAIL) {
                 showMessage('Thao tác không được phép', 'Bạn không thể thay đổi trạng thái của tài khoản này.', true);
@@ -903,7 +1074,6 @@
             const userRef = doc(db, "users", userId);
             try {
                 await updateDoc(userRef, { status: newStatus });
-                // onSnapshot sẽ tự động cập nhật UI
             } catch (error) {
                 console.error("Error updating user status:", error);
                 showMessage('Lỗi Phân Quyền', 'Không thể cập nhật trạng thái. Vui lòng kiểm tra Firestore Security Rules.', true);
@@ -1080,13 +1250,13 @@
                 if(canModify) {
                     actionsHtml += `<button onclick="openEditUserModal('${user.id}')" class="font-medium text-indigo-600 hover:underline">Sửa</button>`;
                     if(status === 'active') {
-                        actionsHtml += `<button onclick="updateUserStatus('${user.id}', 'suspended')" class="font-medium text-orange-600 hover:underline">Khóa</button>`;
+                        actionsHtml += `<button onclick="updateUserStatus('${user.id}', 'suspended')" class="font-medium text-orange-600 hover:underline ml-3">Khóa</button>`;
                     } else if (status === 'pending') {
-                         actionsHtml += `<button onclick="updateUserStatus('${user.id}', 'active')" class="font-medium text-green-600 hover:underline">Duyệt</button>`;
+                         actionsHtml += `<button onclick="updateUserStatus('${user.id}', 'active')" class="font-medium text-green-600 hover:underline ml-3">Duyệt</button>`;
                     } else if (status === 'suspended') {
-                        actionsHtml += `<button onclick="updateUserStatus('${user.id}', 'active')" class="font-medium text-green-600 hover:underline">Mở khóa</button>`;
+                        actionsHtml += `<button onclick="updateUserStatus('${user.id}', 'active')" class="font-medium text-green-600 hover:underline ml-3">Mở khóa</button>`;
                     }
-                    actionsHtml += `<button onclick="handleDeleteUser('${user.id}', '${user.name}')" class="font-medium text-red-600 hover:underline">Xóa</button>`;
+                    actionsHtml += `<button onclick="handleDeleteUser('${user.id}', '${user.name}')" class="font-medium text-red-600 hover:underline ml-3">Xóa</button>`;
                 }
 
                 return `
@@ -1104,7 +1274,7 @@
                             </span>
                         </td>
                         <td class="px-6 py-4">${statusBadge}</td>
-                        <td class="px-6 py-4 flex items-center gap-3">
+                        <td class="px-6 py-4">
                            ${actionsHtml}
                         </td>
                     </tr>
@@ -1148,24 +1318,10 @@
             
             try {
                 if (userId) { // Editing existing user
-                    // LƯU Ý: Chức năng này yêu cầu cấu hình Firestore Security Rules phù hợp.
                     const userRef = doc(db, "users", userId);
                     await updateDoc(userRef, { name: name });
                     showMessage('Thành công', 'Đã cập nhật thông tin người dùng.');
                 } else { // Creating new user by admin
-                    // ##### LƯU Ý VỀ VIỆC TẠO NGƯỜI DÙNG TỪ TRANG ADMIN #####
-                    // Việc tạo tài khoản người dùng trực tiếp từ client-side (như đoạn code dưới đây)
-                    // là một GIẢI PHÁP TẠM THỜI và không đáng tin cậy. Cách làm này khởi tạo một
-                    // ứng dụng Firebase thứ hai tạm thời, có thể gặp lỗi hoặc bị Firebase hạn chế.
-                    //
-                    // GIẢI PHÁP ĐÚNG ĐẮN VÀ BẢO MẬT là sử dụng Firebase Cloud Functions.
-                    // Admin sẽ gọi một function trên server, và function đó với quyền admin sẽ
-                    // tạo người dùng một cách an toàn.
-                    // Tham khảo: https://firebase.google.com/docs/functions/callable
-                    //
-                    // Ngoài ra, để `setDoc` bên dưới thành công, bạn cũng cần có Security Rule
-                    // cho phép admin tạo document trong collection 'users'.
-                    
                     const tempApp = initializeApp(firebaseConfig, `Secondary-${Date.now()}`); 
                     const tempAuth = getAuth(tempApp);
                     const userCredential = await createUserWithEmailAndPassword(tempAuth, email, password);
@@ -1195,7 +1351,6 @@
         });
         
         window.handleDeleteUser = (userId, userName) => {
-            // LƯU Ý: Chức năng này yêu cầu cấu hình Firestore Security Rules phù hợp.
             if (!userId) return;
             showConfirmation(`Xóa người dùng "${userName}"?`, 
             'Hành động này sẽ xóa dữ liệu người dùng khỏi Firestore nhưng không xóa tài khoản khỏi hệ thống xác thực. Đây là một hạn chế của việc xóa từ phía client. Tiếp tục?',
@@ -1265,6 +1420,7 @@
             ui.backToDashboardBtn.classList.add('hidden');
             ui.statsContainer.classList.add('hidden');
             ui.leaveGroupBtn.classList.add('hidden');
+            ui.sharePlanBtn.classList.add('hidden');
             
             if (groupIds.length === 0) {
                 ui.mainContent.innerHTML = `
@@ -1414,6 +1570,7 @@
                         members: [currentUser.uid],
                         createdAt: Timestamp.now(),
                         startDate: Timestamp.fromDate(selectedStartDate),
+                        public: false // Default to not public
                     });
                     
                     await updateDoc(doc(db, "users", currentUser.uid), {
@@ -1494,12 +1651,13 @@
                         ui.backToDashboardBtn.click();
                         return;
                     }
-                    const groupData = doc.data();
+                    const groupData = {id: doc.id, ...doc.data()};
                     
                     ui.headerTitle.textContent = `${groupData.name}`;
                     ui.backToDashboardBtn.classList.remove('hidden');
                     ui.statsContainer.classList.remove('hidden');
                     ui.leaveGroupBtn.classList.remove('hidden');
+                    ui.sharePlanBtn.classList.remove('hidden');
                     ui.mainContent.innerHTML = `<div id="schedule-container" class="bg-white p-2 sm:p-4 md:p-6 rounded-xl shadow-lg"></div>`;
             
                     if (groupData.startDate && typeof groupData.startDate.toDate === 'function') {
@@ -1538,7 +1696,14 @@
         }
         
         // --- Week Navigation & Schedule Grid ---
-        function renderWeekNavigator() {
+        function renderWeekNavigator(isReadOnly = false) {
+             const containerId = isReadOnly ? 'public-main-content' : 'schedule-container';
+             const container = document.getElementById(containerId);
+             if (!container) return;
+             // Clear previous navigator if it exists
+             const oldNav = container.querySelector('.week-navigator');
+             if(oldNav) oldNav.remove();
+
             if (!activeGroupStartDate) return;
             const weekDates = getWeekDates(currentWeek, activeGroupStartDate);
             const weekStart = weekDates[0];
@@ -1546,18 +1711,18 @@
             
             let weekButtonsHtml = '';
             for (let i = 1; i <= activeGroupTotalWeeks; i++) {
-                weekButtonsHtml += `<button class="week-num-btn ${i === currentWeek ? 'active' : ''}" onclick="setWeek(${i})">${i}</button>`;
+                weekButtonsHtml += `<button class="week-num-btn ${i === currentWeek ? 'active' : ''}" onclick="setWeek(${i}, ${isReadOnly})">${i}</button>`;
             }
 
             let navHtml = `
-            <div class="flex flex-col md:flex-row justify-between items-center mb-4 p-3 bg-gray-50 rounded-lg">
+            <div class="week-navigator flex flex-col md:flex-row justify-between items-center mb-4 p-3 bg-gray-50 rounded-lg">
                 <div class="font-semibold text-gray-700 mb-3 md:mb-0">
                     Tuần ${currentWeek} (${formatDate(weekStart)} - ${formatDate(weekEnd)})
                 </div>
                 <div class="flex items-center gap-1">
-                    <button class="week-btn" onclick="changeWeek(-1)" ${currentWeek === 1 ? 'disabled' : ''}><i class="fas fa-chevron-left"></i></button>
+                    <button class="week-btn" onclick="changeWeek(-1, ${isReadOnly})" ${currentWeek === 1 ? 'disabled' : ''}><i class="fas fa-chevron-left"></i></button>
                     <div class="hidden sm:flex items-center gap-1">${weekButtonsHtml}</div>
-                    <button class="week-btn" onclick="changeWeek(1)" ${currentWeek === activeGroupTotalWeeks ? 'disabled' : ''}><i class="fas fa-chevron-right"></i></button>
+                    <button class="week-btn" onclick="changeWeek(1, ${isReadOnly})" ${currentWeek === activeGroupTotalWeeks ? 'disabled' : ''}><i class="fas fa-chevron-right"></i></button>
                 </div>
             </div>
             <style>
@@ -1567,31 +1732,35 @@
                 .week-num-btn.active { background: #4f46e5; color: white; }
             </style>`;
             
-            const container = document.getElementById('schedule-container');
-            if (container) container.innerHTML = navHtml;
+           container.insertAdjacentHTML('afterbegin', navHtml);
         }
 
-        window.changeWeek = (delta) => {
+        window.changeWeek = (delta, isReadOnly = false) => {
             const newWeek = currentWeek + delta;
             if (newWeek >= 1 && newWeek <= activeGroupTotalWeeks) {
-                setWeek(newWeek);
+                setWeek(newWeek, isReadOnly);
             }
         };
         
-        window.setWeek = (week) => {
+        window.setWeek = (week, isReadOnly = false) => {
             currentWeek = week;
-            renderWeekNavigator();
-            renderSchedule();
-            renderTasks(cachedTasks);
+            renderWeekNavigator(isReadOnly);
+            renderSchedule(isReadOnly);
+            renderTasks(cachedTasks, isReadOnly);
         };
 
-        function renderSchedule() {
+        function renderSchedule(isReadOnly = false) {
+            const containerId = isReadOnly ? 'public-main-content' : 'schedule-container';
+            const container = document.getElementById(containerId);
+            if (!container) return;
+            // Clear previous schedule grid
+            const oldGrid = container.querySelector('.schedule-grid-wrapper');
+            if (oldGrid) oldGrid.remove();
+
+
             const days = ["Hai", "Ba", "Tư", "Năm", "Sáu", "Bảy", "CN"];
             const timeSlots = ["00:00", "01:00", "02:00", "03:00", "04:00", "05:00", "06:00", "07:00", "08:00", "09:00", "10:00", "11:00", "12:00", "13:00", "14:00", "15:00", "16:00", "17:00", "18:00", "19:00", "20:00", "21:00", "22:00", "23:00"];
             
-            const container = document.getElementById('schedule-container');
-            if (!container) return;
-
             if (!activeGroupStartDate) {
                  container.insertAdjacentHTML('beforeend', '<p class="text-center text-red-500 p-4">Không thể hiển thị lịch vì nhóm này không có ngày bắt đầu hợp lệ.</p>');
                  return;
@@ -1600,7 +1769,7 @@
             const weekDates = getWeekDates(currentWeek, activeGroupStartDate);
 
             // Responsive grid wrapper
-            let gridHtml = '<div class="overflow-x-auto custom-scrollbar">';
+            let gridHtml = '<div class="schedule-grid-wrapper overflow-x-auto custom-scrollbar">';
             
             gridHtml += '<div class="schedule-grid grid" style="grid-template-columns: 50px repeat(7, minmax(120px, 1fr)); gap: 1px; background-color: #e5e7eb; border-radius: 8px; overflow: hidden; min-width: 900px;">';
             gridHtml += '<div class="bg-gray-200 sticky left-0 z-10"></div>'; // Corner
@@ -1614,21 +1783,19 @@
                     const cellDate = weekDates[index];
                     const dateString = cellDate.toISOString().split('T')[0];
                     
-                    const cellClasses = "grid-cell bg-white min-h-[100px] p-1.5 hover:bg-indigo-50 transition-colors space-y-1.5 overflow-y-auto custom-scrollbar";
-                    const clickHandler = `onclick="openTaskModal(null, '${time}', '${dateString}')"`;
+                    const cellClasses = `grid-cell bg-white min-h-[100px] p-1.5 space-y-1.5 overflow-y-auto custom-scrollbar ${isReadOnly ? '' : 'hover:bg-indigo-50 transition-colors'}`;
+                    const clickHandler = isReadOnly ? '' : `onclick="openTaskModal(null, '${time}', '${dateString}')"`;
 
                     gridHtml += `<div class="${cellClasses}" data-time="${time}" data-date="${dateString}" ${clickHandler}></div>`;
                 });
             });
             gridHtml += '</div></div>'; // Close schedule-grid and wrapper
 
-            const existingGrid = container.querySelector('.overflow-x-auto');
-            if (existingGrid) existingGrid.remove();
             container.insertAdjacentHTML('beforeend', gridHtml);
         }
 
         // --- Task Handling ---
-        function renderTasks(allTasks) {
+        function renderTasks(allTasks, isReadOnly = false) {
             document.querySelectorAll('.task-card').forEach(card => card.remove());
             if (!activeGroupStartDate) return;
             const weekDates = getWeekDates(currentWeek, activeGroupStartDate).map(d => d.toISOString().split('T')[0]);
@@ -1646,17 +1813,19 @@
                         const platformClass = (task.platform || 'unknown').toLowerCase();
                         const statusClass = (task.status || 'Chưa làm').replace(/\s+/g, '-').toLowerCase();
 
-                        taskEl.className = `task-card border-l-4 p-2 rounded cursor-pointer transition-all hover:shadow-md hover:translate-x-1 platform-${platformClass}`;
+                        taskEl.className = `task-card border-l-4 p-2 rounded transition-all platform-${platformClass} ${isReadOnly ? 'cursor-default' : 'cursor-pointer hover:shadow-md hover:translate-x-1'}`;
                         taskEl.innerHTML = `
                             <div class="font-bold text-sm text-gray-800">${task.partner || 'N/A'}</div>
                             <div class="text-xs text-gray-600 break-words">${task.content || ''}</div>
                             <div class="text-xs text-indigo-500 font-medium mt-1">@${assigneeName}</div>
                             <span class="task-status text-xs font-medium px-2 py-0.5 rounded-full mt-1 inline-block status-${statusClass}">${task.status || 'Chưa làm'}</span>
                         `;
-                        taskEl.onclick = (e) => {
-                            e.stopPropagation();
-                            openTaskModal(task);
-                        };
+                        if (!isReadOnly) {
+                             taskEl.onclick = (e) => {
+                                e.stopPropagation();
+                                openTaskModal(task);
+                            };
+                        }
                         cell.appendChild(taskEl);
                     }
                 }
@@ -1742,7 +1911,9 @@
         });
 
         // --- Statistics ---
-        function updateStats(allTasks) {
+        function updateStats(allTasks, isReadOnly = false) {
+            const container = isReadOnly ? ui.publicStatsContainer : ui.statsContainer;
+
             const statusCounts = { 'Chưa làm': 0, 'Đang làm': 0, 'Hoàn thành': 0, 'Bù': 0 };
             let totalTasks = 0;
             if (activeGroupStartDate){
@@ -1762,24 +1933,98 @@
                     }
                 });
             }
-
-            ui.statsContainer.innerHTML = `
+            
+            let statsHtml = `
                 <div class="stat-card"><div class="stat-value">${totalTasks}</div><div class="stat-label">CV Tháng</div></div>
                 <div class="stat-card"><div class="stat-value text-gray-500">${statusCounts['Chưa làm']}</div><div class="stat-label">Chưa làm</div></div>
                 <div class="stat-card"><div class="stat-value text-blue-500">${statusCounts['Đang làm']}</div><div class="stat-label">Đang làm</div></div>
                 <div class="stat-card"><div class="stat-value text-green-500">${statusCounts['Hoàn thành']}</div><div class="stat-label">Hoàn thành</div></div>
                 <div class="stat-card"><div class="stat-value text-yellow-500">${statusCounts['Bù']}</div><div class="stat-label">CV Bù</div></div>
-                <div class="stat-card"><div class="stat-value text-xs break-all p-2">${activeGroupId || 'N/A'}</div><div class="stat-label">ID Nhóm</div></div>       
-                 <style>
+            `;
+            if (!isReadOnly) {
+                statsHtml += `<div class="stat-card"><div class="stat-value text-xs break-all p-2">${activeGroupId || 'N/A'}</div><div class="stat-label">ID Nhóm</div></div>`;
+            }
+
+            container.innerHTML = `
+                ${statsHtml}
+                <style>
                       .stat-card { background: white; border-radius: 12px; padding: 0.5rem; text-align: center; box-shadow: 0 2px 4px rgba(0,0,0,0.05); display: flex; flex-direction: column; justify-content: center;}
                       .stat-value { font-size: 1.5rem; line-height: 2rem; font-weight: 700; color: #4f46e5; }
                       .stat-label { font-size: 0.7rem; line-height: 1rem; color: #6b7280; margin-top: 2px; text-transform: uppercase; letter-spacing: 0.5px; }
                       @media (max-width: 640px) {
-                        .stat-value { font-size: 1.25rem; line-height: 1.75rem;}
+                         .stat-value { font-size: 1.25rem; line-height: 1.75rem;}
                       }
-                 </style>
+                </style>
             `;
         }
+
+        // ======================================================================
+        // ======================== SHARING SECTION =============================
+        // ======================================================================
+        ui.sharePlanBtn.addEventListener('click', async () => {
+            try {
+                const groupRef = doc(db, 'groups', activeGroupId);
+                const groupDoc = await getDoc(groupRef);
+                if (groupDoc.exists()) {
+                    const isPublic = groupDoc.data().public || false;
+                    ui.publicShareToggle.checked = isPublic;
+                    if(isPublic) {
+                        const shareUrl = `${window.location.origin}${window.location.pathname}?share=${activeGroupId}`;
+                        ui.shareLinkInput.value = shareUrl;
+                        ui.shareLinkContainer.classList.remove('hidden');
+                    } else {
+                         ui.shareLinkContainer.classList.add('hidden');
+                    }
+                    openModal('share-modal');
+                }
+            } catch (error) {
+                console.error("Error opening share modal:", error);
+                showMessage('Lỗi', 'Không thể lấy thông tin chia sẻ.', true);
+            }
+        });
+
+        ui.publicShareToggle.addEventListener('change', async (e) => {
+            const isPublic = e.target.checked;
+            try {
+                 const groupRef = doc(db, 'groups', activeGroupId);
+                 await updateDoc(groupRef, { public: isPublic });
+                 
+                 if(isPublic) {
+                    const shareUrl = `${window.location.origin}${window.location.pathname}?share=${activeGroupId}`;
+                    ui.shareLinkInput.value = shareUrl;
+                    ui.shareLinkContainer.classList.remove('hidden');
+                 } else {
+                    ui.shareLinkContainer.classList.add('hidden');
+                 }
+                 showMessage('Thành công', `Chế độ xem công khai đã được ${isPublic ? 'bật' : 'tắt'}.`);
+
+            } catch (error) {
+                console.error("Error toggling public share:", error);
+                showMessage('Lỗi', 'Không thể thay đổi cài đặt chia sẻ. Vui lòng kiểm tra Security Rules.', true);
+                e.target.checked = !isPublic; // Revert toggle on error
+            }
+        });
+
+        ui.copyShareLinkBtn.addEventListener('click', () => {
+            const linkInput = ui.shareLinkInput;
+            linkInput.select();
+            linkInput.setSelectionRange(0, 99999); // For mobile devices
+
+            try {
+                // Use the Clipboard API if available, otherwise fallback
+                 if (navigator.clipboard) {
+                    navigator.clipboard.writeText(linkInput.value).then(() => {
+                        showMessage('Đã sao chép!', 'Liên kết đã được sao chép vào bộ nhớ tạm.');
+                    });
+                } else {
+                    document.execCommand('copy');
+                    showMessage('Đã sao chép!', 'Liên kết đã được sao chép vào bộ nhớ tạm.');
+                }
+            } catch (err) {
+                console.error('Fallback: Oops, unable to copy', err);
+                showMessage('Lỗi', 'Không thể sao chép liên kết.', true);
+            }
+        });
 
         // ======================================================================
         // ======================== FRIENDS SECTION =============================
@@ -2031,7 +2276,7 @@
             if(conversations.length > 0) {
                  ui.chatConversationsList.innerHTML = conversations.map(convo => `
                      <div onclick="openChatConversation('${convo.id}', '${convo.type}')" 
-                          class="flex items-center gap-3 p-2 rounded-lg hover:bg-gray-200 cursor-pointer transition-colors ${currentChatContext.id === convo.id ? 'bg-indigo-100' : ''}">
+                         class="flex items-center gap-3 p-2 rounded-lg hover:bg-gray-200 cursor-pointer transition-colors ${currentChatContext.id === convo.id ? 'bg-indigo-100' : ''}">
                          <div class="w-10 h-10 rounded-full bg-gray-300 flex items-center justify-center font-bold text-white flex-shrink-0">
                              ${(convo.name[0] || '?').toUpperCase()}
                          </div>
@@ -2077,7 +2322,7 @@
                 subtitle = `${groupData.members.length} thành viên`;
                 conversationRef = collection(db, 'groups', id, 'messages');
                 if (activeGroupId !== id || activeGroupMembers.length === 0) {
-                    await fetchAndCacheMembers(groupData.members); 
+                     await fetchAndCacheMembers(groupData.members); 
                 }
                 membersForAvatar = activeGroupMembers;
             } else { // friend
@@ -2160,6 +2405,11 @@
             ui.chatView.classList.remove('flex');
         });
         
+        // --- App Entry Point ---
+        window.onload = () => {
+            handleRouting();
+        };
+
     </script>
 </body>
 </html>
