@@ -64,6 +64,22 @@
         .toggle-checkbox:checked + .toggle-label {
             background-color: #68D391;
         }
+
+        /* Style for collapsed rows in the schedule */
+        .row-collapsed {
+            min-height: 28px !important;
+            height: 28px;
+            padding-top: 2px !important;
+            padding-bottom: 2px !important;
+            transition: all 0.2s ease-in-out;
+        }
+        .time-label-cell.row-collapsed {
+             font-size: 0.7rem;
+             line-height: 20px;
+        }
+        .grid-cell.row-collapsed:hover {
+            background-color: #eff6ff !important; /* Lighter indigo for empty cells */
+        }
     </style>
 </head>
 <body class="bg-gray-100" oncontextmenu="return true;">
@@ -373,11 +389,11 @@
             <div id="share-link-container" class="hidden">
                  <label class="block text-sm font-medium text-gray-700 mb-1">Liên kết chia sẻ</label>
                  <div class="flex gap-2">
-                     <input type="text" id="share-link-input" readonly class="w-full px-3 py-2 border border-gray-300 rounded-lg bg-gray-100">
-                     <button id="copy-share-link-btn" class="bg-indigo-600 text-white px-4 py-2 rounded-lg hover:bg-indigo-700 flex items-center gap-2">
-                         <i class="far fa-copy"></i>
-                         <span>Sao chép</span>
-                    </button>
+                      <input type="text" id="share-link-input" readonly class="w-full px-3 py-2 border border-gray-300 rounded-lg bg-gray-100">
+                      <button id="copy-share-link-btn" class="bg-indigo-600 text-white px-4 py-2 rounded-lg hover:bg-indigo-700 flex items-center gap-2">
+                           <i class="far fa-copy"></i>
+                           <span>Sao chép</span>
+                      </button>
                  </div>
                  <p class="text-xs text-gray-500 mt-2">Bất kỳ ai có liên kết này đều có thể xem lịch công việc của nhóm bạn ở chế độ chỉ đọc.</p>
             </div>
@@ -723,7 +739,7 @@
                 }
             });
              if (screenId !== 'loading-screen') {
-                ui.loadingScreen.classList.add('hidden');
+                 ui.loadingScreen.classList.add('hidden');
             }
         };
 
@@ -1014,9 +1030,9 @@
 
                 if (!groupDoc.exists() || !groupDoc.data().public) {
                      ui.publicMainContent.innerHTML = `<div class="text-center bg-red-100 text-red-700 p-8 rounded-xl shadow">
-                        <h2 class="text-xl font-bold mb-2">Lỗi Truy Cập</h2>
-                        <p>Lịch công việc này không tồn tại hoặc không được chia sẻ công khai.</p>
-                     </div>`;
+                          <h2 class="text-xl font-bold mb-2">Lỗi Truy Cập</h2>
+                          <p>Lịch công việc này không tồn tại hoặc không được chia sẻ công khai.</p>
+                       </div>`;
                      return;
                 }
                 
@@ -1042,15 +1058,15 @@
 
 
              } catch (error) {
-                console.error("Error loading public view:", error);
-                const errorMessage = error.code === 'permission-denied'
-                    ? 'Bạn không có quyền xem lịch này. Hãy chắc chắn rằng Firestore Security Rules đã được cấu hình đúng cho việc xem công khai.'
-                    : 'Đã có lỗi xảy ra khi tải dữ liệu.';
+                 console.error("Error loading public view:", error);
+                 const errorMessage = error.code === 'permission-denied'
+                     ? 'Bạn không có quyền xem lịch này. Hãy chắc chắn rằng Firestore Security Rules đã được cấu hình đúng cho việc xem công khai.'
+                     : 'Đã có lỗi xảy ra khi tải dữ liệu.';
                 
                  ui.publicMainContent.innerHTML = `<div class="text-center bg-red-100 text-red-700 p-8 rounded-xl shadow">
-                        <h2 class="text-xl font-bold mb-2">Lỗi</h2>
-                        <p>${errorMessage}</p>
-                     </div>`;
+                          <h2 class="text-xl font-bold mb-2">Lỗi</h2>
+                          <p>${errorMessage}</p>
+                       </div>`;
              }
         }
 
@@ -1778,7 +1794,7 @@
             });
             
             timeSlots.forEach(time => {
-                gridHtml += `<div class="bg-gray-200 text-center p-2 font-medium text-xs text-gray-600 flex items-center justify-center sticky left-0 z-10">${time}</div>`;
+                gridHtml += `<div class="bg-gray-200 text-center p-2 font-medium text-xs text-gray-600 flex items-center justify-center sticky left-0 z-10 time-label-cell" data-time-row="${time}">${time}</div>`;
                 days.forEach((_, index) => {
                     const cellDate = weekDates[index];
                     const dateString = cellDate.toISOString().split('T')[0];
@@ -1786,13 +1802,39 @@
                     const cellClasses = `grid-cell bg-white min-h-[100px] p-1.5 space-y-1.5 overflow-y-auto custom-scrollbar ${isReadOnly ? '' : 'hover:bg-indigo-50 transition-colors'}`;
                     const clickHandler = isReadOnly ? '' : `onclick="openTaskModal(null, '${time}', '${dateString}')"`;
 
-                    gridHtml += `<div class="${cellClasses}" data-time="${time}" data-date="${dateString}" ${clickHandler}></div>`;
+                    gridHtml += `<div class="${cellClasses}" data-time="${time}" data-date="${dateString}" data-time-row="${time}" ${clickHandler}></div>`;
                 });
             });
             gridHtml += '</div></div>'; // Close schedule-grid and wrapper
 
             container.insertAdjacentHTML('beforeend', gridHtml);
         }
+        
+        // --- Layout Optimization ---
+        function optimizeScheduleLayout(isReadOnly = false) {
+            const containerId = isReadOnly ? 'public-main-content' : 'schedule-container';
+            const container = document.getElementById(containerId);
+            if (!container) return;
+
+            const timeSlots = ["00:00", "01:00", "02:00", "03:00", "04:00", "05:00", "06:00", "07:00", "08:00", "09:00", "10:00", "11:00", "12:00", "13:00", "14:00", "15:00", "16:00", "17:00", "18:00", "19:00", "20:00", "21:00", "22:00", "23:00"];
+
+            timeSlots.forEach(time => {
+                const dayCells = container.querySelectorAll(`.grid-cell[data-time="${time}"]`);
+                if (dayCells.length === 0) return;
+
+                // Check if any cell in the row has a task-card element
+                const rowHasTasks = Array.from(dayCells).some(cell => cell.querySelector('.task-card'));
+
+                const rowElements = container.querySelectorAll(`[data-time-row="${time}"]`);
+
+                if (rowHasTasks) {
+                    rowElements.forEach(el => el.classList.remove('row-collapsed'));
+                } else {
+                    rowElements.forEach(el => el.classList.add('row-collapsed'));
+                }
+            });
+        }
+
 
         // --- Task Handling ---
         function renderTasks(allTasks, isReadOnly = false) {
@@ -1822,14 +1864,17 @@
                         `;
                         if (!isReadOnly) {
                              taskEl.onclick = (e) => {
-                                e.stopPropagation();
-                                openTaskModal(task);
-                            };
+                                 e.stopPropagation();
+                                 openTaskModal(task);
+                             };
                         }
                         cell.appendChild(taskEl);
                     }
                 }
             });
+
+            // After rendering tasks, optimize the layout
+            optimizeScheduleLayout(isReadOnly);
         }
         
         window.openTaskModal = (task, time, date) => {
@@ -1952,7 +1997,7 @@
                       .stat-value { font-size: 1.5rem; line-height: 2rem; font-weight: 700; color: #4f46e5; }
                       .stat-label { font-size: 0.7rem; line-height: 1rem; color: #6b7280; margin-top: 2px; text-transform: uppercase; letter-spacing: 0.5px; }
                       @media (max-width: 640px) {
-                         .stat-value { font-size: 1.25rem; line-height: 1.75rem;}
+                           .stat-value { font-size: 1.25rem; line-height: 1.75rem;}
                       }
                 </style>
             `;
@@ -1988,7 +2033,7 @@
             try {
                  const groupRef = doc(db, 'groups', activeGroupId);
                  await updateDoc(groupRef, { public: isPublic });
-                 
+                
                  if(isPublic) {
                     const shareUrl = `${window.location.origin}${window.location.pathname}?share=${activeGroupId}`;
                     ui.shareLinkInput.value = shareUrl;
@@ -2013,12 +2058,12 @@
             try {
                 // Use the Clipboard API if available, otherwise fallback
                  if (navigator.clipboard) {
-                    navigator.clipboard.writeText(linkInput.value).then(() => {
-                        showMessage('Đã sao chép!', 'Liên kết đã được sao chép vào bộ nhớ tạm.');
-                    });
+                     navigator.clipboard.writeText(linkInput.value).then(() => {
+                         showMessage('Đã sao chép!', 'Liên kết đã được sao chép vào bộ nhớ tạm.');
+                     });
                 } else {
-                    document.execCommand('copy');
-                    showMessage('Đã sao chép!', 'Liên kết đã được sao chép vào bộ nhớ tạm.');
+                     document.execCommand('copy');
+                     showMessage('Đã sao chép!', 'Liên kết đã được sao chép vào bộ nhớ tạm.');
                 }
             } catch (err) {
                 console.error('Fallback: Oops, unable to copy', err);
@@ -2206,16 +2251,16 @@
                  try {
                      const userRef = doc(db, 'users', currentUser.uid);
                      const friendRef = doc(db, 'users', friendUid);
-                     
+                    
                      const batch = writeBatch(db);
                      batch.update(userRef, { friends: arrayRemove(friendUid) });
                      batch.update(friendRef, { friends: arrayRemove(currentUser.uid) });
                      await batch.commit();
-                     
+                    
                      // Cập nhật cache cục bộ và re-render UI ngay lập tức
                      currentUserData.friends = (currentUserData.friends || []).filter(uid => uid !== friendUid);
                      await loadAndRenderFriendsList(currentUserData.friends);
-                     
+                    
                      showMessage('Thành công', 'Đã hủy kết bạn.');
                  } catch(error) {
                      console.error("Lỗi khi hủy kết bạn: ", error);
