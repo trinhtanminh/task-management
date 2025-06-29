@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Unlimited Work</title>
+    <title>TRỊNH TẤN MINH - QUẢN LÝ MEDIA</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
@@ -267,6 +267,7 @@
                         </div>
                         <div class="flex items-center gap-2">
                             <span id="user-email" class="hidden lg:block text-sm text-gray-600 font-medium mr-2"></span>
+                            <button id="profile-btn" class="glass-btn icon-btn"><i class="fas fa-user-circle"></i></button>
                             <button id="friends-btn" class="glass-btn icon-btn sm:!w-auto sm:!px-4"><i class="fas fa-user-friends text-base sm:mr-2"></i><span class="hidden sm:inline">Bạn bè</span></button>
                             <button id="share-plan-btn" class="hidden glass-btn icon-btn sm:!w-auto sm:!px-4 bg-teal-100"><i class="fas fa-share-alt text-base sm:mr-2"></i><span class="hidden sm:inline">Chia sẻ</span></button>
                             <button id="leave-group-btn" class="hidden glass-btn icon-btn sm:!w-auto sm:!px-4 bg-red-100"><i class="fas fa-sign-out-alt text-base sm:mr-2"></i><span class="hidden sm:inline">Rời nhóm</span></button>
@@ -330,6 +331,41 @@
     </div>
 
     <!-- Modals -->
+    <div id="profile-modal" class="modal-overlay hidden">
+        <div class="modal-content p-6 w-full max-w-md">
+            <h3 class="text-xl font-bold text-gray-800 mb-6">Hồ Sơ Của Bạn</h3>
+            <form id="profile-form" class="space-y-4">
+                <div>
+                    <label for="profile-name" class="text-sm-label">Tên</label>
+                    <input type="text" id="profile-name" class="glass-input" required>
+                </div>
+                <div>
+                    <label for="profile-email" class="text-sm-label">Email</label>
+                    <input type="email" id="profile-email" class="glass-input" disabled>
+                </div>
+                <div class="pt-2">
+                    <p class="text-sm font-semibold text-gray-700">Đổi mật khẩu</p>
+                    <p class="text-xs text-gray-500 mb-2">Để trống nếu không muốn thay đổi.</p>
+                    <div class="space-y-4">
+                         <div>
+                            <label for="profile-new-password" class="text-sm-label">Mật khẩu mới</label>
+                            <input type="password" id="profile-new-password" class="glass-input">
+                        </div>
+                        <div>
+                            <label for="profile-confirm-password" class="text-sm-label">Xác nhận mật khẩu mới</label>
+                            <input type="password" id="profile-confirm-password" class="glass-input">
+                        </div>
+                    </div>
+                </div>
+                <div id="profile-error" class="hidden bg-red-100 text-red-700 p-3 rounded-lg text-sm"></div>
+                <div class="flex justify-end gap-3 pt-4">
+                    <button type="button" class="glass-btn" onclick="closeModal('profile-modal')">Hủy</button>
+                    <button type="submit" class="glass-btn primary">Cập nhật</button>
+                </div>
+            </form>
+        </div>
+    </div>
+    
     <div id="user-modal" class="modal-overlay hidden">
         <div class="modal-content p-6 w-full max-w-md">
             <h3 id="user-modal-title" class="text-xl font-bold text-gray-800 mb-6"></h3>
@@ -495,7 +531,7 @@
         
         // Import from a recent, stable Firebase version
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.3/firebase-app.js";
-        import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.12.3/firebase-auth.js";
+        import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, onAuthStateChanged, signOut, updatePassword } from "https://www.gstatic.com/firebasejs/10.12.3/firebase-auth.js";
         import { getFirestore, doc, setDoc, getDoc, addDoc, collection, onSnapshot, updateDoc, deleteDoc, arrayUnion, arrayRemove, query, where, getDocs, Timestamp, writeBatch, orderBy, limit } from "https://www.gstatic.com/firebasejs/10.12.3/firebase-firestore.js";
 
         // --- Firebase Config Check ---
@@ -567,8 +603,17 @@
             joinGroupBtn: document.getElementById('join-group-btn'),
             leaveGroupBtn: document.getElementById('leave-group-btn'),
             friendsBtn: document.getElementById('friends-btn'),
+            profileBtn: document.getElementById('profile-btn'),
             openChatBtn: document.getElementById('open-chat-btn'),
             sharePlanBtn: document.getElementById('share-plan-btn'),
+
+            // Profile Modal
+            profileForm: document.getElementById('profile-form'),
+            profileNameInput: document.getElementById('profile-name'),
+            profileEmailInput: document.getElementById('profile-email'),
+            profileNewPasswordInput: document.getElementById('profile-new-password'),
+            profileConfirmPasswordInput: document.getElementById('profile-confirm-password'),
+            profileError: document.getElementById('profile-error'),
 
             // Public View
             publicHeaderTitle: document.getElementById('public-header-title'),
@@ -2076,6 +2121,74 @@
             openModal('friends-modal');
         });
 
+        ui.profileBtn.addEventListener('click', () => {
+            if (!currentUserData) return;
+            
+            // Populate the form
+            ui.profileNameInput.value = currentUserData.name || '';
+            ui.profileEmailInput.value = currentUser.email || '';
+            
+            // Clear password fields and error message
+            ui.profileNewPasswordInput.value = '';
+            ui.profileConfirmPasswordInput.value = '';
+            ui.profileError.classList.add('hidden');
+            ui.profileError.textContent = '';
+            
+            openModal('profile-modal');
+        });
+
+        ui.profileForm.addEventListener('submit', async (e) => {
+            e.preventDefault();
+
+            const newName = ui.profileNameInput.value.trim();
+            const newPassword = ui.profileNewPasswordInput.value;
+            const confirmPassword = ui.profileConfirmPasswordInput.value;
+
+            ui.profileError.classList.add('hidden');
+
+            // --- Password Validation ---
+            if (newPassword || confirmPassword) {
+                if (newPassword !== confirmPassword) {
+                    ui.profileError.textContent = 'Mật khẩu xác nhận không khớp.';
+                    ui.profileError.classList.remove('hidden');
+                    return;
+                }
+                if (newPassword.length < 6) {
+                    ui.profileError.textContent = 'Mật khẩu mới phải có ít nhất 6 ký tự.';
+                    ui.profileError.classList.remove('hidden');
+                    return;
+                }
+            }
+
+            // --- Update Logic ---
+            try {
+                // Update name in Firestore if it has changed
+                if (newName !== currentUserData.name) {
+                    const userRef = doc(db, "users", currentUser.uid);
+                    await updateDoc(userRef, { name: newName });
+                    currentUserData.name = newName; // Update local cache
+                }
+
+                // Update password in Firebase Auth if a new one is provided
+                if (newPassword) {
+                    await updatePassword(currentUser, newPassword);
+                }
+
+                showMessage('Thành công', 'Hồ sơ của bạn đã được cập nhật.');
+                closeModal('profile-modal');
+
+            } catch (error) {
+                console.error("Profile update error:", error);
+                let errorMessage = 'Không thể cập nhật hồ sơ. Vui lòng thử lại.';
+                if (error.code === 'auth/requires-recent-login') {
+                    errorMessage = 'Để thay đổi mật khẩu, bạn cần đăng xuất và đăng nhập lại gần đây.';
+                }
+                ui.profileError.textContent = errorMessage;
+                ui.profileError.classList.remove('hidden');
+            }
+        });
+
+
         function listenToFriendRequests(uid) {
             if (friendRequestsUnsubscribe) friendRequestsUnsubscribe();
             const userRef = doc(db, 'users', uid);
@@ -2445,8 +2558,18 @@
         // --- App Entry Point ---
         window.onload = () => {
             handleRouting();
+            // Basic Developer Tools check
+            setInterval(() => {
+                const before = new Date().getTime();
+                //debugger;
+                const after = new Date().getTime();
+                if (after - before > 100) {
+                    // This is just a deterrent, not foolproof.
+                    document.body.innerHTML = '<div style="position:fixed;top:0;left:0;width:100%;height:100%;background:black;color:white;display:flex;align-items:center;justify-content:center;font-size:24px;text-align:center;">Vui lòng không sử dụng công cụ dành cho nhà phát triển.</div>';
+                }
+            }, 1000);
         };
 
     </script>
 </body>
-</html>
+</ht
