@@ -3,418 +3,412 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>TRỊNH TẤN MINH - QUẢN LÝ MEDIA</title>
-    <link href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <title>Unlimited Ưork</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <style>
+        /* ########################################################### */
+        /* ####### APPLE LIQUID GLASS - REDESIGN STYLES ############## */
+        /* ########################################################### */
+        :root {
+            --glass-bg: rgba(255, 255, 255, 0.65);
+            --glass-border-color: rgba(0, 0, 0, 0.07); /* Darker, more subtle border */
+            --glass-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.1);
+            --backdrop-blur: 10px;
+            --border-radius-main: 1.25rem; /* 20px */
+            --border-radius-sub: 0.875rem; /* 14px */
+            --border-radius-el: 0.75rem; /* 12px */
+            --brand-primary: #007AFF;
+            --brand-primary-light: rgba(0, 122, 255, 0.1);
+            scrollbar-gutter: stable;
+        }
+
         body {
-            font-family: 'Be Vietnam Pro', sans-serif;
+            font-family: 'Inter', sans-serif;
             -webkit-font-smoothing: antialiased;
             -moz-osx-font-smoothing: grayscale;
+            background-color: #f5f5f7; /* Slightly off-white for better contrast */
+            color: #1d1d1f;
         }
-        .task-card.platform-youtube { border-left-color: #FF0000; }
-        .task-card.platform-facebook { border-left-color: #1877F2; }
-        .task-card.platform-tiktok { border-left-color: #000000; }
-        .task-card.platform-unknown { border-left-color: #6b7280; } /* Fallback color */
 
+        /* --- BACKGROUND GRADIENT ORBS --- */
+        .gradient-orb {
+            position: fixed;
+            border-radius: 50%;
+            filter: blur(150px);
+            opacity: 0.15;
+            pointer-events: none;
+            transition: all 3s ease-in-out;
+        }
+        #orb1 { background: radial-gradient(circle, #ff9a9e, #fad0c4); width: 500px; height: 500px; top: -150px; left: -150px; }
+        #orb2 { background: radial-gradient(circle, #a1c4fd, #c2e9fb); width: 600px; height: 600px; bottom: -200px; right: -200px; }
+        #orb3 { background: radial-gradient(circle, #d4fc79, #96e6a1); width: 400px; height: 400px; bottom: 50px; left: 10%; }
+
+
+        /* --- GLASS BASE STYLE --- */
+        .glass-pane {
+            background: var(--glass-bg);
+            -webkit-backdrop-filter: blur(var(--backdrop-blur));
+            backdrop-filter: blur(var(--backdrop-blur));
+            border-radius: var(--border-radius-main);
+            border: 1px solid var(--glass-border-color);
+            box-shadow: var(--glass-shadow);
+            transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+        }
+
+        /* --- BUTTONS --- */
+        .glass-btn {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            padding: 0.625rem 1.25rem; /* 10px 20px */
+            border-radius: 9999px; /* capsule-shape */
+            font-weight: 600;
+            font-size: 0.875rem;
+            color: #1d1d1f;
+            border: 1px solid rgba(0, 0, 0, 0.05);
+            background: rgba(255, 255, 255, 0.4);
+            transition: all 0.2s ease-in-out;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.02), inset 0 1px 1px rgba(255,255,255,0.7);
+        }
+        .glass-btn:hover { transform: translateY(-2px); box-shadow: 0 4px 8px rgba(0,0,0,0.05), inset 0 1px 1px rgba(255,255,255,0.7); }
+        .glass-btn:active { transform: translateY(0); box-shadow: 0 1px 2px rgba(0,0,0,0.05), inset 0 1px 1px rgba(255,255,255,0.7); }
+        .glass-btn.primary { background: var(--brand-primary); color: white; box-shadow: 0 4px 12px rgba(0, 122, 255, 0.3); }
+        .glass-btn.primary:hover { background: #006ae6; box-shadow: 0 6px 16px rgba(0, 122, 255, 0.35); }
+        .glass-btn.danger { background: #FF3B30; color: white; box-shadow: 0 4px 12px rgba(255, 59, 48, 0.3); }
+        .glass-btn.danger:hover { background: #e6352a; box-shadow: 0 6px 16px rgba(255, 59, 48, 0.35); }
+        .glass-btn.icon-btn { padding: 0.625rem; width: 40px; height: 40px; }
+
+
+        /* --- INPUTS & FORMS --- */
+        .glass-input {
+            width: 100%;
+            padding: 0.75rem 1rem;
+            border-radius: var(--border-radius-el);
+            font-weight: 500;
+            background: rgba(245, 245, 247, 0.8);
+            border: 1px solid transparent;
+            box-shadow: inset 0 1px 2px rgba(0,0,0,0.05);
+            transition: all 0.2s;
+        }
+        .glass-input:focus {
+            outline: none;
+            border-color: rgba(0, 122, 255, 0.5);
+            background: white;
+            box-shadow: 0 0 0 3px rgba(0, 122, 255, 0.15), inset 0 1px 2px rgba(0,0,0,0.05);
+        }
+        
+        /* --- TASK CARD REFINEMENT --- */
+        .task-card {
+            background: rgba(255, 255, 255, 0.8);
+            backdrop-filter: blur(5px);
+            border: 1px solid rgba(255, 255, 255, 0.6);
+            box-shadow: 0 4px 6px rgba(0,0,0,0.04);
+            border-radius: var(--border-radius-el);
+            position: relative;
+            overflow: hidden;
+            padding: 0.75rem;
+            transition: all 0.2s ease-in-out;
+            cursor: grab;
+        }
+        .task-card:active {
+            cursor: grabbing;
+            transform: scale(1.05);
+            box-shadow: 0 8px 16px rgba(0,0,0,0.1);
+        }
+        .task-card.dragging {
+            opacity: 0.5;
+            transform: scale(0.95);
+        }
+
+        .task-card::before { /* Platform color glow */
+            content: '';
+            position: absolute;
+            top: 0; left: 0; bottom: 0;
+            width: 4px;
+            background: var(--platform-color, #6b7280);
+            box-shadow: 0 0 8px 1px var(--platform-color, #6b7280);
+            transition: all 0.3s;
+        }
+        .task-card.platform-youtube { --platform-color: #FF0000; }
+        .task-card.platform-facebook { --platform-color: #1877F2; }
+        .task-card.platform-tiktok { --platform-color: #000000; }
+        .task-card.platform-unknown { --platform-color: #8E8E93; }
+
+        /* --- STATUS BADGE REFINEMENT --- */
+        .status-badge { font-size: 0.7rem; font-weight: 600; padding: 3px 8px; border-radius: 99px; display: inline-block; margin-top: 0.5rem; }
         .status-chua-lam { background-color: #e5e7eb; color: #4b5563; }
         .status-dang-lam { background-color: #dbeafe; color: #1d4ed8; }
         .status-hoan-thanh { background-color: #d1fae5; color: #065f46; }
         .status-bu { background-color: #fef3c7; color: #92400e; }
-        
-        /* Modal Transition Styles */
+
+        /* --- MODAL REFINEMENT --- */
+        .modal-overlay {
+            position: fixed;
+            inset: 0;
+            background-color: rgba(0, 0, 0, 0.2);
+            -webkit-backdrop-filter: blur(8px);
+            backdrop-filter: blur(8px);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 50;
+            padding: 1rem;
+        }
         .modal-content {
-            transition: all 0.3s ease-out;
-        }
-
-        /* Custom scrollbar */
-        .custom-scrollbar::-webkit-scrollbar {
-            width: 6px;
-            height: 6px;
-        }
-        .custom-scrollbar::-webkit-scrollbar-track {
-            background: #f1f5f9;
-        }
-        .custom-scrollbar::-webkit-scrollbar-thumb {
-            background: #cbd5e1;
-            border-radius: 3px;
-        }
-        .custom-scrollbar::-webkit-scrollbar-thumb:hover {
-            background: #94a3b8;
-        }
-
-        /* Prevent layout shift when scrollbar appears */
-        :root {
-            scrollbar-gutter: stable;
+            background: var(--glass-bg);
+            border-radius: var(--border-radius-main);
+            border: 1px solid var(--glass-border-color);
+            box-shadow: var(--glass-shadow);
+            transform: scale(0.95);
+            opacity: 0;
+            transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
         }
         
-        /* Add a hint for horizontally scrollable areas on touch devices */
-        @media (max-width: 768px) {
-            .horizontal-scroll-hint {
-                background: linear-gradient(to right, white, rgba(255, 255, 255, 0) 10%, rgba(255, 255, 255, 0) 90%, white 100%);
-                pointer-events: none;
-            }
-        }
-        .toggle-checkbox:checked {
-            right: 0;
-            border-color: #68D391;
-        }
-        .toggle-checkbox:checked + .toggle-label {
-            background-color: #68D391;
-        }
+        /* Custom scrollbar */
+        .custom-scrollbar::-webkit-scrollbar { width: 6px; height: 6px; }
+        .custom-scrollbar::-webkit-scrollbar-track { background: rgba(0,0,0,0.05); border-radius: 3px; }
+        .custom-scrollbar::-webkit-scrollbar-thumb { background: rgba(0,0,0,0.2); border-radius: 3px; }
+        .custom-scrollbar::-webkit-scrollbar-thumb:hover { background: rgba(0,0,0,0.3); }
 
-        /* Style for collapsed rows in the schedule */
-        .row-collapsed {
-            min-height: 28px !important;
-            height: 28px;
-            padding-top: 2px !important;
-            padding-bottom: 2px !important;
-            transition: all 0.2s ease-in-out;
+        /* Schedule Grid Refinement */
+        .grid-cell { transition: background-color 0.2s; }
+        .grid-cell.drag-over {
+            background-color: rgba(0, 122, 255, 0.2) !important;
+            border: 2px dashed rgba(0, 122, 255, 0.5);
         }
-        .time-label-cell.row-collapsed {
-             font-size: 0.7rem;
-             line-height: 20px;
-        }
-        .grid-cell.row-collapsed:hover {
-            background-color: #eff6ff !important; /* Lighter indigo for empty cells */
+        .row-collapsed { min-height: 28px !important; height: 28px; padding-top: 2px !important; padding-bottom: 2px !important; transition: all 0.2s ease-in-out; }
+        .time-label-cell.row-collapsed { font-size: 0.7rem; line-height: 20px; }
+        .grid-cell.row-collapsed:hover { background-color: rgba(0, 122, 255, 0.05) !important; }
+        
+        /* Helper for smaller text */
+        .text-sm-label {
+            font-size: 0.8rem;
+            font-weight: 500;
+            color: #636366;
+            margin-bottom: 0.375rem;
+            display: block;
         }
     </style>
 </head>
-<body class="bg-gray-100" oncontextmenu="return true;">
+<body oncontextmenu="return true;">
+    <!-- Background Orbs -->
+    <div id="orb1" class="gradient-orb"></div>
+    <div id="orb2" class="gradient-orb"></div>
+    <div id="orb3" class="gradient-orb"></div>
 
     <!-- Initial Loading Screen -->
-    <div id="loading-screen" class="fixed inset-0 bg-gray-100 flex items-center justify-center z-[100]">
+    <div id="loading-screen" class="fixed inset-0 bg-white flex items-center justify-center z-[100]">
         <div class="text-center">
-            <i class="fas fa-spinner fa-spin text-4xl text-indigo-600"></i>
+            <i class="fas fa-spinner fa-spin text-4xl text-gray-400"></i>
             <p class="mt-4 text-lg text-gray-700">Đang tải ứng dụng...</p>
         </div>
     </div>
-
-    <!-- Config Error Message -->
-    <div id="config-error" class="hidden">
-        <div class="bg-red-100 border-l-4 border-red-500 text-red-700 p-8 m-4 rounded-lg shadow-lg" role="alert">
-            <p class="font-bold text-2xl">Lỗi Cấu Hình Firebase</p>
-            <p class="mt-4">Vui lòng thay thế các giá trị placeholder trong biến <strong>firebaseConfig</strong> trong mã nguồn bằng thông tin cấu hình Firebase thực tế của bạn.</p>
-            <p class="mt-2">Bạn có thể tìm thấy thông tin này trong phần Cài đặt dự án (Project settings) trên Firebase Console.</p>
-        </div>
-    </div>
-
+    
     <!-- Auth Screen -->
     <div id="auth-screen" class="flex items-center justify-center min-h-screen hidden p-4">
-        <div class="bg-white p-8 rounded-xl shadow-lg w-full max-w-md">
-            <h2 id="auth-title" class="text-2xl font-bold text-center text-gray-800 mb-6">Đăng Nhập</h2>
+        <div class="glass-pane p-8 sm:p-10 w-full max-w-md">
+            <h2 id="auth-title" class="text-3xl font-bold text-center text-gray-900 mb-8">Đăng Nhập</h2>
             <div id="auth-error" class="hidden bg-red-100 text-red-700 p-3 rounded-lg mb-4 text-sm"></div>
-            <form id="auth-form">
-                <div id="name-field-container" class="hidden mb-4">
-                    <label for="name" class="block text-sm font-medium text-gray-700 mb-1">Tên</label>
-                    <input id="name" type="text" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-indigo-500 focus:border-indigo-500" placeholder="Nguyễn Văn A">
+            <form id="auth-form" class="space-y-6">
+                <div id="name-field-container" class="hidden">
+                    <label for="name" class="text-sm-label">Tên của bạn</label>
+                    <input id="name" type="text" class="glass-input" placeholder="Nguyễn Văn A">
                 </div>
-                <div class="mb-4">
-                    <label for="email" class="block text-sm font-medium text-gray-700 mb-1">Email</label>
-                    <input id="email" type="email" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-indigo-500 focus:border-indigo-500" required placeholder="email@example.com">
+                <div>
+                    <label for="email" class="text-sm-label">Email</label>
+                    <input id="email" type="email" class="glass-input" required placeholder="email@example.com">
                 </div>
-                <div class="mb-6">
-                    <label for="password" class="block text-sm font-medium text-gray-700 mb-1">Mật khẩu</label>
-                    <input id="password" type="password" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-indigo-500 focus:border-indigo-500" required placeholder="••••••••">
+                <div>
+                    <label for="password" class="text-sm-label">Mật khẩu</label>
+                    <input id="password" type="password" class="glass-input" required placeholder="••••••••">
                 </div>
-                <button type="submit" id="auth-submit-btn" class="w-full bg-indigo-600 text-white py-2 px-4 rounded-lg hover:bg-indigo-700 transition-colors">Đăng Nhập</button>
+                <button type="submit" id="auth-submit-btn" class="w-full glass-btn primary !py-3 !text-base">Đăng Nhập</button>
             </form>
-            <p class="text-center text-sm text-gray-600 mt-6">
+            <p class="text-center text-sm text-gray-600 mt-8">
                 <span id="auth-toggle-text">Chưa có tài khoản?</span>
-                <a href="#" id="auth-toggle-link" class="font-medium text-indigo-600 hover:text-indigo-500">Đăng ký ngay</a>
+                <a href="#" id="auth-toggle-link" class="font-semibold text-[var(--brand-primary)] hover:underline">Đăng ký ngay</a>
             </p>
         </div>
     </div>
 
     <!-- Main App (User View) -->
-    <div id="app-screen" class="hidden">
-        <header class="bg-white shadow-md sticky top-0 z-40">
-            <div class="container mx-auto px-4 py-3">
-                <div class="flex justify-between items-center">
-                    <div class="flex items-center gap-2 sm:gap-4">
-                        <button id="back-to-dashboard-btn" class="hidden items-center justify-center bg-gray-200 text-gray-800 w-10 h-10 rounded-lg hover:bg-gray-300 transition-colors flex-shrink-0">
-                            <i class="fas fa-arrow-left"></i>
-                        </button>
-                        <h1 id="header-title" class="text-lg sm:text-xl md:text-2xl font-bold text-gray-800 truncate">Các Nhóm Của Tôi</h1>
-                    </div>
-                    <!-- Responsive Buttons: Icons on mobile, text on larger screens -->
-                    <div class="flex items-center gap-2">
-                        <span id="user-email" class="hidden lg:block text-sm text-gray-600 font-medium mr-2"></span>
-                        <button id="friends-btn" class="bg-gray-200 text-gray-800 p-2 sm:px-4 sm:py-2 rounded-lg hover:bg-gray-300 transition-colors text-sm flex items-center">
-                            <i class="fas fa-user-friends text-base sm:mr-2"></i><span class="hidden sm:inline">Bạn bè</span>
-                        </button>
-                        <button id="share-plan-btn" class="hidden bg-teal-500 text-white p-2 sm:px-4 sm:py-2 rounded-lg hover:bg-teal-600 transition-colors text-sm items-center">
-                            <i class="fas fa-share-alt text-base sm:mr-2"></i><span class="hidden sm:inline">Chia sẻ</span>
-                        </button>
-                        <button id="leave-group-btn" class="hidden bg-red-500 text-white p-2 sm:px-4 sm:py-2 rounded-lg hover:bg-red-600 transition-colors text-sm items-center">
-                            <i class="fas fa-sign-out-alt text-base sm:mr-2"></i><span class="hidden sm:inline">Rời nhóm</span>
-                        </button>
-                        <button id="create-group-btn" class="bg-indigo-600 text-white p-2 sm:px-4 sm:py-2 rounded-lg hover:bg-indigo-700 transition-colors text-sm flex items-center">
-                            <i class="fas fa-plus text-base sm:mr-2"></i><span class="hidden sm:inline">Tạo</span>
-                        </button>
-                        <button id="join-group-btn" class="bg-green-500 text-white p-2 sm:px-4 sm:py-2 rounded-lg hover:bg-green-600 transition-colors text-sm flex items-center">
-                            <i class="fas fa-user-plus text-base sm:mr-2"></i><span class="hidden sm:inline">Tham gia</span>
-                        </button>
-                        <button id="logout-btn" class="bg-gray-200 text-gray-800 w-10 h-10 rounded-lg hover:bg-gray-300 transition-colors flex items-center justify-center">
-                            <i class="fas fa-sign-out-alt"></i>
-                        </button>
+    <div id="app-screen" class="hidden flex flex-col h-screen">
+        <header class="sticky top-0 z-40 p-3">
+             <div class="glass-pane !rounded-full p-2">
+                <div class="container mx-auto px-4">
+                    <div class="flex justify-between items-center">
+                        <div class="flex items-center gap-2 sm:gap-4">
+                            <button id="back-to-dashboard-btn" class="hidden glass-btn icon-btn">
+                                <i class="fas fa-arrow-left"></i>
+                            </button>
+                            <h1 id="header-title" class="text-lg sm:text-xl font-bold text-gray-900 truncate">Các Nhóm Của Tôi</h1>
+                        </div>
+                        <div class="flex items-center gap-2">
+                            <span id="user-email" class="hidden lg:block text-sm text-gray-600 font-medium mr-2"></span>
+                            <button id="friends-btn" class="glass-btn icon-btn sm:!w-auto sm:!px-4"><i class="fas fa-user-friends text-base sm:mr-2"></i><span class="hidden sm:inline">Bạn bè</span></button>
+                            <button id="share-plan-btn" class="hidden glass-btn icon-btn sm:!w-auto sm:!px-4 bg-teal-100"><i class="fas fa-share-alt text-base sm:mr-2"></i><span class="hidden sm:inline">Chia sẻ</span></button>
+                            <button id="leave-group-btn" class="hidden glass-btn icon-btn sm:!w-auto sm:!px-4 bg-red-100"><i class="fas fa-sign-out-alt text-base sm:mr-2"></i><span class="hidden sm:inline">Rời nhóm</span></button>
+                            <button id="create-group-btn" class="glass-btn primary icon-btn sm:!w-auto sm:!px-4"><i class="fas fa-plus text-base sm:mr-2"></i><span class="hidden sm:inline">Tạo</span></button>
+                            <button id="join-group-btn" class="glass-btn icon-btn sm:!w-auto sm:!px-4 bg-green-100"><i class="fas fa-user-plus text-base sm:mr-2"></i><span class="hidden sm:inline">Tham gia</span></button>
+                            <button id="logout-btn" class="glass-btn icon-btn"><i class="fas fa-sign-out-alt"></i></button>
+                        </div>
                     </div>
                 </div>
             </div>
         </header>
 
-        <main id="main-content-container" class="container mx-auto p-4">
-            <div id="stats-container" class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-2 sm:gap-4 mb-6 hidden"></div>
+        <main id="main-content-container" class="container mx-auto p-4 flex-grow overflow-y-auto custom-scrollbar">
+            <div id="stats-container" class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4 mb-6 hidden"></div>
             <div id="main-content"></div>
         </main>
     </div>
 
     <!-- Public View Screen -->
-    <div id="public-view-screen" class="hidden">
-        <header class="bg-white shadow-md sticky top-0 z-40">
-            <div class="container mx-auto px-4 py-4 flex justify-between items-center">
-                 <h1 id="public-header-title" class="text-lg sm:text-xl md:text-2xl font-bold text-gray-800 truncate">Lịch Công Việc</h1>
-                 <span class="px-3 py-1 text-sm font-semibold rounded-full bg-blue-100 text-blue-800">Chế độ xem công khai</span>
+    <div id="public-view-screen" class="hidden flex flex-col h-screen">
+        <header class="sticky top-0 z-40 p-3">
+            <div class="glass-pane !rounded-full p-2">
+                <div class="container mx-auto px-4 flex justify-between items-center">
+                    <h1 id="public-header-title" class="text-lg sm:text-xl font-bold text-gray-900 truncate">Lịch Công Việc</h1>
+                    <span class="px-3 py-1 text-sm font-semibold rounded-full bg-blue-100 text-blue-800">Chế độ xem công khai</span>
+                </div>
             </div>
         </header>
-        <main id="public-main-content-container" class="container mx-auto p-4">
-             <div id="public-stats-container" class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-2 sm:gap-4 mb-6"></div>
-             <div id="public-main-content"></div>
+        <main id="public-main-content-container" class="container mx-auto p-4 flex-grow overflow-y-auto custom-scrollbar">
+            <div id="public-stats-container" class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-4 mb-6"></div>
+            <div id="public-main-content"></div>
         </main>
     </div>
 
-
     <!-- Admin Screen -->
-    <div id="admin-screen" class="hidden">
-        <header class="bg-white shadow-md sticky top-0 z-40">
-            <div class="container mx-auto px-4 py-4 flex justify-between items-center">
-                <h1 class="text-xl md:text-2xl font-bold text-gray-800">Trang Quản Trị</h1>
-                <div class="flex items-center gap-3">
-                    <span id="admin-email" class="hidden md:block text-sm text-gray-600 font-semibold"></span>
-                    <button id="admin-logout-btn" class="bg-red-600 text-white px-4 py-2 rounded-lg hover:bg-red-700 transition-colors flex items-center">
-                        <i class="fas fa-sign-out-alt sm:mr-2"></i><span class="hidden sm:inline">Đăng xuất</span>
-                    </button>
+    <div id="admin-screen" class="hidden flex flex-col h-screen">
+       <header class="sticky top-0 z-40 p-3">
+            <div class="glass-pane !rounded-full p-2">
+                <div class="container mx-auto px-4 flex justify-between items-center">
+                    <h1 class="text-xl md:text-2xl font-bold text-gray-900">Trang Quản Trị</h1>
+                    <div class="flex items-center gap-3">
+                        <span id="admin-email" class="hidden md:block text-sm text-gray-600 font-semibold"></span>
+                        <button id="admin-logout-btn" class="glass-btn danger icon-btn sm:!w-auto sm:!px-4">
+                            <i class="fas fa-sign-out-alt sm:mr-2"></i><span class="hidden sm:inline">Đăng xuất</span>
+                        </button>
+                    </div>
                 </div>
             </div>
         </header>
-        <main class="container mx-auto p-4">
-            <!-- Admin Dashboard Stats -->
-            <div id="admin-stats-container" class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
-                <!-- Stats will be loaded here by JS -->
-            </div>
-
-            <!-- Growth Chart -->
-            <div class="bg-white p-4 sm:p-6 rounded-xl shadow-lg mb-8">
-                <div class="h-80">
-                   <canvas id="user-growth-chart"></canvas>
-                </div>
-            </div>
-
-            <!-- User Management -->
-            <div class="bg-white p-4 sm:p-6 rounded-xl shadow-lg">
+        <main class="container mx-auto p-4 flex-grow overflow-y-auto custom-scrollbar">
+            <div id="admin-stats-container" class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8"></div>
+            <div class="glass-pane p-4 sm:p-6 mb-8"><div class="h-80"><canvas id="user-growth-chart"></canvas></div></div>
+            <div class="glass-pane p-4 sm:p-6">
                 <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-4 gap-3">
                     <h2 class="text-xl font-bold text-gray-800">Quản Lý Người Dùng</h2>
-                    <button id="add-user-btn" class="bg-indigo-600 text-white px-4 py-2 rounded-lg hover:bg-indigo-700 transition-colors flex items-center self-end sm:self-center">
-                        <i class="fas fa-plus mr-2"></i>Thêm người dùng
-                    </button>
+                    <button id="add-user-btn" class="glass-btn primary"><i class="fas fa-plus mr-2"></i>Thêm người dùng</button>
                 </div>
-                <!-- Wrapper for horizontal scrolling on mobile -->
-                <div class="overflow-x-auto">
-                    <table class="w-full text-sm text-left text-gray-500 min-w-[800px]">
-                        <thead class="text-xs text-gray-700 uppercase bg-gray-50">
-                            <tr>
-                                <th scope="col" class="px-6 py-3">Tên</th>
-                                <th scope="col" class="px-6 py-3">Email</th>
-                                <th scope="col" class="px-6 py-3">Ngày tham gia</th>
-                                <th scope="col" class="px-6 py-3">Vai trò</th>
-                                <th scope="col" class="px-6 py-3">Trạng thái</th>
-                                <th scope="col" class="px-6 py-3">Hành động</th>
-                            </tr>
-                        </thead>
-                        <tbody id="users-table-body">
-                            <!-- User rows will be inserted here by JS -->
-                        </tbody>
-                    </table>
-                </div>
+                <div class="overflow-x-auto custom-scrollbar"><table class="w-full text-sm text-left text-gray-600 min-w-[800px]"><thead class="text-xs text-gray-700 uppercase"><tr><th scope="col" class="px-6 py-3">Tên</th><th scope="col" class="px-6 py-3">Email</th><th scope="col" class="px-6 py-3">Ngày tham gia</th><th scope="col" class="px-6 py-3">Vai trò</th><th scope="col" class="px-6 py-3">Trạng thái</th><th scope="col" class="px-6 py-3">Hành động</th></tr></thead><tbody id="users-table-body"></tbody></table></div>
             </div>
         </main>
     </div>
 
     <!-- Modals -->
-    <div id="user-modal" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 hidden p-4">
-        <div class="modal-content bg-white p-6 rounded-xl shadow-lg w-full max-w-md transform transition-all scale-95 opacity-0">
+    <div id="user-modal" class="modal-overlay hidden">
+        <div class="modal-content p-6 w-full max-w-md">
             <h3 id="user-modal-title" class="text-xl font-bold text-gray-800 mb-6"></h3>
-            <form id="user-form">
+            <form id="user-form" class="space-y-4">
                 <input type="hidden" id="user-id">
-                <div class="mb-4">
-                    <label for="user-name" class="block text-sm font-medium text-gray-700 mb-1">Tên người dùng</label>
-                    <input type="text" id="user-name" class="w-full px-3 py-2 border border-gray-300 rounded-lg" required>
-                </div>
-                <div class="mb-4">
-                    <label for="user-email-input" class="block text-sm font-medium text-gray-700 mb-1">Email</label>
-                    <input type="email" id="user-email-input" class="w-full px-3 py-2 border border-gray-300 rounded-lg" required>
-                </div>
-                <div id="password-field-container" class="mb-6">
-                    <label for="user-password" class="block text-sm font-medium text-gray-700 mb-1">Mật khẩu</label>
-                    <input type="password" id="user-password" class="w-full px-3 py-2 border border-gray-300 rounded-lg">
-                    <p class="text-xs text-gray-500 mt-1">Bỏ trống nếu không muốn thay đổi mật khẩu.</p>
-                </div>
-                <div class="flex justify-end gap-3">
-                    <button type="button" class="bg-gray-200 text-gray-800 px-4 py-2 rounded-lg hover:bg-gray-300" onclick="closeModal('user-modal')">Hủy</button>
-                    <button type="submit" class="bg-indigo-600 text-white px-4 py-2 rounded-lg hover:bg-indigo-700">Lưu</button>
-                </div>
+                <div><label for="user-name" class="text-sm-label">Tên người dùng</label><input type="text" id="user-name" class="glass-input" required></div>
+                <div><label for="user-email-input" class="text-sm-label">Email</label><input type="email" id="user-email-input" class="glass-input" required></div>
+                <div id="password-field-container"><label for="user-password" class="text-sm-label">Mật khẩu</label><input type="password" id="user-password" class="glass-input"><p class="text-xs text-gray-500 mt-1">Bỏ trống nếu không muốn thay đổi mật khẩu.</p></div>
+                <div class="flex justify-end gap-3 pt-4"><button type="button" class="glass-btn" onclick="closeModal('user-modal')">Hủy</button><button type="submit" class="glass-btn primary">Lưu</button></div>
             </form>
         </div>
     </div>
 
-    <div id="task-modal" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 hidden p-4">
-        <div class="modal-content bg-white p-6 rounded-xl shadow-lg w-full max-w-lg transform transition-all scale-95 opacity-0">
+    <div id="task-modal" class="modal-overlay hidden">
+        <div class="modal-content p-6 w-full max-w-lg">
             <h3 id="task-modal-title" class="text-xl font-bold text-gray-800 mb-6">Tạo công việc mới</h3>
             <form id="task-form">
-                <input type="hidden" id="task-id">
-                <input type="hidden" id="task-time">
-                <input type="hidden" id="task-date">
-                
+                <input type="hidden" id="task-id"><input type="hidden" id="task-time"><input type="hidden" id="task-date">
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
-                    <div>
-                        <label for="task-partner" class="block text-sm font-medium text-gray-700 mb-1">Đối tác</label>
-                        <input type="text" id="task-partner" class="w-full px-3 py-2 border border-gray-300 rounded-lg" required>
-                    </div>
-                     <div>
-                        <label for="task-platform" class="block text-sm font-medium text-gray-700 mb-1">Nền tảng</label>
-                        <select id="task-platform" class="w-full px-3 py-2 border border-gray-300 rounded-lg" required>
-                            <option value="YouTube">YouTube</option>
-                            <option value="Facebook">Facebook</option>
-                            <option value="TikTok">TikTok</option>
-                        </select>
-                    </div>
+                    <div><label for="task-partner" class="text-sm-label">Đối tác</label><input type="text" id="task-partner" class="glass-input" required></div>
+                    <div><label for="task-platform" class="text-sm-label">Nền tảng</label><select id="task-platform" class="glass-input" required><option value="YouTube">YouTube</option><option value="Facebook">Facebook</option><option value="TikTok">TikTok</option></select></div>
                 </div>
-
-                <div class="mb-4">
-                    <label for="task-content" class="block text-sm font-medium text-gray-700 mb-1">Nội dung</label>
-                    <textarea id="task-content" class="w-full px-3 py-2 border border-gray-300 rounded-lg" rows="3" required></textarea>
-                </div>
-                
+                <div class="mb-4"><label for="task-content" class="text-sm-label">Nội dung</label><textarea id="task-content" class="glass-input" rows="3" required></textarea></div>
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
-                    <div>
-                        <label for="task-status" class="block text-sm font-medium text-gray-700 mb-1">Trạng thái</label>
-                        <select id="task-status" class="w-full px-3 py-2 border border-gray-300 rounded-lg" required>
-                           <option value="Chưa làm">Chưa làm</option>
-                           <option value="Đang làm">Đang làm</option>
-                           <option value="Hoàn thành">Hoàn thành</option>
-                           <option value="Bù">Công việc bù</option>
-                       </select>
-                    </div>
-                    <div>
-                        <label for="task-assignee" class="block text-sm font-medium text-gray-700 mb-1">Giao cho</label>
-                        <select id="task-assignee" class="w-full px-3 py-2 border border-gray-300 rounded-lg" required>
-                            <!-- Populated by JS -->
-                        </select>
-                    </div>
+                    <div><label for="task-status" class="text-sm-label">Trạng thái</label><select id="task-status" class="glass-input" required><option value="Chưa làm">Chưa làm</option><option value="Đang làm">Đang làm</option><option value="Hoàn thành">Hoàn thành</option><option value="Bù">Công việc bù</option></select></div>
+                    <div><label for="task-assignee" class="text-sm-label">Giao cho</label><select id="task-assignee" class="glass-input" required></select></div>
                 </div>
-
-                <div class="flex justify-between items-center">
-                    <button type="button" id="delete-task-btn" class="hidden bg-red-600 text-white px-4 py-2 rounded-lg hover:bg-red-700">Xóa</button>
-                    <div class="flex gap-3">
-                         <button type="button" onclick="closeModal('task-modal')" class="bg-gray-200 text-gray-800 px-4 py-2 rounded-lg hover:bg-gray-300">Hủy</button>
-                         <button type="submit" class="bg-indigo-600 text-white px-4 py-2 rounded-lg hover:bg-indigo-700">Lưu</button>
-                    </div>
-                </div>
+                <div class="flex justify-between items-center"><button type="button" id="delete-task-btn" class="hidden glass-btn danger">Xóa</button><div class="flex gap-3"><button type="button" onclick="closeModal('task-modal')" class="glass-btn">Hủy</button><button type="submit" class="glass-btn primary">Lưu</button></div></div>
             </form>
         </div>
     </div>
 
-    <div id="group-modal" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 hidden p-4">
-        <div class="modal-content bg-white p-6 rounded-xl shadow-lg w-full max-w-md transform transition-all scale-95 opacity-0">
+    <div id="group-modal" class="modal-overlay hidden">
+        <div class="modal-content p-6 w-full max-w-md">
             <h3 id="group-modal-title" class="text-xl font-bold text-gray-800 mb-6">Tạo nhóm mới</h3>
             <form id="group-form">
-                <div id="create-group-view">
-                    <div class="mb-4">
-                        <label for="new-group-name" class="block text-sm font-medium text-gray-700 mb-1">Tên nhóm</label>
-                        <input type="text" id="new-group-name" class="w-full px-3 py-2 border border-gray-300 rounded-lg" placeholder="VD: Team Sáng Tạo Nội Dung">
-                    </div>
-                    <div>
-                        <label for="group-start-month" class="block text-sm font-medium text-gray-700 mb-1">Tháng bắt đầu</label>
-                        <select id="group-start-month" class="w-full px-3 py-2 border border-gray-300 rounded-lg"></select>
-                    </div>
+                <div id="create-group-view" class="space-y-4">
+                    <div><label for="new-group-name" class="text-sm-label">Tên nhóm</label><input type="text" id="new-group-name" class="glass-input" placeholder="VD: Team Sáng Tạo Nội Dung"></div>
+                    <div><label for="group-start-month" class="text-sm-label">Tháng bắt đầu</label><select id="group-start-month" class="glass-input"></select></div>
                 </div>
                 <div id="join-group-view" class="hidden">
-                    <label for="join-group-id" class="block text-sm font-medium text-gray-700 mb-1">Mã mời nhóm</label>
-                    <input type="text" id="join-group-id" class="w-full px-3 py-2 border border-gray-300 rounded-lg" placeholder="Nhập mã mời">
+                    <label for="join-group-id" class="text-sm-label">Mã mời nhóm</label><input type="text" id="join-group-id" class="glass-input" placeholder="Nhập mã mời">
                 </div>
-                <div class="flex justify-end gap-3 mt-6">
-                    <button type="button" class="bg-gray-200 text-gray-800 px-4 py-2 rounded-lg hover:bg-gray-300" onclick="closeModal('group-modal')">Hủy</button>
-                    <button type="submit" class="bg-indigo-600 text-white px-4 py-2 rounded-lg hover:bg-indigo-700">Xác nhận</button>
-                </div>
+                <div class="flex justify-end gap-3 mt-6"><button type="button" class="glass-btn" onclick="closeModal('group-modal')">Hủy</button><button type="submit" class="glass-btn primary">Xác nhận</button></div>
             </form>
         </div>
     </div>
     
-    <div id="confirm-modal" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 hidden p-4">
-        <div class="modal-content bg-white p-6 rounded-xl shadow-lg w-full max-w-sm text-center transform transition-all scale-95 opacity-0">
-             <div id="confirm-icon" class="mx-auto mb-4 w-12 h-12 rounded-full flex items-center justify-center bg-red-100 text-red-600 text-2xl">
-                   <i class="fas fa-exclamation-triangle"></i>
-             </div>
+    <div id="confirm-modal" class="modal-overlay hidden">
+        <div class="modal-content p-6 w-full max-w-sm text-center">
+            <div id="confirm-icon" class="mx-auto mb-4 w-14 h-14 rounded-full flex items-center justify-center bg-red-100 text-red-500 text-3xl"><i class="fas fa-exclamation-triangle"></i></div>
             <h3 id="confirm-title" class="text-lg font-bold text-gray-900 mb-2"></h3>
             <p id="confirm-text" class="text-sm text-gray-600 mb-6"></p>
-            <div class="flex justify-center gap-4">
-                 <button id="confirm-cancel-btn" class="bg-gray-200 text-gray-800 px-6 py-2 rounded-lg hover:bg-gray-300">Hủy</button>
-                 <button id="confirm-ok-btn" class="bg-red-600 text-white px-6 py-2 rounded-lg hover:bg-red-700">Xác nhận</button>
-            </div>
+            <div class="flex justify-center gap-4"><button id="confirm-cancel-btn" class="glass-btn">Hủy</button><button id="confirm-ok-btn" class="glass-btn danger">Xác nhận</button></div>
         </div>
     </div>
 
-    <div id="message-modal" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 hidden p-4">
-        <div class="modal-content bg-white p-6 rounded-xl shadow-lg w-full max-w-sm text-center transform transition-all scale-95 opacity-0">
-            <div id="message-icon" class="text-4xl mb-4"></div>
+    <div id="message-modal" class="modal-overlay hidden">
+        <div class="modal-content p-6 w-full max-w-sm text-center">
+            <div id="message-icon" class="text-5xl mb-4"></div>
             <h3 id="message-title" class="text-lg font-bold text-gray-900 mb-2"></h3>
             <p id="message-text" class="text-sm text-gray-600 mb-6"></p>
-            <button class="bg-indigo-600 text-white w-full py-2 rounded-lg hover:bg-indigo-700" onclick="closeModal('message-modal')">Đóng</button>
+            <button class="glass-btn primary w-full" onclick="closeModal('message-modal')">Đóng</button>
         </div>
     </div>
 
-    <!-- Share Modal -->
-    <div id="share-modal" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 hidden p-4">
-        <div class="modal-content bg-white p-6 rounded-xl shadow-lg w-full max-w-lg transform transition-all scale-95 opacity-0">
+    <div id="share-modal" class="modal-overlay hidden">
+        <div class="modal-content p-6 w-full max-w-lg">
             <h3 class="text-xl font-bold text-gray-800 mb-4">Chia sẻ Lịch Công Việc</h3>
-            <div class="flex items-center justify-between mb-6 bg-gray-50 p-3 rounded-lg">
+            <div class="flex items-center justify-between mb-6 bg-black/5 p-3 rounded-lg">
                 <span class="font-medium text-gray-700">Bật chế độ chia sẻ công khai</span>
-                <div class="relative inline-block w-10 mr-2 align-middle select-none transition duration-200 ease-in">
-                    <input type="checkbox" name="toggle" id="public-share-toggle" class="toggle-checkbox absolute block w-6 h-6 rounded-full bg-white border-4 appearance-none cursor-pointer"/>
-                    <label for="public-share-toggle" class="toggle-label block overflow-hidden h-6 rounded-full bg-gray-300 cursor-pointer"></label>
-                </div>
+                <div class="relative inline-block w-10 mr-2 align-middle select-none transition duration-200 ease-in"><input type="checkbox" name="toggle" id="public-share-toggle" class="toggle-checkbox absolute block w-6 h-6 rounded-full bg-white border-4 appearance-none cursor-pointer"/><label for="public-share-toggle" class="toggle-label block overflow-hidden h-6 rounded-full bg-gray-300 cursor-pointer"></label></div>
             </div>
             <div id="share-link-container" class="hidden">
-                 <label class="block text-sm font-medium text-gray-700 mb-1">Liên kết chia sẻ</label>
-                 <div class="flex gap-2">
-                      <input type="text" id="share-link-input" readonly class="w-full px-3 py-2 border border-gray-300 rounded-lg bg-gray-100">
-                      <button id="copy-share-link-btn" class="bg-indigo-600 text-white px-4 py-2 rounded-lg hover:bg-indigo-700 flex items-center gap-2">
-                           <i class="far fa-copy"></i>
-                           <span>Sao chép</span>
-                      </button>
-                 </div>
-                 <p class="text-xs text-gray-500 mt-2">Bất kỳ ai có liên kết này đều có thể xem lịch công việc của nhóm bạn ở chế độ chỉ đọc.</p>
+                <label class="text-sm-label">Liên kết chia sẻ</label>
+                <div class="flex gap-2">
+                    <input type="text" id="share-link-input" readonly class="glass-input !bg-black/5">
+                    <button id="copy-share-link-btn" class="glass-btn primary flex-shrink-0"><i class="far fa-copy mr-2"></i><span>Sao chép</span></button>
+                </div>
+                <p class="text-xs text-gray-500 mt-2">Bất kỳ ai có liên kết này đều có thể xem lịch công việc của nhóm bạn ở chế độ chỉ đọc.</p>
             </div>
-            <div class="flex justify-end mt-6">
-                <button type="button" class="bg-gray-200 text-gray-800 px-4 py-2 rounded-lg hover:bg-gray-300" onclick="closeModal('share-modal')">Đóng</button>
-            </div>
+            <div class="flex justify-end mt-6"><button type="button" class="glass-btn" onclick="closeModal('share-modal')">Đóng</button></div>
         </div>
     </div>
 
-    <!-- Friends Modal -->
-    <div id="friends-modal" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 hidden p-4">
-        <div class="modal-content bg-white p-6 rounded-xl shadow-lg w-full max-w-lg transform transition-all scale-95 opacity-0 flex flex-col max-h-[80vh]">
+    <div id="friends-modal" class="modal-overlay hidden">
+        <div class="modal-content p-6 w-full max-w-lg flex flex-col max-h-[80vh]">
             <h3 class="text-xl font-bold text-gray-800 mb-4 flex-shrink-0">Quản lý bạn bè</h3>
             <div class="mb-4 flex-shrink-0">
                 <form id="send-friend-request-form" class="flex gap-2 mb-2">
-                    <input type="email" id="friend-email-input" class="flex-1 px-3 py-2 border border-gray-300 rounded-lg" placeholder="Nhập email để kết bạn" required />
-                    <button type="submit" class="bg-indigo-600 text-white px-4 py-2 rounded-lg hover:bg-indigo-700">Gửi</button>
+                    <input type="email" id="friend-email-input" class="glass-input flex-1" placeholder="Nhập email để kết bạn" required />
+                    <button type="submit" class="glass-btn primary">Gửi</button>
                 </form>
                 <div id="friend-request-message" class="hidden text-sm mb-2"></div>
             </div>
-            <div class="flex-grow overflow-y-auto custom-scrollbar pr-2">
+            <div class="flex-grow overflow-y-auto custom-scrollbar -mr-2 pr-2">
                 <div class="mb-4">
                     <h4 class="font-semibold text-gray-700 mb-2">Lời mời kết bạn</h4>
                     <ul id="friend-requests-list" class="space-y-2"></ul>
@@ -424,63 +418,50 @@
                     <ul id="friends-list" class="space-y-2"></ul>
                 </div>
             </div>
-            <div class="flex justify-end mt-6 flex-shrink-0">
-                <button type="button" class="bg-gray-200 text-gray-800 px-4 py-2 rounded-lg hover:bg-gray-300" onclick="closeModal('friends-modal')">Đóng</button>
-            </div>
+            <div class="flex justify-end mt-6 flex-shrink-0"><button type="button" class="glass-btn" onclick="closeModal('friends-modal')">Đóng</button></div>
         </div>
     </div>
 
     <!-- Messenger Chat Button -->
-    <button id="open-chat-btn" class="fixed bottom-6 right-6 z-40 bg-indigo-600 text-white w-14 h-14 rounded-full shadow-lg flex items-center justify-center text-3xl hover:bg-indigo-700 transition-all">
+    <button id="open-chat-btn" class="fixed bottom-6 right-6 z-40 bg-[var(--brand-primary)] text-white w-16 h-16 rounded-full shadow-lg flex items-center justify-center text-3xl hover:bg-blue-600 transition-all transform hover:scale-110">
         <i class="fab fa-facebook-messenger"></i>
     </button>
-
+    
     <!-- Messenger Chat Modal -->
-    <div id="chat-modal" class="fixed inset-0 bg-black bg-opacity-50 flex items-end md:items-center justify-center z-50 hidden">
-        <div class="modal-content bg-white rounded-t-2xl md:rounded-2xl shadow-2xl w-full max-w-3xl h-[80vh] flex flex-col md:flex-row transform transition-all scale-95 opacity-0 overflow-hidden">
+    <div id="chat-modal" class="modal-overlay hidden p-0 md:p-4" onclick="closeModal('chat-modal')">
+        <div class="modal-content bg-white/70 w-full max-w-4xl h-full md:h-[calc(100vh-4rem)] flex flex-row overflow-hidden md:!rounded-3xl !rounded-none" onclick="event.stopPropagation()">
             <!-- Sidebar -->
-            <div id="chat-sidebar" class="w-full md:w-80 bg-gray-50 border-r border-gray-200 flex flex-col">
-                <div class="flex items-center justify-between p-4 border-b">
-                    <div class="font-bold text-lg text-gray-800">Tin nhắn</div>
+            <div id="chat-sidebar" class="w-full md:w-80 bg-white/30 border-r border-white/50 flex flex-col">
+                <div class="flex items-center justify-between p-4 border-b border-white/50 flex-shrink-0">
+                    <div class="font-bold text-lg text-gray-900">Tin nhắn</div>
                     <button onclick="closeModal('chat-modal')" class="text-gray-500 hover:text-red-500 text-xl"><i class="fas fa-times"></i></button>
                 </div>
-                <div class="flex gap-2 px-4 pt-2">
-                    <button id="chat-tab-group" class="flex-1 py-2 rounded-lg font-medium text-sm text-center bg-indigo-100 text-indigo-700">Nhóm</button>
-                    <button id="chat-tab-friends" class="flex-1 py-2 rounded-lg font-medium text-sm text-center bg-gray-100 text-gray-700">Bạn bè</button>
-                </div>
+                <div class="flex gap-2 p-2 flex-shrink-0"><button id="chat-tab-group" class="flex-1 glass-btn !rounded-lg !text-sm !py-2 !font-semibold">Nhóm</button><button id="chat-tab-friends" class="flex-1 glass-btn !rounded-lg !text-sm !py-2 !font-semibold">Bạn bè</button></div>
                 <div id="chat-conversations-list" class="flex-1 overflow-y-auto p-2 space-y-1 custom-scrollbar"></div>
             </div>
             <!-- Chat Main -->
             <div id="chat-view" class="flex-1 flex-col h-full hidden">
-                <div id="chat-header" class="p-4 border-b flex items-center gap-3 flex-shrink-0">
-                    <button id="back-to-conversations-btn" class="p-2 -ml-2 text-gray-600 hover:text-gray-800 md:hidden">
-                        <i class="fas fa-arrow-left"></i>
-                    </button>
+                <div id="chat-header" class="p-4 border-b border-white/50 flex items-center gap-3 flex-shrink-0 backdrop-blur-sm bg-white/20">
+                    <button id="back-to-conversations-btn" class="p-2 -ml-2 text-gray-600 hover:text-gray-800 md:hidden"><i class="fas fa-arrow-left"></i></button>
                     <div id="chat-avatar" class="w-10 h-10 rounded-full bg-indigo-200 flex items-center justify-center text-xl font-bold text-white flex-shrink-0"></div>
-                    <div class="overflow-hidden">
-                        <div id="chat-title" class="font-semibold text-gray-800 truncate"></div>
-                        <div id="chat-subtitle" class="text-xs text-gray-500 truncate"></div>
-                    </div>
+                    <div class="overflow-hidden"><div id="chat-title" class="font-semibold text-gray-900 truncate"></div><div id="chat-subtitle" class="text-xs text-gray-600 truncate"></div></div>
                 </div>
-                <div id="chat-messages" class="flex-1 overflow-y-auto p-4 space-y-4 bg-gray-50 custom-scrollbar"></div>
-                <form id="chat-input-form" class="flex items-center gap-2 p-4 border-t bg-white">
-                    <input id="chat-input" type="text" class="flex-1 px-4 py-2 border border-gray-300 rounded-full focus:ring-indigo-500 focus:border-indigo-500" placeholder="Nhập tin nhắn..." autocomplete="off" />
-                    <button type="submit" class="bg-indigo-600 text-white w-10 h-10 rounded-full hover:bg-indigo-700 transition-colors flex items-center justify-center flex-shrink-0"><i class="fas fa-paper-plane"></i></button>
+                <div id="chat-messages" class="flex-1 overflow-y-auto p-4 space-y-4 bg-transparent custom-scrollbar"></div>
+                <form id="chat-input-form" class="flex items-center gap-3 p-3 border-t border-white/50 bg-white/20 backdrop-blur-sm">
+                    <input id="chat-input" type="text" class="flex-1 px-4 py-2 border-none rounded-full glass-input" placeholder="Nhập tin nhắn..." autocomplete="off" />
+                    <button type="submit" class="bg-[var(--brand-primary)] text-white w-10 h-10 rounded-full hover:bg-blue-600 transition-colors flex items-center justify-center flex-shrink-0"><i class="fas fa-paper-plane"></i></button>
                 </form>
             </div>
             <!-- Placeholder -->
-            <div id="chat-placeholder" class="flex-1 flex-col h-full items-center justify-center bg-gray-50 p-4 hidden md:flex">
-               <i class="fa-regular fa-comments text-6xl text-gray-300 mb-4"></i>
-               <h3 class="text-lg font-semibold text-gray-600">Bắt đầu cuộc trò chuyện</h3>
-               <p class="text-sm text-gray-500 text-center">Chọn một nhóm hoặc bạn bè để xem tin nhắn.</p>
-            </div>
+            <div id="chat-placeholder" class="flex-1 flex-col h-full items-center justify-center p-4 hidden md:flex"><i class="fa-regular fa-comments text-7xl text-gray-300 mb-4"></i><h3 class="text-xl font-semibold text-gray-600">Bắt đầu cuộc trò chuyện</h3><p class="text-gray-500 text-center">Chọn một nhóm hoặc bạn bè để xem tin nhắn.</p></div>
         </div>
     </div>
 
+    <!-- ########################################################### -->
+    <!-- ############ DO NOT EDIT SCRIPT BELOW ##################### -->
+    <!-- ########################################################### -->
     <script type="module">
-        // #############################################################################
-        // ##### QUAN TRỌNG: Vui lòng thay thế bằng cấu hình Firebase của bạn #####
-        // #############################################################################
+        // ##### IMPORTANT: PLEASE REPLACE WITH YOUR FIREBASE CONFIG #####
         const firebaseConfig = {
             apiKey: "AIzaSyB_P4-Si9ua1b7k4W60z6tcTfK-FXdWpRs",
             authDomain: "quan-ly-media.firebaseapp.com",
@@ -494,97 +475,8 @@
         
         // Import from a recent, stable Firebase version
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.3/firebase-app.js";
-        import { 
-            getAuth, 
-            createUserWithEmailAndPassword, 
-            signInWithEmailAndPassword, 
-            onAuthStateChanged, 
-            signOut 
-        } from "https://www.gstatic.com/firebasejs/10.12.3/firebase-auth.js";
-        import { 
-            getFirestore, 
-            doc, 
-            setDoc, 
-            getDoc, 
-            addDoc, 
-            collection,
-            onSnapshot,
-            updateDoc,
-            deleteDoc,
-            arrayUnion,
-            arrayRemove,
-            query,
-            where,
-            getDocs,
-            Timestamp,
-            writeBatch,
-            orderBy,
-            limit
-        } from "https://www.gstatic.com/firebasejs/10.12.3/firebase-firestore.js";
-
-        // #################################################################################################
-        // ##### LƯU Ý QUAN TRỌNG VỀ PHÂN QUYỀN (FIRESTORE SECURITY RULES) CHO CHIA SẺ CÔNG KHAI #####
-        // #################################################################################################
-        // Để tính năng chia sẻ công khai hoạt động, bạn CẦN cập nhật Firestore Security Rules.
-        // Nếu không, người dùng không đăng nhập sẽ không thể xem được dữ liệu.
-        //
-        // Dưới đây là ví dụ về các quy tắc cần thiết. Hãy vào Firebase Console > Firestore Database > Rules
-        // và cập nhật cho phù hợp.
-        /*
-        rules_version = '2';
-        service cloud.firestore {
-          match /databases/{database}/documents {
-            
-            // Hàm kiểm tra xem người dùng có phải là admin của hệ thống không
-            function isAppAdmin() {
-              return request.auth != null && get(/databases/$(database)/documents/users/$(request.auth.uid)).data.role == 'admin';
-            }
-
-            // Hàm kiểm tra xem người dùng có phải là thành viên của một nhóm cụ thể không
-            function isGroupMember(groupId) {
-                return request.auth != null && request.auth.uid in get(/databases/$(database)/documents/groups/$(groupId)).data.members;
-            }
-
-            // QUY TẮC CHO COLLECTION 'users'
-            match /users/{userId} {
-              allow read: if request.auth != null; // Bất kỳ ai đăng nhập cũng có thể đọc hồ sơ người khác (cần cho việc lấy tên, email)
-              allow create: if request.auth.uid == userId; // Người dùng tự tạo hồ sơ của mình
-              allow update: if request.auth.uid == userId; // Người dùng tự cập nhật hồ sơ của mình
-              // Admin của hệ thống có thể đọc, ghi, xóa bất kỳ hồ sơ người dùng nào
-              allow write, delete: if isAppAdmin();
-            }
-
-            // QUY TẮC CHO COLLECTION 'groups'
-            match /groups/{groupId} {
-              // CHO PHÉP XEM CÔNG KHAI: Bất kỳ ai (kể cả không đăng nhập) cũng có thể đọc (get) thông tin của nhóm nếu nhóm được đặt là công khai.
-              allow get: if resource.data.public == true;
-
-              // Cho phép thành viên đọc và cập nhật (không xóa) nhóm.
-              allow read, update: if isGroupMember(groupId);
-              
-              // Chỉ admin của nhóm mới có quyền xóa nhóm.
-              allow delete: if request.auth.uid == resource.data.adminId;
-            }
-
-            // QUY TẮC CHO SUB-COLLECTION 'tasks'
-            match /groups/{groupId}/tasks/{taskId} {
-                // CHO PHÉP XEM CÔNG KHAI: Bất kỳ ai cũng có thể liệt kê (list) và đọc (get) các công việc của một nhóm công khai.
-                allow list, get: if get(/databases/$(database)/documents/groups/$(groupId)).data.public == true;
-                
-                // Thành viên nhóm có toàn quyền trên các công việc.
-                allow read, write, delete: if isGroupMember(groupId);
-            }
-            
-            // Các quy tắc khác cho 'chats', 'friendRequests' giữ nguyên hoặc tùy chỉnh theo nhu cầu...
-            // Ví dụ:
-            match /chats/{chatId}/messages/{messageId} {
-                allow read, create: if request.auth.uid in chatId.split('_');
-            }
-          }
-        }
-        */
-        // #############################################################################
-
+        import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.12.3/firebase-auth.js";
+        import { getFirestore, doc, setDoc, getDoc, addDoc, collection, onSnapshot, updateDoc, deleteDoc, arrayUnion, arrayRemove, query, where, getDocs, Timestamp, writeBatch, orderBy, limit } from "https://www.gstatic.com/firebasejs/10.12.3/firebase-firestore.js";
 
         // --- Firebase Config Check ---
         if (firebaseConfig.apiKey.includes("AIzaSyB_P4-Si9ua1b7k4W60z6tcTfK-FXdWpRs") || firebaseConfig.projectId.includes("quan-ly-media")) {
@@ -618,11 +510,12 @@
         let allUsersCache = [];
         let activeGroupMembers = []; 
         let currentFriendsData = []; // Cache for friend data {uid, name, email}
-        // UI State
+        // UI State & Drag-Drop State
         let currentWeek = 1;
         let activeGroupStartDate = null;
         let activeGroupTotalWeeks = 4;
         let currentChatContext = { type: null, id: null, name: null };
+        let dragOperation = { taskId: null, isCopy: false };
         
 
         // --- UI Elements ---
@@ -740,7 +633,7 @@
             });
              if (screenId !== 'loading-screen') {
                  ui.loadingScreen.classList.add('hidden');
-            }
+             }
         };
 
         // --- Modal Control ---
@@ -761,11 +654,11 @@
             
             // Reset chat view on close
             if (modalId === 'chat-modal') {
-                 ui.chatSidebar.classList.remove('hidden');
-                 ui.chatView.classList.add('hidden');
-                 ui.chatView.classList.remove('flex');
-                 ui.chatPlaceholder.classList.remove('hidden');
-                 ui.chatPlaceholder.classList.add('md:flex'); // Reset to default state
+                ui.chatSidebar.classList.remove('hidden');
+                ui.chatView.classList.add('hidden');
+                ui.chatView.classList.remove('flex');
+                ui.chatPlaceholder.classList.remove('hidden');
+                ui.chatPlaceholder.classList.add('md:flex'); // Reset to default state
             }
 
             document.body.style.overflow = ''; // Restore background scrolling
@@ -1022,18 +915,18 @@
         // ======================================================================
         async function initializePublicView(groupId) {
              showScreen('public-view-screen');
-             ui.publicMainContent.innerHTML = `<div class="text-center p-8"><i class="fas fa-spinner fa-spin text-2xl text-indigo-600"></i><p class="mt-2">Đang tải lịch công việc...</p></div>`;
+             ui.publicMainContent.innerHTML = `<div class="text-center p-8"><i class="fas fa-spinner fa-spin text-2xl text-[var(--brand-primary)]"></i><p class="mt-2">Đang tải lịch công việc...</p></div>`;
 
              try {
                 const groupRef = doc(db, "groups", groupId);
                 const groupDoc = await getDoc(groupRef);
 
                 if (!groupDoc.exists() || !groupDoc.data().public) {
-                     ui.publicMainContent.innerHTML = `<div class="text-center bg-red-100 text-red-700 p-8 rounded-xl shadow">
-                          <h2 class="text-xl font-bold mb-2">Lỗi Truy Cập</h2>
-                          <p>Lịch công việc này không tồn tại hoặc không được chia sẻ công khai.</p>
-                       </div>`;
-                     return;
+                    ui.publicMainContent.innerHTML = `<div class="glass-pane text-center p-8">
+                            <h2 class="text-xl font-bold mb-2 text-red-600">Lỗi Truy Cập</h2>
+                            <p>Lịch công việc này không tồn tại hoặc không được chia sẻ công khai.</p>
+                          </div>`;
+                    return;
                 }
                 
                 const groupData = { id: groupDoc.id, ...groupDoc.data() };
@@ -1063,10 +956,10 @@
                      ? 'Bạn không có quyền xem lịch này. Hãy chắc chắn rằng Firestore Security Rules đã được cấu hình đúng cho việc xem công khai.'
                      : 'Đã có lỗi xảy ra khi tải dữ liệu.';
                 
-                 ui.publicMainContent.innerHTML = `<div class="text-center bg-red-100 text-red-700 p-8 rounded-xl shadow">
-                          <h2 class="text-xl font-bold mb-2">Lỗi</h2>
-                          <p>${errorMessage}</p>
-                       </div>`;
+                 ui.publicMainContent.innerHTML = `<div class="glass-pane text-center p-8">
+                              <h2 class="text-xl font-bold mb-2 text-red-600">Lỗi</h2>
+                              <p>${errorMessage}</p>
+                            </div>`;
              }
         }
 
@@ -1134,23 +1027,11 @@
         function updateAdminStats(users, totalGroups, totalTasks) {
             const totalUsers = users.length;
             ui.adminStatsContainer.innerHTML = `
-                <div class="stat-card bg-blue-50">
-                    <div class="stat-icon text-blue-500"><i class="fas fa-users"></i></div>
-                    <div class="stat-value text-blue-600">${totalUsers}</div>
-                    <div class="stat-label">Tổng người dùng</div>
-                </div>
-                <div class="stat-card bg-green-50">
-                    <div class="stat-icon text-green-500"><i class="fas fa-layer-group"></i></div>
-                    <div class="stat-value text-green-600">${totalGroups}</div>
-                    <div class="stat-label">Tổng số nhóm</div>
-                </div>
-                <div class="stat-card bg-indigo-50">
-                    <div class="stat-icon text-indigo-500"><i class="fas fa-tasks"></i></div>
-                    <div class="stat-value text-indigo-600">${totalTasks}</div>
-                    <div class="stat-label">Tổng công việc</div>
-                </div>
+                <div class="stat-card"><div class="stat-icon text-blue-500"><i class="fas fa-users"></i></div><div class="stat-value text-blue-600">${totalUsers}</div><div class="stat-label">Tổng người dùng</div></div>
+                <div class="stat-card"><div class="stat-icon text-green-500"><i class="fas fa-layer-group"></i></div><div class="stat-value text-green-600">${totalGroups}</div><div class="stat-label">Tổng số nhóm</div></div>
+                <div class="stat-card"><div class="stat-icon text-indigo-500"><i class="fas fa-tasks"></i></div><div class="stat-value text-indigo-600">${totalTasks}</div><div class="stat-label">Tổng công việc</div></div>
                 <style>
-                    .stat-card { border-radius: 12px; padding: 1.5rem; text-align: center; }
+                    .stat-card { background: var(--glass-bg); border: 1px solid var(--glass-border-color); border-radius: var(--border-radius-main); padding: 1.5rem; text-align: center; }
                     .stat-icon { font-size: 2rem; margin-bottom: 0.75rem; }
                     .stat-value { font-size: 2.25rem; font-weight: 700; }
                     .stat-label { font-size: 0.875rem; color: #6b7280; margin-top: 4px; text-transform: uppercase; letter-spacing: 0.5px; }
@@ -1201,10 +1082,10 @@
                         label: 'Số người dùng mới',
                         data: data,
                         fill: true,
-                        borderColor: 'rgb(79, 70, 229)',
-                        backgroundColor: 'rgba(199, 210, 254, 0.5)',
-                        tension: 0.3,
-                        pointBackgroundColor: 'rgb(79, 70, 229)',
+                        borderColor: 'rgb(0, 122, 255)',
+                        backgroundColor: 'rgba(0, 122, 255, 0.2)',
+                        tension: 0.4,
+                        pointBackgroundColor: 'rgb(0, 122, 255)',
                         pointRadius: 4,
                     }]
                 },
@@ -1212,20 +1093,17 @@
                     responsive: true,
                     maintainAspectRatio: false,
                     scales: {
-                        y: {
-                            beginAtZero: true,
-                            ticks: {
-                                precision: 0 // Show only whole numbers
-                            }
-                        }
+                        y: { beginAtZero: true, ticks: { precision: 0 }, grid: { color: 'rgba(0,0,0,0.05)' } },
+                        x: { grid: { display: false } }
                     },
                     plugins: {
                         legend: { display: false },
                         title: {
                             display: true,
                             text: 'Biểu Đồ Tăng Trưởng Người Dùng',
-                            font: { size: 18, family: "'Be Vietnam Pro', sans-serif" },
-                            padding: { bottom: 20 }
+                            font: { size: 18, family: "'Inter', sans-serif", weight: '600' },
+                            padding: { bottom: 20 },
+                            color: '#1d1d1f'
                         }
                     }
                 }
@@ -1248,17 +1126,10 @@
                 const status = user.status || 'active';
                 let statusBadge;
                 switch (status) {
-                    case 'active':
-                        statusBadge = `<span class="px-2 py-1 text-xs font-medium rounded-full bg-green-100 text-green-800">Hoạt động</span>`;
-                        break;
-                    case 'pending':
-                        statusBadge = `<span class="px-2 py-1 text-xs font-medium rounded-full bg-yellow-100 text-yellow-800">Chờ duyệt</span>`;
-                        break;
-                    case 'suspended':
-                        statusBadge = `<span class="px-2 py-1 text-xs font-medium rounded-full bg-red-100 text-red-800">Bị khóa</span>`;
-                        break;
-                    default:
-                        statusBadge = `<span class="px-2 py-1 text-xs font-medium rounded-full bg-gray-100 text-gray-800">Không rõ</span>`;
+                    case 'active': statusBadge = `<span class="px-2 py-1 text-xs font-medium rounded-full bg-green-100 text-green-800">Hoạt động</span>`; break;
+                    case 'pending': statusBadge = `<span class="px-2 py-1 text-xs font-medium rounded-full bg-yellow-100 text-yellow-800">Chờ duyệt</span>`; break;
+                    case 'suspended': statusBadge = `<span class="px-2 py-1 text-xs font-medium rounded-full bg-red-100 text-red-800">Bị khóa</span>`; break;
+                    default: statusBadge = `<span class="px-2 py-1 text-xs font-medium rounded-full bg-gray-100 text-gray-800">Không rõ</span>`;
                 }
 
                 const canModify = user.email !== ADMIN_EMAIL;
@@ -1276,23 +1147,13 @@
                 }
 
                 return `
-                    <tr class="bg-white border-b hover:bg-gray-50 ${status === 'pending' ? 'bg-yellow-50' : ''}">
+                    <tr class="border-b border-gray-200/50 hover:bg-gray-500/5 ${status === 'pending' ? 'bg-yellow-500/10' : ''}">
                         <td class="px-6 py-4 font-medium text-gray-900 whitespace-nowrap">${user.name || 'N/A'}</td>
                         <td class="px-6 py-4">${user.email}</td>
                         <td class="px-6 py-4">${formatFullDate(user.createdAt)}</td>
-                        <td class="px-6 py-4">
-                            <span class="px-2 py-1 text-xs font-medium rounded-full ${
-                                user.role === 'admin' 
-                                ? 'bg-indigo-100 text-indigo-800' 
-                                : 'bg-gray-100 text-gray-800'
-                            }">
-                                ${user.role === 'admin' ? 'Admin' : 'User'}
-                            </span>
-                        </td>
+                        <td class="px-6 py-4"><span class="px-2 py-1 text-xs font-medium rounded-full ${user.role === 'admin' ? 'bg-indigo-100 text-indigo-800' : 'bg-gray-100 text-gray-800'}">${user.role === 'admin' ? 'Admin' : 'User'}</span></td>
                         <td class="px-6 py-4">${statusBadge}</td>
-                        <td class="px-6 py-4">
-                           ${actionsHtml}
-                        </td>
+                        <td class="px-6 py-4">${actionsHtml}</td>
                     </tr>
                 `;
             }).join('');
@@ -1440,8 +1301,8 @@
             
             if (groupIds.length === 0) {
                 ui.mainContent.innerHTML = `
-                    <div class="text-center bg-white p-8 rounded-xl shadow">
-                        <h2 class="text-xl font-bold mb-2">Chào mừng bạn!</h2>
+                    <div class="glass-pane text-center p-8">
+                        <h2 class="text-2xl font-bold mb-2">Chào mừng bạn!</h2>
                         <p class="text-gray-600">Bạn chưa ở trong nhóm nào. Hãy tạo một nhóm mới hoặc tham gia bằng mã mời.</p>
                     </div>`;
                 return;
@@ -1456,16 +1317,16 @@
                 const isGroupAdmin = data.adminId === currentUser.uid;
 
                 const deleteButtonHtml = isGroupAdmin ? `
-                    <button onclick="deleteGroup(event, '${doc.id}', '${data.name}')" class="absolute top-2 right-2 w-8 h-8 bg-red-100 text-red-600 rounded-full hover:bg-red-200 transition-colors flex items-center justify-center">
+                    <button onclick="deleteGroup(event, '${doc.id}', '${data.name}')" class="absolute top-3 right-3 w-8 h-8 bg-red-100/50 text-red-600 rounded-full hover:bg-red-200/80 transition-colors flex items-center justify-center">
                         <i class="fas fa-trash-alt fa-sm"></i>
                     </button>
                 ` : '';
 
                 return `
-                    <div class="group-card relative">
-                        <div onclick="selectGroup('${doc.id}')" class="bg-white p-5 rounded-xl shadow hover:shadow-lg hover:-translate-y-1 transition-all cursor-pointer pr-12">
-                            <div class="font-bold text-lg text-gray-800">${data.name}</div>
-                            <div class="text-sm text-gray-500">${(data.members || []).length} thành viên</div>
+                    <div class="group-card relative glass-pane p-5 hover:shadow-xl hover:-translate-y-1">
+                        <div onclick="selectGroup('${doc.id}')" class="cursor-pointer pr-10">
+                            <div class="font-bold text-lg text-gray-900">${data.name}</div>
+                            <div class="text-sm text-gray-600">${(data.members || []).length} thành viên</div>
                         </div>
                         ${deleteButtonHtml}
                     </div>`;
@@ -1674,7 +1535,7 @@
                     ui.statsContainer.classList.remove('hidden');
                     ui.leaveGroupBtn.classList.remove('hidden');
                     ui.sharePlanBtn.classList.remove('hidden');
-                    ui.mainContent.innerHTML = `<div id="schedule-container" class="bg-white p-2 sm:p-4 md:p-6 rounded-xl shadow-lg"></div>`;
+                    ui.mainContent.innerHTML = `<div id="schedule-container" class="glass-pane p-2 sm:p-4 md:p-6"></div>`;
             
                     if (groupData.startDate && typeof groupData.startDate.toDate === 'function') {
                         activeGroupStartDate = groupData.startDate.toDate();
@@ -1688,6 +1549,9 @@
                     renderWeekNavigator();
                     renderSchedule();
                     renderTasks(cachedTasks); 
+
+                    // Add drag and drop listeners once the schedule container is in the DOM
+                    addDragDropListeners();
                 }, async (error) => {
                     console.error("Group listener failed:", error);
                     showMessage('Lỗi Kết Nối', 'Mất kết nối tới dữ liệu nhóm.', true);
@@ -1731,8 +1595,8 @@
             }
 
             let navHtml = `
-            <div class="week-navigator flex flex-col md:flex-row justify-between items-center mb-4 p-3 bg-gray-50 rounded-lg">
-                <div class="font-semibold text-gray-700 mb-3 md:mb-0">
+            <div class="week-navigator flex flex-col md:flex-row justify-between items-center mb-4 p-3 bg-black/5 rounded-2xl">
+                <div class="font-semibold text-gray-800 mb-3 md:mb-0">
                     Tuần ${currentWeek} (${formatDate(weekStart)} - ${formatDate(weekEnd)})
                 </div>
                 <div class="flex items-center gap-1">
@@ -1742,13 +1606,13 @@
                 </div>
             </div>
             <style>
-                .week-btn, .week-num-btn { padding: 8px 12px; border: none; border-radius: 6px; background: #e5e7eb; color: #374151; cursor: pointer; transition: all 0.2s; font-weight: 500; }
-                .week-btn:hover:not(:disabled), .week-num-btn:hover { background: #d1d5db; }
+                .week-btn, .week-num-btn { width: 36px; height: 36px; border: none; border-radius: 10px; background: rgba(0,0,0,0.05); color: #374151; cursor: pointer; transition: all 0.2s; font-weight: 600; }
+                .week-btn:hover:not(:disabled), .week-num-btn:hover { background: rgba(0,0,0,0.1); }
                 .week-btn:disabled { opacity: 0.5; cursor: not-allowed; }
-                .week-num-btn.active { background: #4f46e5; color: white; }
+                .week-num-btn.active { background: var(--brand-primary); color: white; }
             </style>`;
             
-           container.insertAdjacentHTML('afterbegin', navHtml);
+            container.insertAdjacentHTML('afterbegin', navHtml);
         }
 
         window.changeWeek = (delta, isReadOnly = false) => {
@@ -1763,6 +1627,7 @@
             renderWeekNavigator(isReadOnly);
             renderSchedule(isReadOnly);
             renderTasks(cachedTasks, isReadOnly);
+            updateStats(cachedTasks, isReadOnly); // Update stats when week changes
         };
 
         function renderSchedule(isReadOnly = false) {
@@ -1778,8 +1643,8 @@
             const timeSlots = ["00:00", "01:00", "02:00", "03:00", "04:00", "05:00", "06:00", "07:00", "08:00", "09:00", "10:00", "11:00", "12:00", "13:00", "14:00", "15:00", "16:00", "17:00", "18:00", "19:00", "20:00", "21:00", "22:00", "23:00"];
             
             if (!activeGroupStartDate) {
-                 container.insertAdjacentHTML('beforeend', '<p class="text-center text-red-500 p-4">Không thể hiển thị lịch vì nhóm này không có ngày bắt đầu hợp lệ.</p>');
-                 return;
+                container.insertAdjacentHTML('beforeend', '<p class="text-center text-red-500 p-4">Không thể hiển thị lịch vì nhóm này không có ngày bắt đầu hợp lệ.</p>');
+                return;
             }
             
             const weekDates = getWeekDates(currentWeek, activeGroupStartDate);
@@ -1787,19 +1652,19 @@
             // Responsive grid wrapper
             let gridHtml = '<div class="schedule-grid-wrapper overflow-x-auto custom-scrollbar">';
             
-            gridHtml += '<div class="schedule-grid grid" style="grid-template-columns: 50px repeat(7, minmax(120px, 1fr)); gap: 1px; background-color: #e5e7eb; border-radius: 8px; overflow: hidden; min-width: 900px;">';
-            gridHtml += '<div class="bg-gray-200 sticky left-0 z-10"></div>'; // Corner
+            gridHtml += '<div class="schedule-grid grid" style="grid-template-columns: 50px repeat(7, minmax(140px, 1fr)); gap: 1px; background-color: rgba(229, 229, 231, 0.5); border-radius: var(--border-radius-sub); overflow: hidden; min-width: 900px;">';
+            gridHtml += '<div class="bg-white/30 sticky left-0 z-10"></div>'; // Corner
             days.forEach((day, index) => {
-                gridHtml += `<div class="bg-gray-200 text-center p-2 font-semibold text-sm text-gray-600">${day}<div class="font-normal text-xs">${formatDate(weekDates[index])}</div></div>`;
+                gridHtml += `<div class="bg-white/30 text-center p-2 font-semibold text-sm text-gray-700">${day}<div class="font-normal text-xs text-gray-500">${formatDate(weekDates[index])}</div></div>`;
             });
             
             timeSlots.forEach(time => {
-                gridHtml += `<div class="bg-gray-200 text-center p-2 font-medium text-xs text-gray-600 flex items-center justify-center sticky left-0 z-10 time-label-cell" data-time-row="${time}">${time}</div>`;
+                gridHtml += `<div class="bg-white/30 text-center p-2 font-medium text-xs text-gray-600 flex items-center justify-center sticky left-0 z-10 time-label-cell" data-time-row="${time}">${time}</div>`;
                 days.forEach((_, index) => {
                     const cellDate = weekDates[index];
                     const dateString = cellDate.toISOString().split('T')[0];
                     
-                    const cellClasses = `grid-cell bg-white min-h-[100px] p-1.5 space-y-1.5 overflow-y-auto custom-scrollbar ${isReadOnly ? '' : 'hover:bg-indigo-50 transition-colors'}`;
+                    const cellClasses = `grid-cell bg-white/40 min-h-[100px] p-1.5 space-y-1.5 overflow-y-auto custom-scrollbar ${isReadOnly ? '' : 'hover:bg-blue-500/10'}`;
                     const clickHandler = isReadOnly ? '' : `onclick="openTaskModal(null, '${time}', '${dateString}')"`;
 
                     gridHtml += `<div class="${cellClasses}" data-time="${time}" data-date="${dateString}" data-time-row="${time}" ${clickHandler}></div>`;
@@ -1836,7 +1701,7 @@
         }
 
 
-        // --- Task Handling ---
+        // --- Task Handling (with Drag & Drop) ---
         function renderTasks(allTasks, isReadOnly = false) {
             document.querySelectorAll('.task-card').forEach(card => card.remove());
             if (!activeGroupStartDate) return;
@@ -1852,15 +1717,19 @@
                         const assigneeName = assignee ? (assignee.name || assignee.email) : 'Chưa gán';
 
                         const taskEl = document.createElement('div');
+                        taskEl.id = `task-${task.id}`;
+                        taskEl.dataset.taskId = task.id;
+                        taskEl.draggable = !isReadOnly; // Make draggable if not read-only
+
                         const platformClass = (task.platform || 'unknown').toLowerCase();
                         const statusClass = (task.status || 'Chưa làm').replace(/\s+/g, '-').toLowerCase();
 
-                        taskEl.className = `task-card border-l-4 p-2 rounded transition-all platform-${platformClass} ${isReadOnly ? 'cursor-default' : 'cursor-pointer hover:shadow-md hover:translate-x-1'}`;
+                        taskEl.className = `task-card platform-${platformClass} ${isReadOnly ? 'cursor-default' : 'hover:shadow-lg hover:scale-[1.03]'}`;
                         taskEl.innerHTML = `
-                            <div class="font-bold text-sm text-gray-800">${task.partner || 'N/A'}</div>
+                            <div class="font-bold text-sm text-gray-800 truncate">${task.partner || 'N/A'}</div>
                             <div class="text-xs text-gray-600 break-words">${task.content || ''}</div>
-                            <div class="text-xs text-indigo-500 font-medium mt-1">@${assigneeName}</div>
-                            <span class="task-status text-xs font-medium px-2 py-0.5 rounded-full mt-1 inline-block status-${statusClass}">${task.status || 'Chưa làm'}</span>
+                            <div class="text-xs text-indigo-600 font-medium mt-1 truncate">@${assigneeName}</div>
+                            <div class="status-badge status-${statusClass}">${task.status || 'Chưa làm'}</div>
                         `;
                         if (!isReadOnly) {
                              taskEl.onclick = (e) => {
@@ -1872,8 +1741,6 @@
                     }
                 }
             });
-
-            // After rendering tasks, optimize the layout
             optimizeScheduleLayout(isReadOnly);
         }
         
@@ -1936,7 +1803,7 @@
                 }
                 closeModal('task-modal');
             } catch (error) {
-                 showMessage('Lỗi', 'Không thể lưu công việc.', true);
+                showMessage('Lỗi', 'Không thể lưu công việc.', true);
             }
         });
         
@@ -1958,50 +1825,156 @@
         // --- Statistics ---
         function updateStats(allTasks, isReadOnly = false) {
             const container = isReadOnly ? ui.publicStatsContainer : ui.statsContainer;
+            if (!container) return;
 
             const statusCounts = { 'Chưa làm': 0, 'Đang làm': 0, 'Hoàn thành': 0, 'Bù': 0 };
-            let totalTasks = 0;
-            if (activeGroupStartDate){
-                const monthStart = new Date(activeGroupStartDate);
-                
-                const monthTasks = allTasks.filter(task => {
-                    if (!task.date) return false;
-                    const taskDate = new Date(task.date);
-                    return taskDate.getFullYear() === monthStart.getFullYear() && taskDate.getMonth() === monthStart.getMonth();
-                });
-                
-                totalTasks = monthTasks.length;
-                monthTasks.forEach(task => {
-                    const status = task.status || 'Chưa làm';
-                    if (statusCounts[status] !== undefined) {
-                        statusCounts[status]++;
-                    }
-                });
-            }
+            
+            const weekDates = activeGroupStartDate ? getWeekDates(currentWeek, activeGroupStartDate).map(d => d.toISOString().split('T')[0]) : [];
+            const weekTasks = allTasks.filter(task => weekDates.includes(task.date));
+
+            const totalTasks = weekTasks.length;
+            
+            weekTasks.forEach(task => {
+                const status = task.status || 'Chưa làm';
+                if (statusCounts[status] !== undefined) {
+                    statusCounts[status]++;
+                }
+            });
             
             let statsHtml = `
-                <div class="stat-card"><div class="stat-value">${totalTasks}</div><div class="stat-label">CV Tháng</div></div>
-                <div class="stat-card"><div class="stat-value text-gray-500">${statusCounts['Chưa làm']}</div><div class="stat-label">Chưa làm</div></div>
-                <div class="stat-card"><div class="stat-value text-blue-500">${statusCounts['Đang làm']}</div><div class="stat-label">Đang làm</div></div>
-                <div class="stat-card"><div class="stat-value text-green-500">${statusCounts['Hoàn thành']}</div><div class="stat-label">Hoàn thành</div></div>
-                <div class="stat-card"><div class="stat-value text-yellow-500">${statusCounts['Bù']}</div><div class="stat-label">CV Bù</div></div>
+                <div class="stat-item"><div class="stat-icon"><i class="fa-solid fa-layer-group text-purple-500"></i></div><div><div class="stat-value text-purple-600">${totalTasks}</div><div class="stat-label">CV Tuần</div></div></div>
+                <div class="stat-item"><div class="stat-icon"><i class="fa-solid fa-inbox text-gray-500"></i></div><div><div class="stat-value text-gray-600">${statusCounts['Chưa làm']}</div><div class="stat-label">Chưa làm</div></div></div>
+                <div class="stat-item"><div class="stat-icon"><i class="fa-solid fa-person-running text-sky-500"></i></div><div><div class="stat-value text-sky-600">${statusCounts['Đang làm']}</div><div class="stat-label">Đang làm</div></div></div>
+                <div class="stat-item"><div class="stat-icon"><i class="fa-solid fa-circle-check text-green-500"></i></div><div><div class="stat-value text-green-600">${statusCounts['Hoàn thành']}</div><div class="stat-label">Hoàn thành</div></div></div>
+                <div class="stat-item"><div class="stat-icon"><i class="fa-solid fa-arrow-rotate-left text-amber-500"></i></div><div><div class="stat-value text-amber-600">${statusCounts['Bù']}</div><div class="stat-label">CV Bù</div></div></div>
             `;
             if (!isReadOnly) {
-                statsHtml += `<div class="stat-card"><div class="stat-value text-xs break-all p-2">${activeGroupId || 'N/A'}</div><div class="stat-label">ID Nhóm</div></div>`;
+                statsHtml += `
+                 <div class="stat-item !flex-col !items-start !justify-center !p-3">
+                    <div class="stat-label !uppercase !text-gray-500">ID Nhóm</div>
+                    <div class="flex items-center gap-1 mt-1 w-full">
+                        <input type="text" readonly id="group-id-input" class="flex-grow bg-transparent text-gray-700 font-mono text-sm p-0 border-0 focus:ring-0 w-0" value="${activeGroupId || 'N/A'}">
+                        <button onclick="copyGroupId()" class="text-gray-500 hover:text-blue-600 w-8 h-8 flex-shrink-0 flex items-center justify-center rounded-lg hover:bg-black/10 transition">
+                            <i class="far fa-copy"></i>
+                        </button>
+                    </div>
+                 </div>
+                `;
             }
 
             container.innerHTML = `
                 ${statsHtml}
                 <style>
-                      .stat-card { background: white; border-radius: 12px; padding: 0.5rem; text-align: center; box-shadow: 0 2px 4px rgba(0,0,0,0.05); display: flex; flex-direction: column; justify-content: center;}
-                      .stat-value { font-size: 1.5rem; line-height: 2rem; font-weight: 700; color: #4f46e5; }
-                      .stat-label { font-size: 0.7rem; line-height: 1rem; color: #6b7280; margin-top: 2px; text-transform: uppercase; letter-spacing: 0.5px; }
-                      @media (max-width: 640px) {
-                           .stat-value { font-size: 1.25rem; line-height: 1.75rem;}
-                      }
+                     .stat-item { background: rgba(255,255,255,0.5); border: 1px solid var(--glass-border-color); border-radius: var(--border-radius-main); padding: 0.75rem 1rem; text-align: left; display: flex; align-items: center; gap: 0.75rem; }
+                     .stat-icon { font-size: 1.75rem; }
+                     .stat-value { font-size: 1.75rem; line-height: 2.25rem; font-weight: 800; }
+                     .stat-label { font-size: 0.75rem; line-height: 1rem; color: #6b7280; font-weight: 500; }
+                     @media (max-width: 640px) {
+                         .stat-value { font-size: 1.25rem; line-height: 1.75rem;}
+                     }
                 </style>
             `;
         }
+
+        window.copyGroupId = () => {
+            const input = document.getElementById('group-id-input');
+            if (!input) return;
+            navigator.clipboard.writeText(input.value).then(() => {
+                showMessage('Thành công', 'Đã sao chép ID Nhóm vào bộ nhớ tạm.');
+            }, (err) => {
+                console.error('Could not copy text: ', err);
+                showMessage('Lỗi', 'Không thể sao chép ID.', true);
+            });
+        };
+        
+        // --- Drag and Drop Logic ---
+        function addDragDropListeners() {
+            const container = document.getElementById('schedule-container');
+            if (!container) return;
+
+            // Using event delegation for drag events on dynamically created tasks
+            container.addEventListener('dragstart', (e) => {
+                if (e.target.classList.contains('task-card')) {
+                    dragOperation.taskId = e.target.dataset.taskId;
+                    dragOperation.isCopy = e.altKey; // Check if Alt key is pressed
+                    e.dataTransfer.setData('text/plain', dragOperation.taskId);
+                    e.dataTransfer.effectAllowed = e.altKey ? 'copy' : 'move';
+                    setTimeout(() => e.target.classList.add('dragging'), 0);
+                }
+            });
+
+            container.addEventListener('dragend', (e) => {
+                if (e.target.classList.contains('task-card')) {
+                    e.target.classList.remove('dragging');
+                }
+                 document.querySelectorAll('.drag-over').forEach(el => el.classList.remove('drag-over'));
+            });
+
+            container.addEventListener('dragover', (e) => {
+                e.preventDefault();
+                const cell = e.target.closest('.grid-cell');
+                if (cell) {
+                    document.querySelectorAll('.drag-over').forEach(el => el.classList.remove('drag-over'));
+                    cell.classList.add('drag-over');
+                }
+            });
+            
+            container.addEventListener('dragleave', (e) => {
+                 const cell = e.target.closest('.grid-cell');
+                 if (cell && !cell.contains(e.relatedTarget)) {
+                    cell.classList.remove('drag-over');
+                 }
+            });
+
+            container.addEventListener('drop', async (e) => {
+                e.preventDefault();
+                document.querySelectorAll('.drag-over').forEach(el => el.classList.remove('drag-over'));
+                const cell = e.target.closest('.grid-cell');
+                if (cell) {
+                    const taskId = dragOperation.taskId;
+                    if (!taskId) return;
+
+                    const newDate = cell.dataset.date;
+                    const newTime = cell.dataset.time;
+
+                    try {
+                        if (dragOperation.isCopy) {
+                            // Copy logic
+                            const taskRef = doc(db, "groups", activeGroupId, "tasks", taskId);
+                            const taskSnap = await getDoc(taskRef);
+                            if (taskSnap.exists()) {
+                                const originalTaskData = taskSnap.data();
+                                const newTaskData = {
+                                    ...originalTaskData,
+                                    date: newDate,
+                                    time: newTime,
+                                    createdAt: Timestamp.now(),
+                                    updatedAt: Timestamp.now()
+                                };
+                                delete newTaskData.id; // ensure new doc gets new ID
+                                await addDoc(collection(db, "groups", activeGroupId, "tasks"), newTaskData);
+                                showMessage('Thành công', 'Đã sao chép công việc.');
+                            }
+                        } else {
+                            // Move logic
+                            const taskRef = doc(db, "groups", activeGroupId, "tasks", taskId);
+                            await updateDoc(taskRef, {
+                                date: newDate,
+                                time: newTime,
+                                updatedAt: Timestamp.now()
+                            });
+                        }
+                    } catch (err) {
+                        console.error("Drag/drop error:", err);
+                        showMessage("Lỗi", "Không thể di chuyển/sao chép công việc.", true);
+                    } finally {
+                        // Reset drag operation state
+                        dragOperation = { taskId: null, isCopy: false };
+                    }
+                }
+            });
+        }
+
 
         // ======================================================================
         // ======================== SHARING SECTION =============================
@@ -2058,13 +2031,13 @@
             try {
                 // Use the Clipboard API if available, otherwise fallback
                  if (navigator.clipboard) {
-                     navigator.clipboard.writeText(linkInput.value).then(() => {
-                         showMessage('Đã sao chép!', 'Liên kết đã được sao chép vào bộ nhớ tạm.');
-                     });
-                } else {
-                     document.execCommand('copy');
-                     showMessage('Đã sao chép!', 'Liên kết đã được sao chép vào bộ nhớ tạm.');
-                }
+                      navigator.clipboard.writeText(linkInput.value).then(() => {
+                          showMessage('Đã sao chép!', 'Liên kết đã được sao chép vào bộ nhớ tạm.');
+                      });
+                 } else {
+                      document.execCommand('copy');
+                      showMessage('Đã sao chép!', 'Liên kết đã được sao chép vào bộ nhớ tạm.');
+                 }
             } catch (err) {
                 console.error('Fallback: Oops, unable to copy', err);
                 showMessage('Lỗi', 'Không thể sao chép liên kết.', true);
@@ -2111,7 +2084,7 @@
                 }
 
                 ui.friendsList.innerHTML = currentFriendsData.map(friend => `
-                    <li class="px-3 py-2 bg-gray-100 rounded flex justify-between items-center">
+                    <li class="px-3 py-2 bg-black/5 rounded-lg flex justify-between items-center">
                         <span>${friend.name || friend.email}</span>
                         <button onclick="unfriend('${friend.uid}', '${friend.name}')" class="text-xs text-red-500 hover:underline">Hủy kết bạn</button>
                     </li>
@@ -2126,11 +2099,11 @@
             const pendingRequests = requests.filter(r => r.status === 'pending');
             if (pendingRequests.length > 0) {
                  ui.friendRequestsList.innerHTML = pendingRequests.map(r => `
-                    <li class="px-3 py-2 bg-yellow-50 rounded flex flex-col sm:flex-row justify-between items-start sm:items-center gap-2">
+                    <li class="px-3 py-2 bg-yellow-400/20 rounded-lg flex flex-col sm:flex-row justify-between items-start sm:items-center gap-2">
                         <span>${r.fromName || r.fromEmail}</span>
                         <div class="flex gap-2 self-end sm:self-center">
-                            <button class="text-green-600 hover:underline text-sm" onclick="handleFriendRequest('${r.fromUid}', true)">Chấp nhận</button>
-                            <button class="text-red-600 hover:underline text-sm" onclick="handleFriendRequest('${r.fromUid}', false)">Từ chối</button>
+                            <button class="text-green-600 hover:underline text-sm font-semibold" onclick="handleFriendRequest('${r.fromUid}', true)">Chấp nhận</button>
+                            <button class="text-red-600 hover:underline text-sm font-semibold" onclick="handleFriendRequest('${r.fromUid}', false)">Từ chối</button>
                         </div>
                     </li>
                 `).join('');
@@ -2249,22 +2222,22 @@
              'Bạn có chắc muốn hủy kết bạn không?', 
              async () => {
                  try {
-                     const userRef = doc(db, 'users', currentUser.uid);
-                     const friendRef = doc(db, 'users', friendUid);
+                      const userRef = doc(db, 'users', currentUser.uid);
+                      const friendRef = doc(db, 'users', friendUid);
                     
-                     const batch = writeBatch(db);
-                     batch.update(userRef, { friends: arrayRemove(friendUid) });
-                     batch.update(friendRef, { friends: arrayRemove(currentUser.uid) });
-                     await batch.commit();
+                      const batch = writeBatch(db);
+                      batch.update(userRef, { friends: arrayRemove(friendUid) });
+                      batch.update(friendRef, { friends: arrayRemove(currentUser.uid) });
+                      await batch.commit();
                     
-                     // Cập nhật cache cục bộ và re-render UI ngay lập tức
-                     currentUserData.friends = (currentUserData.friends || []).filter(uid => uid !== friendUid);
-                     await loadAndRenderFriendsList(currentUserData.friends);
+                      // Cập nhật cache cục bộ và re-render UI ngay lập tức
+                      currentUserData.friends = (currentUserData.friends || []).filter(uid => uid !== friendUid);
+                      await loadAndRenderFriendsList(currentUserData.friends);
                     
-                     showMessage('Thành công', 'Đã hủy kết bạn.');
+                      showMessage('Thành công', 'Đã hủy kết bạn.');
                  } catch(error) {
-                     console.error("Lỗi khi hủy kết bạn: ", error);
-                     showMessage('Lỗi', 'Không thể hủy kết bạn. Vui lòng thử lại.', true);
+                      console.error("Lỗi khi hủy kết bạn: ", error);
+                      showMessage('Lỗi', 'Không thể hủy kết bạn. Vui lòng thử lại.', true);
                  }
              });
         }
@@ -2275,22 +2248,21 @@
 
         ui.openChatBtn.addEventListener('click', () => {
             openModal('chat-modal');
+            // Default to group tab and render
+            ui.chatTabGroup.classList.add('primary', 'bg-white/80');
+            ui.chatTabFriends.classList.remove('primary', 'bg-white/80');
             renderChatSidebar('group');
         });
 
         ui.chatTabGroup.addEventListener('click', () => {
-            ui.chatTabGroup.classList.add('bg-indigo-100', 'text-indigo-700');
-            ui.chatTabGroup.classList.remove('bg-gray-100', 'text-gray-700');
-            ui.chatTabFriends.classList.add('bg-gray-100', 'text-gray-700');
-            ui.chatTabFriends.classList.remove('bg-indigo-100', 'text-indigo-700');
+            ui.chatTabGroup.classList.add('primary', 'bg-white/80');
+            ui.chatTabFriends.classList.remove('primary', 'bg-white/80');
             renderChatSidebar('group');
         });
         
         ui.chatTabFriends.addEventListener('click', () => {
-            ui.chatTabFriends.classList.add('bg-indigo-100', 'text-indigo-700');
-            ui.chatTabFriends.classList.remove('bg-gray-100', 'text-gray-700');
-            ui.chatTabGroup.classList.add('bg-gray-100', 'text-gray-700');
-            ui.chatTabGroup.classList.remove('bg-indigo-100', 'text-indigo-700');
+            ui.chatTabFriends.classList.add('primary', 'bg-white/80');
+            ui.chatTabGroup.classList.remove('primary', 'bg-white/80');
             renderChatSidebar('friend');
         });
 
@@ -2320,16 +2292,16 @@
 
             if(conversations.length > 0) {
                  ui.chatConversationsList.innerHTML = conversations.map(convo => `
-                     <div onclick="openChatConversation('${convo.id}', '${convo.type}')" 
-                         class="flex items-center gap-3 p-2 rounded-lg hover:bg-gray-200 cursor-pointer transition-colors ${currentChatContext.id === convo.id ? 'bg-indigo-100' : ''}">
-                         <div class="w-10 h-10 rounded-full bg-gray-300 flex items-center justify-center font-bold text-white flex-shrink-0">
-                             ${(convo.name[0] || '?').toUpperCase()}
-                         </div>
-                         <div class="flex-1 overflow-hidden">
-                             <div class="font-semibold text-sm text-gray-800 truncate">${convo.name}</div>
-                             <div class="text-xs text-gray-500 truncate">${convo.subtitle}</div>
-                         </div>
-                     </div>
+                      <div onclick="openChatConversation('${convo.id}', '${convo.type}')" 
+                           class="flex items-center gap-3 p-2 rounded-xl hover:bg-black/5 cursor-pointer transition-colors ${currentChatContext.id === convo.id ? 'bg-black/10' : ''}">
+                          <div class="w-10 h-10 rounded-full bg-gray-300 flex items-center justify-center font-bold text-white flex-shrink-0">
+                               ${(convo.name[0] || '?').toUpperCase()}
+                          </div>
+                          <div class="flex-1 overflow-hidden">
+                              <div class="font-semibold text-sm text-gray-800 truncate">${convo.name}</div>
+                              <div class="text-xs text-gray-500 truncate">${convo.subtitle}</div>
+                          </div>
+                      </div>
                  `).join('');
             } else {
                  ui.chatConversationsList.innerHTML = `<div class="text-gray-400 text-center p-4">Không có ${type === 'group' ? 'nhóm' : 'bạn bè'} nào.</div>`;
@@ -2349,10 +2321,10 @@
             }
 
             // Highlight the current conversation in the list
-            document.querySelectorAll('#chat-conversations-list > div').forEach(el => el.classList.remove('bg-indigo-100'));
+            document.querySelectorAll('#chat-conversations-list > div').forEach(el => el.classList.remove('bg-black/10'));
             const currentConvoEl = document.querySelector(`div[onclick="openChatConversation('${id}', '${type}')"]`);
             if (currentConvoEl) {
-                currentConvoEl.classList.add('bg-indigo-100');
+                currentConvoEl.classList.add('bg-black/10');
             }
 
             let conversationRef;
@@ -2405,10 +2377,10 @@
                         ${!isMe ? `<div class="w-8 h-8 rounded-full bg-gray-300 flex-shrink-0 flex items-center justify-center text-sm text-white font-bold" title="${senderName}">${(senderName[0] || '?').toUpperCase()}</div>` : ''}
                         <div class="flex flex-col gap-1 max-w-[70%]">
                             <div class="flex items-center space-x-2 rtl:space-x-reverse ${isMe ? 'justify-end' : ''}">
-                                <span class="text-xs font-semibold text-gray-900">${senderName}</span>
+                                <span class="text-xs font-semibold text-gray-800">${senderName}</span>
                                 <span class="text-xs font-normal text-gray-500">${formatTime(msg.sentAt)}</span>
                             </div>
-                            <div class="leading-snug p-2.5 rounded-xl ${isMe ? 'bg-indigo-600 text-white rounded-br-none' : 'bg-white text-gray-800 rounded-bl-none shadow-sm'}">
+                            <div class="leading-snug p-2.5 rounded-xl ${isMe ? 'bg-blue-600 text-white rounded-br-none' : 'bg-white/80 text-gray-800 rounded-bl-none shadow-sm'}">
                                 <p class="text-sm font-normal break-words">${msg.text}</p>
                             </div>
                         </div>
