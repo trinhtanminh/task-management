@@ -210,6 +210,25 @@
         .toggle-checkbox:checked + .toggle-label {
             background-color: #34C759;
         }
+        
+        /* --- MOBILE MENU --- */
+        .mobile-menu-item {
+            display: flex;
+            align-items: center;
+            width: 100%;
+            padding: 0.6rem 0.75rem;
+            font-size: 0.9rem;
+            font-weight: 500;
+            border-radius: 0.6rem;
+            transition: background-color 0.2s ease-in-out;
+            color: #1d1d1f;
+        }
+        .mobile-menu-item:hover {
+            background-color: rgba(0,0,0,0.05);
+        }
+        .mobile-menu-item.text-red-500:hover {
+            background-color: rgba(255, 59, 48, 0.1);
+        }
     </style>
 </head>
 <body oncontextmenu="return false;">
@@ -257,27 +276,39 @@
     <div id="app-screen" class="hidden flex flex-col h-screen">
         <header class="sticky top-0 z-40 p-3">
              <div class="glass-pane !rounded-full p-2">
-                <div class="container mx-auto px-4">
-                    <div class="flex justify-between items-center">
-                        <div class="flex items-center gap-2 sm:gap-4">
-                            <button id="back-to-dashboard-btn" class="hidden glass-btn icon-btn">
-                                <i class="fas fa-arrow-left"></i>
-                            </button>
-                            <h1 id="header-title" class="text-lg sm:text-xl font-bold text-gray-900 truncate">Các Nhóm Của Tôi</h1>
-                        </div>
-                        <div class="flex items-center gap-2">
-                            <span id="user-email" class="hidden lg:block text-sm text-gray-600 font-medium mr-2"></span>
-                            <button id="profile-btn" class="glass-btn icon-btn"><i class="fas fa-user-circle"></i></button>
-                            <button id="friends-btn" class="glass-btn icon-btn sm:!w-auto sm:!px-4"><i class="fas fa-user-friends text-base sm:mr-2"></i><span class="hidden sm:inline">Bạn bè</span></button>
-                            <button id="share-plan-btn" class="hidden glass-btn icon-btn sm:!w-auto sm:!px-4 bg-teal-100"><i class="fas fa-share-alt text-base sm:mr-2"></i><span class="hidden sm:inline">Chia sẻ</span></button>
-                            <button id="leave-group-btn" class="hidden glass-btn icon-btn sm:!w-auto sm:!px-4 bg-red-100"><i class="fas fa-sign-out-alt text-base sm:mr-2"></i><span class="hidden sm:inline">Rời nhóm</span></button>
-                            <button id="create-group-btn" class="glass-btn primary icon-btn sm:!w-auto sm:!px-4"><i class="fas fa-plus text-base sm:mr-2"></i><span class="hidden sm:inline">Tạo</span></button>
-                            <button id="join-group-btn" class="glass-btn icon-btn sm:!w-auto sm:!px-4 bg-green-100"><i class="fas fa-user-plus text-base sm:mr-2"></i><span class="hidden sm:inline">Tham gia</span></button>
-                            <button id="logout-btn" class="glass-btn icon-btn"><i class="fas fa-sign-out-alt"></i></button>
-                        </div>
-                    </div>
-                </div>
-            </div>
+                 <div class="container mx-auto px-4">
+                     <div class="flex justify-between items-center">
+                         <div class="flex items-center gap-2 sm:gap-4">
+                             <button id="back-to-dashboard-btn" class="hidden glass-btn icon-btn">
+                                 <i class="fas fa-arrow-left"></i>
+                             </button>
+                             <h1 id="header-title" class="text-lg sm:text-xl font-bold text-gray-900 truncate">Các Nhóm Của Tôi</h1>
+                         </div>
+                         <div class="flex items-center gap-2">
+                            <!-- Desktop Buttons -->
+                            <div class="hidden sm:flex items-center gap-2">
+                                <span id="user-email" class="hidden lg:block text-sm text-gray-600 font-medium mr-2"></span>
+                                <button id="profile-btn" class="glass-btn icon-btn"><i class="fas fa-user-circle"></i></button>
+                                <button id="friends-btn" class="glass-btn !w-auto !px-4"><i class="fas fa-user-friends text-base mr-2"></i><span class="inline">Bạn bè</span></button>
+                                <button id="share-plan-btn" class="hidden glass-btn !w-auto !px-4 bg-teal-100"><i class="fas fa-share-alt text-base mr-2"></i><span class="inline">Chia sẻ</span></button>
+                                <button id="leave-group-btn" class="hidden glass-btn !w-auto !px-4 bg-red-100"><i class="fas fa-sign-out-alt text-base mr-2"></i><span class="inline">Rời nhóm</span></button>
+                                <button id="create-group-btn" class="glass-btn primary !w-auto !px-4"><i class="fas fa-plus text-base mr-2"></i><span class="inline">Tạo</span></button>
+                                <button id="join-group-btn" class="glass-btn !w-auto !px-4 bg-green-100"><i class="fas fa-user-plus text-base mr-2"></i><span class="inline">Tham gia</span></button>
+                                <button id="logout-btn" class="glass-btn icon-btn"><i class="fas fa-sign-out-alt"></i></button>
+                            </div>
+                            <!-- Mobile Menu Button -->
+                            <div class="sm:hidden relative">
+                                <button id="mobile-menu-btn" class="glass-btn icon-btn">
+                                    <i class="fas fa-ellipsis-h"></i>
+                                </button>
+                                <div id="mobile-menu" class="hidden absolute right-0 mt-2 w-56 glass-pane !rounded-2xl p-2 space-y-1 z-50">
+                                    <!-- Mobile menu items will be populated by JS -->
+                                </div>
+                            </div>
+                         </div>
+                     </div>
+                 </div>
+             </div>
         </header>
 
         <main id="main-content-container" class="container mx-auto p-4 flex-grow overflow-y-auto custom-scrollbar">
@@ -316,7 +347,7 @@
                     </div>
                 </div>
             </div>
-        </header>
+       </header>
         <main class="container mx-auto p-4 flex-grow overflow-y-auto custom-scrollbar">
             <div id="admin-stats-container" class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8"></div>
             <div class="glass-pane p-4 sm:p-6 mb-8"><div class="h-80"><canvas id="user-growth-chart"></canvas></div></div>
@@ -351,7 +382,7 @@
                             <label for="profile-new-password" class="text-sm-label">Mật khẩu mới</label>
                             <input type="password" id="profile-new-password" class="glass-input">
                         </div>
-                        <div>
+                         <div>
                             <label for="profile-confirm-password" class="text-sm-label">Xác nhận mật khẩu mới</label>
                             <input type="password" id="profile-confirm-password" class="glass-input">
                         </div>
@@ -572,6 +603,9 @@
         let activeGroupTotalWeeks = 4;
         let currentChatContext = { type: null, id: null, name: null };
         let dragOperation = { taskId: null, isCopy: false };
+        // Filter State
+        let filterPartnerValue = '';
+        let filterAssigneeUid = '';
         
 
         // --- UI Elements ---
@@ -606,6 +640,8 @@
             profileBtn: document.getElementById('profile-btn'),
             openChatBtn: document.getElementById('open-chat-btn'),
             sharePlanBtn: document.getElementById('share-plan-btn'),
+            mobileMenuBtn: document.getElementById('mobile-menu-btn'),
+            mobileMenu: document.getElementById('mobile-menu'),
 
             // Profile Modal
             profileForm: document.getElementById('profile-form'),
@@ -988,9 +1024,9 @@
 
                 if (!groupDoc.exists() || !groupDoc.data().public) {
                     ui.publicMainContent.innerHTML = `<div class="glass-pane text-center p-8">
-                            <h2 class="text-xl font-bold mb-2 text-red-600">Lỗi Truy Cập</h2>
-                            <p>Lịch công việc này không tồn tại hoặc không được chia sẻ công khai.</p>
-                          </div>`;
+                                <h2 class="text-xl font-bold mb-2 text-red-600">Lỗi Truy Cập</h2>
+                                <p>Lịch công việc này không tồn tại hoặc không được chia sẻ công khai.</p>
+                              </div>`;
                     return;
                 }
                 
@@ -1022,9 +1058,9 @@
                      : 'Đã có lỗi xảy ra khi tải dữ liệu.';
                 
                  ui.publicMainContent.innerHTML = `<div class="glass-pane text-center p-8">
-                              <h2 class="text-xl font-bold mb-2 text-red-600">Lỗi</h2>
-                              <p>${errorMessage}</p>
-                            </div>`;
+                                   <h2 class="text-xl font-bold mb-2 text-red-600">Lỗi</h2>
+                                   <p>${errorMessage}</p>
+                                 </div>`;
              }
         }
 
@@ -1358,6 +1394,7 @@
         }
 
         async function loadGroupDashboard(groupIds) {
+            updateMobileMenu(); // Update mobile menu for this view
             ui.headerTitle.textContent = 'Các Nhóm Của Tôi';
             ui.backToDashboardBtn.classList.add('hidden');
             ui.statsContainer.classList.add('hidden');
@@ -1595,6 +1632,7 @@
                     }
                     const groupData = {id: doc.id, ...doc.data()};
                     
+                    updateMobileMenu(); // Update mobile menu for this view
                     ui.headerTitle.textContent = `${groupData.name}`;
                     ui.backToDashboardBtn.classList.remove('hidden');
                     ui.statsContainer.classList.remove('hidden');
@@ -1612,6 +1650,7 @@
                     
                     await fetchAndCacheMembers(groupData.members || []);
                     renderWeekNavigator();
+                    renderFilterControls(); // ADDED: Render filter controls
                     renderSchedule();
                     renderTasks(cachedTasks); 
 
@@ -1690,6 +1729,7 @@
         window.setWeek = (week, isReadOnly = false) => {
             currentWeek = week;
             renderWeekNavigator(isReadOnly);
+            if (!isReadOnly) renderFilterControls(); // Re-render filters when week changes
             renderSchedule(isReadOnly);
             renderTasks(cachedTasks, isReadOnly);
             updateStats(cachedTasks, isReadOnly); // Update stats when week changes
@@ -1772,7 +1812,15 @@
             if (!activeGroupStartDate) return;
             const weekDates = getWeekDates(currentWeek, activeGroupStartDate).map(d => d.toISOString().split('T')[0]);
             
-            allTasks.forEach(task => {
+            // Apply filters
+            const filteredTasks = allTasks.filter(task => {
+                if (!task) return false;
+                const partnerMatch = !filterPartnerValue || (task.partner && task.partner.toLowerCase().includes(filterPartnerValue.toLowerCase()));
+                const assigneeMatch = !filterAssigneeUid || task.assigneeUid === filterAssigneeUid;
+                return partnerMatch && assigneeMatch;
+            });
+
+            filteredTasks.forEach(task => {
                 if (!task || !task.date || !task.time) return; 
 
                 if (weekDates.includes(task.date)) {
@@ -1809,6 +1857,65 @@
             optimizeScheduleLayout(isReadOnly);
         }
         
+        // --- UPDATED: Filter Controls ---
+        function renderFilterControls() {
+            const container = document.getElementById('schedule-container');
+            if (!container) return;
+
+            const oldControls = document.getElementById('filter-controls');
+            if (oldControls) oldControls.remove();
+
+            // Create options for member filter
+            let memberOptions = '<option value="">Tất cả thành viên</option>';
+            activeGroupMembers.forEach(member => {
+                memberOptions += `<option value="${member.uid}" ${filterAssigneeUid === member.uid ? 'selected' : ''}>${member.name || member.email}</option>`;
+            });
+
+            const filterHtml = `
+                <div id="filter-controls" class="p-3 bg-black/5 rounded-2xl mb-4 flex flex-col sm:flex-row gap-3 items-center">
+                    <div class="relative flex-grow w-full">
+                        <i class="fas fa-search absolute left-4 top-1/2 -translate-y-1/2 text-gray-400 pointer-events-none"></i>
+                        <input type="text" id="filter-partner" placeholder="Lọc theo đối tác..." class="glass-input !pl-10" value="${filterPartnerValue}">
+                    </div>
+                    <div class="relative flex-grow w-full">
+                        <i class="fas fa-user-check absolute left-4 top-1/2 -translate-y-1/2 text-gray-400 pointer-events-none"></i>
+                        <select id="filter-assignee" class="glass-input !pl-10 appearance-none">
+                            ${memberOptions}
+                        </select>
+                        <i class="fas fa-chevron-down absolute right-4 top-1/2 -translate-y-1/2 text-gray-400 pointer-events-none"></i>
+                    </div>
+                    <button id="clear-filters-btn" class="glass-btn danger !w-full sm:!w-auto flex-shrink-0">
+                        <i class="fas fa-times sm:mr-2"></i> <span class="hidden sm:inline">Xóa lọc</span>
+                    </button>
+                </div>
+            `;
+            
+            const weekNav = container.querySelector('.week-navigator');
+            if (weekNav) {
+                weekNav.insertAdjacentHTML('afterend', filterHtml);
+            } else {
+                container.insertAdjacentHTML('afterbegin', filterHtml);
+            }
+
+            // Add event listeners
+            document.getElementById('filter-partner').addEventListener('input', (e) => {
+                filterPartnerValue = e.target.value;
+                renderTasks(cachedTasks);
+            });
+            document.getElementById('filter-assignee').addEventListener('change', (e) => {
+                filterAssigneeUid = e.target.value;
+                renderTasks(cachedTasks);
+            });
+            document.getElementById('clear-filters-btn').addEventListener('click', () => {
+                filterPartnerValue = '';
+                filterAssigneeUid = '';
+                document.getElementById('filter-partner').value = '';
+                document.getElementById('filter-assignee').value = '';
+                renderTasks(cachedTasks);
+            });
+        }
+
+
         window.openTaskModal = (task, time, date) => {
             ui.taskForm.reset();
             
@@ -1916,13 +2023,13 @@
             if (!isReadOnly) {
                 statsHtml += `
                  <div class="stat-item !flex-col !items-start !justify-center !p-3">
-                    <div class="stat-label !uppercase !text-gray-500">ID Nhóm</div>
-                    <div class="flex items-center gap-1 mt-1 w-full">
-                        <input type="text" readonly id="group-id-input" class="flex-grow bg-transparent text-gray-700 font-mono text-sm p-0 border-0 focus:ring-0 w-0" value="${activeGroupId || 'N/A'}">
-                        <button onclick="copyGroupId()" class="text-gray-500 hover:text-blue-600 w-8 h-8 flex-shrink-0 flex items-center justify-center rounded-lg hover:bg-black/10 transition">
-                            <i class="far fa-copy"></i>
-                        </button>
-                    </div>
+                     <div class="stat-label !uppercase !text-gray-500">ID Nhóm</div>
+                     <div class="flex items-center gap-1 mt-1 w-full">
+                         <input type="text" readonly id="group-id-input" class="flex-grow bg-transparent text-gray-700 font-mono text-sm p-0 border-0 focus:ring-0 w-0" value="${activeGroupId || 'N/A'}">
+                         <button onclick="copyGroupId()" class="text-gray-500 hover:text-blue-600 w-8 h-8 flex-shrink-0 flex items-center justify-center rounded-lg hover:bg-black/10 transition">
+                             <i class="far fa-copy"></i>
+                         </button>
+                     </div>
                  </div>
                 `;
             }
@@ -1987,7 +2094,7 @@
             container.addEventListener('dragleave', (e) => {
                  const cell = e.target.closest('.grid-cell');
                  if (cell && !cell.contains(e.relatedTarget)) {
-                    cell.classList.remove('drag-over');
+                     cell.classList.remove('drag-over');
                  }
             });
 
@@ -2425,16 +2532,16 @@
 
             if(conversations.length > 0) {
                  ui.chatConversationsList.innerHTML = conversations.map(convo => `
-                      <div onclick="openChatConversation('${convo.id}', '${convo.type}')" 
+                       <div onclick="openChatConversation('${convo.id}', '${convo.type}')" 
                            class="flex items-center gap-3 p-2 rounded-xl hover:bg-black/5 cursor-pointer transition-colors ${currentChatContext.id === convo.id ? 'bg-black/10' : ''}">
-                          <div class="w-10 h-10 rounded-full bg-gray-300 flex items-center justify-center font-bold text-white flex-shrink-0">
-                               ${(convo.name[0] || '?').toUpperCase()}
-                          </div>
-                          <div class="flex-1 overflow-hidden">
-                              <div class="font-semibold text-sm text-gray-800 truncate">${convo.name}</div>
-                              <div class="text-xs text-gray-500 truncate">${convo.subtitle}</div>
-                          </div>
-                      </div>
+                           <div class="w-10 h-10 rounded-full bg-gray-300 flex items-center justify-center font-bold text-white flex-shrink-0">
+                                ${(convo.name[0] || '?').toUpperCase()}
+                           </div>
+                           <div class="flex-1 overflow-hidden">
+                                <div class="font-semibold text-sm text-gray-800 truncate">${convo.name}</div>
+                                <div class="text-xs text-gray-500 truncate">${convo.subtitle}</div>
+                           </div>
+                       </div>
                  `).join('');
             } else {
                  ui.chatConversationsList.innerHTML = `<div class="text-gray-400 text-center p-4">Không có ${type === 'group' ? 'nhóm' : 'bạn bè'} nào.</div>`;
@@ -2555,6 +2662,59 @@
             ui.chatView.classList.remove('flex');
         });
         
+        // --- NEW: Mobile Menu Logic ---
+        function updateMobileMenu() {
+            const menu = ui.mobileMenu;
+            if (!menu) return;
+
+            let menuItems = `
+                <a href="#" id="mobile-profile-btn" class="mobile-menu-item"><i class="fas fa-user-circle fa-fw mr-3"></i>Hồ sơ</a>
+                <a href="#" id="mobile-friends-btn" class="mobile-menu-item"><i class="fas fa-user-friends fa-fw mr-3"></i>Bạn bè</a>
+            `;
+
+            if (activeGroupId) { // In a group view
+                menuItems += `
+                    <a href="#" id="mobile-share-btn" class="mobile-menu-item"><i class="fas fa-share-alt fa-fw mr-3"></i>Chia sẻ</a>
+                    <a href="#" id="mobile-leave-btn" class="mobile-menu-item text-red-500"><i class="fas fa-sign-out-alt fa-fw mr-3"></i>Rời nhóm</a>
+                `;
+            } else { // In group dashboard view
+                menuItems += `
+                    <a href="#" id="mobile-create-group-btn" class="mobile-menu-item"><i class="fas fa-plus fa-fw mr-3"></i>Tạo nhóm</a>
+                    <a href="#" id="mobile-join-group-btn" class="mobile-menu-item"><i class="fas fa-user-plus fa-fw mr-3"></i>Tham gia</a>
+                `;
+            }
+
+            menuItems += `<hr class="my-1 border-black/10">`;
+            menuItems += `<a href="#" id="mobile-logout-btn" class="mobile-menu-item text-red-500"><i class="fas fa-sign-out-alt fa-fw mr-3"></i>Đăng xuất</a>`;
+
+            menu.innerHTML = menuItems;
+
+            // Add event listeners for the new mobile buttons
+            const closeMenu = () => ui.mobileMenu.classList.add('hidden');
+            document.getElementById('mobile-profile-btn').onclick = (e) => { e.preventDefault(); ui.profileBtn.click(); closeMenu(); };
+            document.getElementById('mobile-friends-btn').onclick = (e) => { e.preventDefault(); ui.friendsBtn.click(); closeMenu(); };
+            if (activeGroupId) {
+                document.getElementById('mobile-share-btn').onclick = (e) => { e.preventDefault(); ui.sharePlanBtn.click(); closeMenu(); };
+                document.getElementById('mobile-leave-btn').onclick = (e) => { e.preventDefault(); ui.leaveGroupBtn.click(); closeMenu(); };
+            } else {
+                document.getElementById('mobile-create-group-btn').onclick = (e) => { e.preventDefault(); ui.createGroupBtn.click(); closeMenu(); };
+                document.getElementById('mobile-join-group-btn').onclick = (e) => { e.preventDefault(); ui.joinGroupBtn.click(); closeMenu(); };
+            }
+            document.getElementById('mobile-logout-btn').onclick = (e) => { e.preventDefault(); ui.logoutBtn.click(); closeMenu(); };
+        }
+
+        ui.mobileMenuBtn.addEventListener('click', (e) => {
+            e.stopPropagation();
+            ui.mobileMenu.classList.toggle('hidden');
+        });
+
+        document.addEventListener('click', (e) => {
+            if (!ui.mobileMenu.classList.contains('hidden') && !ui.mobileMenu.contains(e.target) && !ui.mobileMenuBtn.contains(e.target)) {
+                ui.mobileMenu.classList.add('hidden');
+            }
+        });
+
+
         // --- App Entry Point ---
         window.onload = () => {
             handleRouting();
@@ -2572,4 +2732,4 @@
 
     </script>
 </body>
-</ht
+</html>
